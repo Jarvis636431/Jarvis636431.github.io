@@ -454,7 +454,7 @@ const currentYear = new Date().getFullYear();
         <div class="flex items-center justify-between mb-6">
           <h3 class="font-display font-bold text-xl">Recent Writing</h3>
           <a
-            href="/blog"
+            href="/blogs"
             class="text-accent-cyan hover:text-primary transition-colors"
           >
             <svg
@@ -475,7 +475,7 @@ const currentYear = new Date().getFullYear();
           {
             sortedPosts.map((post) => (
               <a
-                href={`/blog/${post.slug}`}
+                href={`/blogs/${post.slug}`}
                 class="group bg-white p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md hover:border-accent-cyan/20 transition-all"
               >
                 <span class="text-xs font-mono text-secondary/60 mb-1 block">

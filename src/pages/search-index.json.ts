@@ -13,7 +13,7 @@ export async function GET() {
         ...posts.map((post) => ({
             title: post.data.title,
             description: post.data.description,
-            slug: `/blog/${post.slug}`,
+            slug: `/blogs/${post.slug}`,
             tags: post.data.tags,
             collection: "blog",
             date: post.data.publishDate,

@@ -121,11 +121,11 @@ const nextPost =
       <div class="min-w-0 space-y-10 max-w-3xl">
         <header class="space-y-6 bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10">
           <a
-            href="/blog"
+            href="/blogs"
             class="inline-flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors"
           >
             <span>{"<-"}</span>
-            Back to writing
+            Back to blogs
           </a>
 
           <div class="space-y-3">
@@ -185,7 +185,7 @@ const nextPost =
               >
                 {prevPost && (
                   <a
-                    href={`/blog/${prevPost.slug}`}
+                    href={`/blogs/${prevPost.slug}`}
                     class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-cyan transition-colors"
                   >
                     <div class="text-xs text-secondary uppercase mb-1">
@@ -206,7 +206,7 @@ const nextPost =
                 )}
                 {nextPost && (
                   <a
-                    href={`/blog/${nextPost.slug}`}
+                    href={`/blogs/${nextPost.slug}`}
                     class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-violet transition-colors"
                   >
                     <div class="text-xs text-secondary uppercase mb-1">
