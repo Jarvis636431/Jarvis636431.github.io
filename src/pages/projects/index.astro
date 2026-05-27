@@ -1,6 +1,5 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import ProjectCard from "@components/ProjectCard.astro";
 import { getCollection } from "astro:content";
 
 const projects = (
@@ -16,7 +15,32 @@ const projects = (
   );
 
 const featured = projects.filter(({ data }) => data.featured);
-const rest = projects.filter(({ data }) => !data.featured);
+const launchedCount = projects.filter((p) => p.data.status === "launched").length;
+const activeCount = projects.filter((p) => p.data.status === "in-progress").length;
+const stackTags = Array.from(new Set(projects.flatMap((project) => project.data.stack))).sort();
+
+const capabilities = [
+  {
+    title: "Product Systems",
+    description: "Reservation workflows, role permissions, audit trails, and operational dashboards.",
+    tags: ["Vue", "Go", "MariaDB", "Docker"],
+  },
+  {
+    title: "AI Interfaces",
+    description: "Conversational flows, generated outputs, spatial previews, and iteration loops.",
+    tags: ["React", "TypeScript", "Three.js"],
+  },
+  {
+    title: "Cross-platform Apps",
+    description: "Campus mobile modules, shared UI foundations, and multi-platform delivery.",
+    tags: ["Flutter", "Dart", "iOS", "Android"],
+  },
+  {
+    title: "Design Engineering",
+    description: "Interaction details, component systems, and interfaces built for repeated use.",
+    tags: ["Tailwind", "Figma", "Vite"],
+  },
+];
 
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvishub.com";
@@ -27,15 +51,33 @@ const projectsStructuredData = {
   "@type": "CollectionPage",
   name: "Jarvis Hub Projects",
   url: pageUrl,
-  description: "Selected client collaborations, experiments, and systems work.",
+  description: "Selected systems, AI tools, and campus products I built or contributed to.",
   inLanguage: "en-US",
 };
+
+function formatDate(date: Date) {
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+  });
+}
+
+function projectInitials(title: string) {
+  return title
+    .split(/\s|-/)
+    .filter(Boolean)
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 3)
+    .toUpperCase();
+}
 ---
 
 <Layout
-  title="Mission Log - Jarvis Hub"
-  description="Selected client collaborations, experiments, and systems work."
+  title="Projects - Jarvis Hub"
+  description="Selected systems, AI tools, and campus products I built or contributed to."
   seo={{
+    canonical: pageUrl,
     type: "website",
     image: {
       src: "/logo.png",
@@ -44,340 +86,609 @@ const projectsStructuredData = {
     structuredData: projectsStructuredData,
   }}
 >
-  <div class="min-h-screen">
-    <div class="page-shell">
-      <section class="page-hero">
-        <div class="page-hero__pattern"></div>
-        <div class="page-hero__inner animate-in-fade">
-          <div class="space-y-6">
-            <div class="page-badge">
-              <span class="page-badge__dot bg-accent-violet"></span>
-              Mission Log
-            </div>
+  <div class="projects-shell">
+    <header class="projects-header">
+      <div class="projects-kicker">
+        <span class="projects-kicker__dot"></span>
+        Project index
+      </div>
 
-            <h1 class="page-title">
-              Projects & labs,
-              <span class="page-title__muted">built in the open.</span>
-            </h1>
+      <div class="projects-header__grid">
+        <div class="projects-intro">
+          <h1>Projects</h1>
+        </div>
 
-            <p class="page-subtitle">
-              A curated archive of client collaborations, product systems, and
-              experiments in motion.
-            </p>
-
-            <div class="flex flex-wrap gap-2">
-              <span class="page-chip">Product</span>
-              <span class="page-chip">Experiments</span>
-              <span class="page-chip">Systems</span>
-            </div>
-
-            <div class="filter-row" id="project-filters">
-              <button class="filter-btn active-filter" data-filter="all">
-                All Systems
-              </button>
-              <button class="filter-btn is-inactive" data-filter="featured">
-                Featured
-              </button>
-              <button class="filter-btn is-inactive" data-filter="lab">
-                Lab Experiments
-              </button>
-            </div>
+        <aside class="projects-stats" aria-label="Project statistics">
+          <div>
+            <span>Total</span>
+            <strong>{projects.length}</strong>
           </div>
-
-          <div class="page-meta-card">
-            <div class="page-meta">
-              <span>Deployed</span>
-              <strong>{projects.length}</strong>
-            </div>
-            <div class="page-meta">
-              <span>In Progress</span>
-              <strong>
-                {projects.filter((p) => p.data.status === "in-progress").length}
-              </strong>
-            </div>
-            <div class="page-meta">
-              <span>Featured</span>
-              <strong>{featured.length}</strong>
-            </div>
+          <div>
+            <span>Launched</span>
+            <strong>{launchedCount}</strong>
           </div>
+          <div>
+            <span>Active</span>
+            <strong>{activeCount}</strong>
+          </div>
+        </aside>
+      </div>
+
+      {
+        stackTags.length > 0 && (
+          <div class="stack-strip" aria-label="Technology stack">
+            {stackTags.slice(0, 14).map((tag) => (
+              <span>{tag}</span>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <main class="projects-main">
+      {
+        featured.length > 0 && (
+          <section class="featured-section" aria-label="Featured projects">
+            <div class="section-heading">
+              <span>Featured systems</span>
+              <span></span>
+            </div>
+
+            <div class="featured-list">
+              {featured.map((project, index) => (
+                <a href={`/projects/${project.slug}`} class="featured-project">
+                  <div class="featured-project__media">
+                    {project.data.coverImage ? (
+                      <img src={project.data.coverImage} alt={project.data.title} loading={index === 0 ? "eager" : "lazy"} />
+                    ) : (
+                      <div class="project-monogram" aria-hidden="true">
+                        {projectInitials(project.data.title)}
+                      </div>
+                    )}
+                  </div>
+
+                  <div class="featured-project__content">
+                    <div class="project-meta-row">
+                      <span class={`status status--${project.data.status}`}>
+                        {project.data.status}
+                      </span>
+                      <span>{formatDate(project.data.publishDate)}</span>
+                    </div>
+
+                    <div>
+                      <h2>{project.data.title}</h2>
+                      <p>{project.data.summary}</p>
+                    </div>
+
+                    <div class="project-detail-grid">
+                      {project.data.roles.length > 0 && (
+                        <div>
+                          <span>Role</span>
+                          <strong>{project.data.roles.join(", ")}</strong>
+                        </div>
+                      )}
+                      {project.data.stack.length > 0 && (
+                        <div>
+                          <span>Stack</span>
+                          <strong>{project.data.stack.slice(0, 4).join(" / ")}</strong>
+                        </div>
+                      )}
+                    </div>
+
+                    {project.data.stack.length > 0 && (
+                      <ul class="project-tags">
+                        {project.data.stack.slice(0, 6).map((item) => (
+                          <li>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <span class="project-arrow" aria-hidden="true">
+                    -&gt;
+                  </span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <section class="capabilities-section" aria-label="Capabilities">
+        <div class="section-heading">
+          <span>Capabilities</span>
+          <span></span>
+        </div>
+
+        <div class="capability-grid">
+          {capabilities.map((capability) => (
+            <article class="capability-card">
+              <h2>{capability.title}</h2>
+              <p>{capability.description}</p>
+              <ul>
+                {capability.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
 
-      <div id="projects-grid" class="space-y-16 min-h-[50vh]">
-        {
-          featured.length > 0 && (
-            <section
-              class="space-y-8 project-section"
-              data-section="featured"
-              aria-label="Featured projects"
-            >
-              <div class="section-title">
-                <span>Featured Systems</span>
-                <span class="section-title__line"></span>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {featured.map((project) => (
-                  <div class="project-item" data-featured="true">
-                    <ProjectCard project={project} />
-                  </div>
-                ))}
-              </div>
-            </section>
-          )
-        }
+      <section class="archive-section" aria-label="Project archive">
+        <div class="section-heading">
+          <span>Archive</span>
+          <span></span>
+        </div>
 
-        {
-          rest.length > 0 && (
-            <section
-              class="space-y-8 project-section"
-              data-section="rest"
-              aria-label="More work"
-            >
-              <div class="section-title">
-                <span>Archive & Experiments</span>
-                <span class="section-title__line"></span>
+        <div class="archive-table">
+          {projects.map((project) => (
+            <a href={`/projects/${project.slug}`} class="archive-row">
+              <div class="archive-name">
+                <strong>{project.data.title}</strong>
+                <span>{project.data.summary}</span>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rest.map((project) => (
-                  <div class="project-item" data-featured="false">
-                    <ProjectCard project={project} />
-                  </div>
+              <div class="archive-stack">
+                {project.data.stack.slice(0, 3).map((item) => (
+                  <span>{item}</span>
                 ))}
               </div>
-            </section>
-          )
-        }
-      </div>
-    </div>
+              <div class="archive-meta">
+                <span class={`status status--${project.data.status}`}>
+                  {project.data.status}
+                </span>
+                <time datetime={new Date(project.data.publishDate).toISOString()}>
+                  {formatDate(project.data.publishDate)}
+                </time>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
   </div>
-
-  <script>
-    function initProjectFilters() {
-      const buttons = document.querySelectorAll(".filter-btn");
-      const sections = document.querySelectorAll(".project-section");
-      const items = document.querySelectorAll(".project-item");
-      const titles = document.querySelectorAll("h2");
-
-      if (!buttons.length) return;
-
-      buttons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const filter = btn.getAttribute("data-filter");
-
-          // Update button states
-          buttons.forEach((b) => {
-            b.classList.remove("active-filter");
-            b.classList.add("is-inactive");
-          });
-          btn.classList.add("active-filter");
-          btn.classList.remove("is-inactive");
-
-          // Filter logic
-          if (filter === "all") {
-            sections.forEach((s) => s.classList.remove("hidden"));
-            items.forEach((item) => item.classList.remove("hidden"));
-            titles.forEach((t) => t.classList.remove("hidden"));
-          } else if (filter === "featured") {
-            // Hide "More work" section completely
-            sections.forEach((s) => {
-              if (s.getAttribute("data-section") === "rest")
-                s.classList.add("hidden");
-              else s.classList.remove("hidden");
-            });
-          } else if (filter === "lab") {
-            // Hide "Featured" section, show "More work"
-            sections.forEach((s) => {
-              if (s.getAttribute("data-section") === "featured")
-                s.classList.add("hidden");
-              else s.classList.remove("hidden");
-            });
-          }
-        });
-      });
-    }
-
-    // Init on load and after transitions
-    initProjectFilters();
-    document.addEventListener("astro:page-load", initProjectFilters);
-  </script>
-
-  <style>
-    .animate-in-fade {
-      animation: fadeIn 0.8s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    .page-shell {
-      max-width: 72rem;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 4rem;
-      display: flex;
-      flex-direction: column;
-      gap: 4rem;
-    }
-
-    .page-hero {
-      position: relative;
-      overflow: hidden;
-      border-radius: 28px;
-      border: 1px solid rgba(31, 31, 31, 0.06);
-      background: rgba(255, 255, 255, 0.75);
-      padding: 3.5rem clamp(1.5rem, 3vw, 3rem);
-    }
-
-    .page-hero__pattern {
-      position: absolute;
-      inset: 0;
-      opacity: 0.08;
-      background-image: radial-gradient(rgba(15, 23, 42, 0.4) 1px, transparent 1px);
-      background-size: 28px 28px;
-      pointer-events: none;
-    }
-
-    .page-hero__inner {
-      position: relative;
-      display: grid;
-      gap: 2.5rem;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
-      align-items: end;
-    }
-
-    .page-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.05);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: rgba(31, 31, 31, 0.7);
-      font-family: "IBM Plex Mono", monospace;
-    }
-
-    .page-badge__dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 999px;
-      display: inline-block;
-    }
-
-    .page-title {
-      font-size: clamp(2.8rem, 6vw, 4.8rem);
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-    }
-
-    .page-title__muted {
-      display: block;
-      color: rgba(31, 31, 31, 0.55);
-    }
-
-    .page-subtitle {
-      font-size: 1.1rem;
-      color: rgba(55, 65, 81, 0.9);
-      max-width: 32rem;
-      line-height: 1.7;
-    }
-
-    .page-chip {
-      padding: 0.35rem 0.8rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.06);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      font-size: 0.75rem;
-      color: rgba(31, 31, 31, 0.7);
-    }
-
-    .page-meta-card {
-      display: grid;
-      gap: 1.5rem;
-      padding: 1.5rem;
-      border-radius: 20px;
-      border: 1px solid rgba(31, 31, 31, 0.08);
-      background: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 10px 30px rgba(31, 31, 31, 0.06);
-    }
-
-    .page-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: rgba(31, 31, 31, 0.5);
-      font-family: "IBM Plex Mono", monospace;
-    }
-
-    .page-meta strong {
-      font-size: 1.4rem;
-      font-family: "Space Grotesk", sans-serif;
-      color: rgba(31, 31, 31, 0.9);
-      text-transform: none;
-      letter-spacing: -0.01em;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      font-size: 0.75rem;
-      font-family: "IBM Plex Mono", monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: rgba(31, 31, 31, 0.55);
-    }
-
-    .section-title__line {
-      flex: 1;
-      height: 1px;
-      background: rgba(31, 31, 31, 0.12);
-    }
-
-    .filter-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      padding-top: 0.5rem;
-    }
-
-    .filter-btn {
-      padding: 0.45rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid rgba(15, 23, 42, 0.12);
-      background: rgba(255, 255, 255, 0.8);
-      font-size: 0.7rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(31, 31, 31, 0.7);
-      font-family: "IBM Plex Mono", monospace;
-      transition: all 0.2s ease;
-    }
-
-    .filter-btn:hover {
-      border-color: rgba(15, 23, 42, 0.2);
-      background: rgba(15, 23, 42, 0.08);
-      color: rgba(31, 31, 31, 0.9);
-    }
-
-    .filter-btn.is-inactive {
-      opacity: 0.6;
-    }
-
-    .active-filter {
-      background: rgba(15, 23, 42, 0.9);
-      border-color: rgba(15, 23, 42, 0.9);
-      color: #fff;
-    }
-  </style>
 </Layout>
+
+<style>
+  .projects-shell {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .projects-header {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+  }
+
+  .projects-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.5rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(31, 31, 31, 0.58);
+  }
+
+  .projects-kicker__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #c59a6d;
+    box-shadow: 0 0 0 5px rgba(197, 154, 109, 0.16);
+  }
+
+  .projects-header__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .projects-intro h1 {
+    margin: 0;
+    font-size: clamp(3.4rem, 9vw, 7rem);
+    line-height: 0.9;
+    letter-spacing: 0;
+  }
+
+  .projects-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 14px;
+  }
+
+  .projects-stats div {
+    min-width: 0;
+    padding: 1rem;
+    border-right: 1px solid rgba(31, 31, 31, 0.08);
+  }
+
+  .projects-stats div:last-child {
+    border-right: 0;
+  }
+
+  .projects-stats span,
+  .section-heading,
+  .project-meta-row,
+  .project-detail-grid span,
+  .archive-meta time {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(31, 31, 31, 0.5);
+  }
+
+  .projects-stats strong {
+    display: block;
+    margin-top: 0.35rem;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.2rem;
+    color: rgba(31, 31, 31, 0.9);
+  }
+
+  .stack-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 2rem;
+  }
+
+  .stack-strip span,
+  .project-tags li,
+  .capability-card li,
+  .archive-stack span {
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+    color: rgba(31, 31, 31, 0.68);
+    border-radius: 999px;
+  }
+
+  .stack-strip span {
+    padding: 0.38rem 0.72rem;
+    font-size: 0.82rem;
+  }
+
+  .projects-main {
+    display: grid;
+    gap: 4rem;
+    padding-top: 3rem;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-heading span:last-child {
+    flex: 1;
+    height: 1px;
+    background: rgba(31, 31, 31, 0.1);
+  }
+
+  .featured-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .featured-project {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr) 2rem;
+    gap: 1.4rem;
+    align-items: stretch;
+    padding: 1rem;
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 16px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .featured-project:hover {
+    border-color: rgba(47, 111, 109, 0.35);
+    background: rgba(255, 255, 255, 0.92);
+    transform: translateY(-2px);
+  }
+
+  .featured-project__media {
+    min-height: 190px;
+    overflow: hidden;
+    border: 1px solid rgba(31, 31, 31, 0.08);
+    background:
+      linear-gradient(135deg, rgba(47, 111, 109, 0.08), rgba(197, 154, 109, 0.12)),
+      #f8f7f4;
+    border-radius: 12px;
+  }
+
+  .featured-project__media img {
+    width: 100%;
+    height: 100%;
+    min-height: 190px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease;
+  }
+
+  .featured-project:hover img {
+    transform: scale(1.035);
+  }
+
+  .project-monogram {
+    display: grid;
+    min-height: 190px;
+    place-items: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 700;
+    color: rgba(31, 31, 31, 0.55);
+  }
+
+  .featured-project__content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0;
+  }
+
+  .project-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .status {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    padding: 0.22rem 0.52rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .status--launched {
+    border-color: rgba(47, 111, 109, 0.25);
+    background: rgba(47, 111, 109, 0.08);
+    color: #2f6f6d;
+  }
+
+  .status--in-progress {
+    border-color: rgba(197, 154, 109, 0.35);
+    background: rgba(197, 154, 109, 0.12);
+    color: #8a6234;
+  }
+
+  .featured-project h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  .featured-project:hover h2 {
+    color: #2f6f6d;
+  }
+
+  .featured-project p {
+    max-width: 46rem;
+    margin: 0.75rem 0 0;
+    color: rgba(31, 31, 31, 0.62);
+    line-height: 1.65;
+  }
+
+  .project-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .project-detail-grid div {
+    min-width: 0;
+  }
+
+  .project-detail-grid strong {
+    display: block;
+    margin-top: 0.25rem;
+    overflow-wrap: anywhere;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: rgba(31, 31, 31, 0.74);
+  }
+
+  .project-tags,
+  .capability-card ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-tags li,
+  .capability-card li,
+  .archive-stack span {
+    padding: 0.26rem 0.56rem;
+    font-size: 0.72rem;
+  }
+
+  .project-arrow {
+    padding-top: 0.35rem;
+    font-family: "IBM Plex Mono", monospace;
+    color: rgba(31, 31, 31, 0.36);
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .featured-project:hover .project-arrow,
+  .archive-row:hover .project-arrow {
+    color: #2f6f6d;
+    transform: translateX(3px);
+  }
+
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .capability-card {
+    display: flex;
+    min-height: 220px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.1rem;
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    background: rgba(255, 255, 255, 0.62);
+    border-radius: 14px;
+  }
+
+  .capability-card h2 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  .capability-card p {
+    margin: 0.7rem 0 0;
+    color: rgba(31, 31, 31, 0.58);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .archive-table {
+    border-top: 1px solid rgba(31, 31, 31, 0.1);
+  }
+
+  .archive-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(180px, 0.8fr) minmax(160px, 0.5fr);
+    gap: 1.2rem;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .archive-name {
+    min-width: 0;
+  }
+
+  .archive-name strong {
+    display: block;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 1.08rem;
+    transition: color 0.2s ease;
+  }
+
+  .archive-row:hover .archive-name strong {
+    color: #2f6f6d;
+  }
+
+  .archive-name span {
+    display: block;
+    margin-top: 0.25rem;
+    overflow: hidden;
+    color: rgba(31, 31, 31, 0.56);
+    font-size: 0.92rem;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .archive-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .archive-meta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  @media (max-width: 980px) {
+    .capability-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .featured-project {
+      grid-template-columns: minmax(150px, 0.38fr) minmax(0, 1fr);
+    }
+
+    .project-arrow {
+      display: none;
+    }
+
+    .archive-row {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .archive-meta {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .projects-header__grid,
+    .featured-project {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-project__media,
+    .featured-project__media img,
+    .project-monogram {
+      min-height: 220px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .projects-shell {
+      padding: 2rem 0.5rem 4rem;
+    }
+
+    .projects-stats,
+    .capability-grid,
+    .project-detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .projects-stats div {
+      border-right: 0;
+      border-bottom: 1px solid rgba(31, 31, 31, 0.08);
+    }
+
+    .projects-stats div:last-child {
+      border-bottom: 0;
+    }
+
+    .archive-name span {
+      white-space: normal;
+    }
+  }
+</style>
