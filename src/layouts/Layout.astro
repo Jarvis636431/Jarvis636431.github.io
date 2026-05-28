@@ -252,6 +252,8 @@ const structuredData = seo?.structuredData;
             id="menu-btn"
             class="md:hidden text-primary z-50 relative"
             aria-label="Menu"
+            aria-controls="mobile-menu"
+            aria-expanded="false"
           >
             <div class="w-6 h-5 flex flex-col justify-between">
               <span
@@ -272,9 +274,11 @@ const structuredData = seo?.structuredData;
     <div
       id="mobile-menu"
       class="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+      aria-hidden="true"
     >
       <nav
         class="flex flex-col items-center gap-6 bg-surface border border-black/10 rounded-2xl px-10 py-8 shadow-lg"
+        aria-label="Mobile navigation"
       >
         {
           navLinks.map(({ href, label }) => (
@@ -295,6 +299,7 @@ const structuredData = seo?.structuredData;
 
         <button
           onclick="window.openSearch()"
+          id="mobile-search-btn"
           class="mt-2 text-secondary hover:text-primary flex items-center gap-2 text-xs uppercase tracking-wide"
         >
           <svg
@@ -316,44 +321,105 @@ const structuredData = seo?.structuredData;
     </div>
 
     <script>
-      // Mobile Menu Logic
       const menuBtn = document.getElementById("menu-btn");
       const mobileMenu = document.getElementById("mobile-menu");
-      const mobileLinks = document.querySelectorAll(".mobile-link");
+      const mobileLinks = mobileMenu?.querySelectorAll("a, button") ?? [];
       let isMenuOpen = false;
+      let lastFocusedElement: HTMLElement | null = null;
+
+      function setMenuIcon(open: boolean) {
+        const spans = menuBtn?.querySelectorAll("span");
+        if (!spans) return;
+
+        spans[0].style.transform = open ? "rotate(45deg)" : "rotate(0)";
+        spans[1].style.opacity = open ? "0" : "1";
+        spans[2].style.transform = open ? "rotate(-45deg)" : "rotate(0)";
+      }
+
+      function setMenuState(open: boolean) {
+        isMenuOpen = open;
+        menuBtn?.setAttribute("aria-expanded", String(open));
+        mobileMenu?.setAttribute("aria-hidden", String(!open));
+        mobileMenu?.classList.toggle("opacity-0", !open);
+        mobileMenu?.classList.toggle("pointer-events-none", !open);
+        document.body.style.overflow = open ? "hidden" : "";
+        setMenuIcon(open);
+      }
+
+      function openMenu() {
+        if (isMenuOpen) return;
+        lastFocusedElement =
+          document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null;
+        setMenuState(true);
+        const firstFocusable = mobileLinks[0];
+        if (firstFocusable instanceof HTMLElement) {
+          requestAnimationFrame(() => firstFocusable.focus());
+        }
+      }
+
+      function closeMenu({ restoreFocus = true }: { restoreFocus?: boolean } = {}) {
+        if (!isMenuOpen) return;
+        setMenuState(false);
+        if (restoreFocus && lastFocusedElement instanceof HTMLElement) {
+          lastFocusedElement.focus();
+        }
+        lastFocusedElement = null;
+      }
 
       function toggleMenu() {
-        isMenuOpen = !isMenuOpen;
-        if (isMenuOpen) {
-          mobileMenu?.classList.remove("opacity-0", "pointer-events-none");
-          document.body.style.overflow = "hidden";
-          // Animate burger icon
-          const spans = menuBtn?.querySelectorAll("span");
-          if (spans) {
-            spans[0].style.transform = "rotate(45deg)";
-            spans[1].style.opacity = "0";
-            spans[2].style.transform = "rotate(-45deg)";
-          }
-        } else {
-          mobileMenu?.classList.add("opacity-0", "pointer-events-none");
-          document.body.style.overflow = "";
-          // Reset burger icon
-          const spans = menuBtn?.querySelectorAll("span");
-          if (spans) {
-            spans[0].style.transform = "rotate(0)";
-            spans[1].style.opacity = "1";
-            spans[2].style.transform = "rotate(0)";
-          }
-        }
+        isMenuOpen ? closeMenu() : openMenu();
       }
 
       menuBtn?.addEventListener("click", toggleMenu);
 
-      // Close menu when clicking a link
-      mobileLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-          if (isMenuOpen) toggleMenu();
+      mobileMenu?.addEventListener("click", (event) => {
+        if (event.target === mobileMenu) {
+          closeMenu();
+        }
+      });
+
+      mobileLinks.forEach((item) => {
+        item.addEventListener("click", () => {
+          closeMenu({ restoreFocus: false });
         });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (!isMenuOpen) return;
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeMenu();
+          return;
+        }
+
+        if (event.key !== "Tab") return;
+
+        const focusable = Array.from(mobileLinks).filter(
+          (item) => item instanceof HTMLElement && !item.hasAttribute("disabled")
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!(first instanceof HTMLElement) || !(last instanceof HTMLElement)) {
+          return;
+        }
+
+        const active = document.activeElement;
+        if (event.shiftKey && active === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && active === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.matchMedia("(min-width: 768px)").matches) {
+          closeMenu({ restoreFocus: false });
+        }
       });
     </script>
 
