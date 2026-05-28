@@ -7,16 +7,30 @@ const listClass = `${prefix}__toc-list detail__toc-list`;
 const itemClass = `${prefix}__toc-item detail__toc-item`;
 ---
 
-<aside class={tocClass}>
+<aside
+  class={tocClass}
+  data-toc-root
+  data-article-id={articleId}
+  data-toc-id={tocId}
+  data-item-class={itemClass}
+>
   {title && <div class={titleClass}>{title}</div>}
   <nav id={tocId} class={listClass} aria-label={ariaLabel}></nav>
 </aside>
 
-<script is:inline define:vars={{ articleId, tocId, itemClass }}>
+<script is:inline>
   const runToc = () => {
-    const article = document.getElementById(articleId);
-    const toc = document.getElementById(tocId);
-    if (article && toc) {
+    const tocRoots = document.querySelectorAll("[data-toc-root]");
+    tocRoots.forEach((root) => {
+      const articleId = root.getAttribute("data-article-id");
+      const tocId = root.getAttribute("data-toc-id");
+      const itemClass = root.getAttribute("data-item-class");
+      if (!articleId || !tocId || !itemClass) return;
+
+      const article = document.getElementById(articleId);
+      const toc = document.getElementById(tocId);
+      if (!article || !toc) return;
+
       const headings = Array.from(article.querySelectorAll("h1, h2, h3"));
       const slugify = (s) =>
         s
@@ -32,13 +46,16 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         const depth = h.tagName === "H1" ? 1 : h.tagName === "H2" ? 2 : 3;
         items.push({ id, depth, text });
       });
-      const html = items
-        .map(
-          (i) =>
-            `<a href="#${i.id}" class="${itemClass} toc-depth-${i.depth}" data-id="${i.id}">${i.text}</a>`
-        )
-        .join("");
-      toc.innerHTML = html;
+      const fragment = document.createDocumentFragment();
+      items.forEach((item) => {
+        const link = document.createElement("a");
+        link.href = `#${item.id}`;
+        link.className = `${itemClass} toc-depth-${item.depth}`;
+        link.dataset.id = item.id;
+        link.textContent = item.text;
+        fragment.append(link);
+      });
+      toc.replaceChildren(fragment);
       const links = Array.from(toc.querySelectorAll(`.${itemClass}`));
       const observer = new IntersectionObserver(
         (entries) => {
@@ -58,7 +75,7 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         { rootMargin: "0px 0px -60% 0px", threshold: 0.1 }
       );
       headings.forEach((h) => observer.observe(h));
-    }
+    });
   };
 
   if (document.readyState === "loading") {

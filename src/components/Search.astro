@@ -76,7 +76,17 @@
 <script>
     import Fuse from "fuse.js";
 
+    type SearchItem = {
+        title: string;
+        description: string;
+        slug: string;
+        tags: string[];
+        collection: string;
+        date: string;
+    };
+
     let fuse: Fuse<any> | null = null;
+    let selectedResultIndex = -1;
     const dialog = document.getElementById(
         "search-dialog",
     ) as HTMLDialogElement;
@@ -87,6 +97,88 @@
     const inputEl = document.getElementById("search-input");
     const escHint = document.getElementById("esc-hint");
     const header = document.getElementById("main-header");
+
+    function clearResults() {
+        resultsContainer?.replaceChildren();
+        selectedResultIndex = -1;
+    }
+
+    function renderMessage(message: string) {
+        if (!resultsContainer) return;
+        const messageEl = document.createElement("div");
+        messageEl.className = "p-8 text-center text-secondary font-mono text-sm";
+        messageEl.textContent = message;
+        resultsContainer.replaceChildren(messageEl);
+        selectedResultIndex = -1;
+    }
+
+    function getResultLinks() {
+        if (!resultsContainer) return [];
+        return Array.from(
+            resultsContainer.querySelectorAll<HTMLAnchorElement>("[data-search-result]")
+        );
+    }
+
+    function updateSelectedResult(nextIndex: number) {
+        const links = getResultLinks();
+        if (links.length === 0) {
+            selectedResultIndex = -1;
+            return;
+        }
+
+        selectedResultIndex = (nextIndex + links.length) % links.length;
+        links.forEach((link, index) => {
+            const selected = index === selectedResultIndex;
+            link.setAttribute("aria-selected", String(selected));
+            link.classList.toggle("bg-black/5", selected);
+            link.classList.toggle("border-black/10", selected);
+            if (selected) link.scrollIntoView({ block: "nearest" });
+        });
+    }
+
+    function createResultLink(item: SearchItem) {
+        const link = document.createElement("a");
+        link.href = item.slug;
+        link.dataset.searchResult = "true";
+        link.className =
+            "block p-3 rounded-lg hover:bg-black/5 group transition-colors border border-transparent hover:border-black/10";
+        link.setAttribute("role", "option");
+        link.setAttribute("aria-selected", "false");
+
+        const headerRow = document.createElement("div");
+        headerRow.className = "flex items-center justify-between mb-1";
+
+        const title = document.createElement("h4");
+        title.className =
+            "text-primary font-semibold group-hover:text-accent-cyan transition-colors";
+        title.textContent = item.title;
+
+        const collection = document.createElement("span");
+        collection.className =
+            "text-[10px] uppercase text-secondary/60 bg-black/5 px-1.5 py-0.5 rounded";
+        collection.textContent = item.collection;
+
+        const description = document.createElement("p");
+        description.className = "text-sm text-secondary line-clamp-1 font-mono";
+        description.textContent = item.description;
+
+        headerRow.append(title, collection);
+        link.append(headerRow, description);
+
+        return link;
+    }
+
+    function renderResults(items: SearchItem[]) {
+        if (!resultsContainer) return;
+        clearResults();
+
+        const fragment = document.createDocumentFragment();
+        items.forEach((item) => {
+            fragment.append(createResultLink(item));
+        });
+        resultsContainer.append(fragment);
+        updateSelectedResult(0);
+    }
 
     // Fetch index
     async function loadIndex() {
@@ -177,9 +269,7 @@
             document.body.style.overflow = "";
             document.body.style.paddingRight = ""; // Reset padding
             if (input) input.value = "";
-            if (resultsContainer)
-                resultsContainer.innerHTML =
-                    '<div class="h-full flex items-center justify-center text-secondary font-mono text-sm">Start typing to search.</div>';
+            renderMessage("Start typing to search.");
         }, 600); // Wait for all animations to complete
     }
 
@@ -230,34 +320,35 @@
         const query = (e.target as HTMLInputElement).value;
 
         if (!query) {
-            resultsContainer.innerHTML =
-                '<div class="p-8 text-center text-secondary font-mono text-sm">Start typing to search.</div>';
+            renderMessage("Start typing to search.");
             return;
         }
 
         const results = fuse.search(query);
 
         if (results.length === 0) {
-            resultsContainer.innerHTML =
-                '<div class="p-8 text-center text-secondary font-mono text-sm">No results found.</div>';
+            renderMessage("No results found.");
             return;
         }
 
-        const html = results
-            .map((result) => {
-                const item = result.item;
-                return `
-        <a href="${item.slug}" class="block p-3 rounded-lg hover:bg-black/5 group transition-colors border border-transparent hover:border-black/10">
-          <div class="flex items-center justify-between mb-1">
-            <h4 class="text-primary font-semibold group-hover:text-accent-cyan transition-colors">${item.title}</h4>
-            <span class="text-[10px] uppercase text-secondary/60 bg-black/5 px-1.5 py-0.5 rounded">${item.collection}</span>
-          </div>
-          <p class="text-sm text-secondary line-clamp-1 font-mono">${item.description}</p>
-        </a>
-      `;
-            })
-            .join("");
+        renderResults(results.map((result) => result.item as SearchItem));
+    });
 
-        resultsContainer.innerHTML = html;
+    input?.addEventListener("keydown", (e) => {
+        const links = getResultLinks();
+        if (links.length === 0) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            updateSelectedResult(selectedResultIndex + 1);
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            updateSelectedResult(selectedResultIndex - 1);
+        } else if (e.key === "Enter") {
+            if (selectedResultIndex >= 0 && links[selectedResultIndex]) {
+                e.preventDefault();
+                links[selectedResultIndex].click();
+            }
+        }
     });
 </script>
