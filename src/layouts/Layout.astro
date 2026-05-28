@@ -270,53 +270,60 @@ const structuredData = seo?.structuredData;
       </div>
     </header>
 
-    <!-- Mobile Menu Overlay -->
+    <!-- Mobile Menu Dropdown -->
     <div
       id="mobile-menu"
-      class="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300"
+      class="fixed inset-x-0 top-[73px] bottom-0 z-30 bg-black/10 backdrop-blur-[2px] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"
       aria-hidden="true"
     >
       <nav
-        class="flex flex-col items-center gap-6 bg-surface border border-black/10 rounded-2xl px-10 py-8 shadow-lg"
+        class="mx-auto max-w-6xl border-b border-black/10 bg-background/95 px-4 py-4 shadow-lg backdrop-blur"
         aria-label="Mobile navigation"
       >
-        {
-          navLinks.map(({ href, label }) => (
-            <a
-              href={href}
-              class="mobile-link text-xl font-display text-primary hover:text-accent-cyan transition-colors"
-            >
-              {label}
-            </a>
-          ))
-        }
-        <a
-          href="mailto:hello@jarvishub.com"
-          class="mt-4 px-6 py-2 border border-accent-cyan text-accent-cyan rounded-full hover:bg-accent-cyan hover:text-white transition-all"
-        >
-          Email
-        </a>
+        <div class="flex flex-col divide-y divide-black/10">
+          {
+            navLinks.map(({ href, label }) => (
+              <a
+                href={href}
+                class="mobile-link flex items-center justify-between py-4 font-display text-lg text-primary hover:text-accent-cyan transition-colors"
+              >
+                <span>{label}</span>
+                <span class="text-sm text-secondary" aria-hidden="true">
+                  -&gt;
+                </span>
+              </a>
+            ))
+          }
+        </div>
 
-        <button
-          onclick="window.openSearch()"
-          id="mobile-search-btn"
-          class="mt-2 text-secondary hover:text-primary flex items-center gap-2 text-xs uppercase tracking-wide"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            ><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"
-            ></path></svg
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button
+            onclick="window.openSearch()"
+            id="mobile-search-btn"
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-surface px-4 py-3 text-xs uppercase tracking-wide text-secondary hover:border-accent-cyan/30 hover:text-primary transition-colors"
           >
-          Search
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"
+              ></path></svg
+            >
+            Search
+          </button>
+          <a
+            href="mailto:hello@jarvishub.com"
+            class="inline-flex items-center justify-center rounded-lg border border-accent-cyan/30 bg-accent-cyan/10 px-4 py-3 text-xs uppercase tracking-wide text-accent-cyan hover:bg-accent-cyan hover:text-white transition-colors"
+          >
+            Email
+          </a>
+        </div>
       </nav>
     </div>
 
@@ -342,7 +349,6 @@ const structuredData = seo?.structuredData;
         mobileMenu?.setAttribute("aria-hidden", String(!open));
         mobileMenu?.classList.toggle("opacity-0", !open);
         mobileMenu?.classList.toggle("pointer-events-none", !open);
-        document.body.style.overflow = open ? "hidden" : "";
         setMenuIcon(open);
       }
 
