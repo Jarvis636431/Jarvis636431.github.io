@@ -8,23 +8,33 @@ const timeline = [
     company: "Tenio / Tianjin University",
     type: "Student Developer",
     description: "Developed Tenio AI System in Architecture.",
-    stack: ["Three.js", "Tailwind CSS", "React", "TypeScript",]
+    stack: ["Three.js", "Tailwind CSS", "React", "TypeScript"],
   },
   {
     year: "2023",
     title: "Full-Stack Developer",
     company: "iDesignLab / Tianjin University",
     type: "Student",
-    description: "Developed iDesignLab Platform and iDesignLab Website for Lab Managment. Implemented modern CI/CD pipelines.",
-    stack: ["Vue.js", "Three.js", "Tailwind CSS", "Astro", "React", "Next.js", "TypeScript",]
+    description:
+      "Developed iDesignLab Platform and iDesignLab Website for Lab Managment. Implemented modern CI/CD pipelines.",
+    stack: [
+      "Vue.js",
+      "Three.js",
+      "Tailwind CSS",
+      "Astro",
+      "React",
+      "Next.js",
+      "TypeScript",
+    ],
   },
   {
     year: "2022",
     title: "Frontend Developer",
     company: "TwT STUDIO / Tianjin University",
     type: "Student",
-    description: "Bridged the gap between Android and iOS. Created WePeiyang and implemented it in Flutter.",
-    stack: ["Figma", "Flutter", "Dart"]
+    description:
+      "Bridged the gap between Android and iOS. Created WePeiyang and implemented it in Flutter.",
+    stack: ["Figma", "Flutter", "Dart"],
   },
 ];
 
@@ -33,40 +43,39 @@ const games = [
     name: "Black Myth: Wukong",
     status: "Playing",
     progress: 85,
-    desc: "Destined One"
+    desc: "Destined One",
   },
   {
     name: "Cyberpunk 2077",
     status: "Completed",
     progress: 100,
-    desc: "Legend of Night City"
+    desc: "Legend of Night City",
   },
   {
     name: "The Legend of Zelda",
     status: "Eternal",
     progress: 100,
-    desc: "Hyrule Explorer"
-  }
+    desc: "Hyrule Explorer",
+  },
 ];
 
-const siteOrigin = Astro.site?.origin ?? Astro.url.origin ?? "https://jarvishub.com";
+const siteOrigin =
+  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvishub.com";
 const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateCreated": "2024-01-01T00:00:00+00:00",
-  "dateModified": new Date().toISOString(),
-  "mainEntity": {
+  dateCreated: "2024-01-01T00:00:00+00:00",
+  dateModified: new Date().toISOString(),
+  mainEntity: {
     "@type": "Person",
-    "name": "Jarvis Hub",
-    "alternateName": "Jarvis",
-    "description": "Creative Developer & Design Engineer",
-    "image": new URL("/logo.png", siteOrigin).toString(),
-    "sameAs": [
-      "https://github.com/Jarvis636431"
-    ]
-  }
+    name: "Jarvis Hub",
+    alternateName: "Jarvis",
+    description: "Creative Developer & Design Engineer",
+    image: new URL("/logo.png", siteOrigin).toString(),
+    sameAs: ["https://github.com/Jarvis636431"],
+  },
 };
 ---
 
@@ -76,30 +85,36 @@ const structuredData = {
   seo={{
     canonical: pageUrl,
     type: "profile",
-    structuredData
+    structuredData,
   }}
 >
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-32">
-    
     <!-- Hero Section -->
     <section class="grid md:grid-cols-2 gap-12 items-center animate-in-fade">
       <div class="space-y-8">
-        <h1 class="text-5xl md:text-7xl font-display font-medium leading-[0.9] tracking-tight">
-          Hi<br/>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan to-accent-violet">I'm Jarvis</span>
+        <h1
+          class="text-5xl md:text-7xl font-display font-medium leading-[0.9] tracking-tight"
+        >
+          Hi<br />
+          <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan to-accent-violet"
+            >I'm Jarvis</span
+          >
         </h1>
 
         <p class="text-lg text-secondary leading-relaxed max-w-md">
-          I'm Jarvis, a design engineer and digital explorer. When I'm not crafting pixel-perfect interfaces, you'll find me analyzing game mechanics or getting lost in immersive virtual worlds.
+          I'm Jarvis, a design engineer and digital explorer. When I'm not
+          crafting pixel-perfect interfaces, you'll find me analyzing game
+          mechanics or getting lost in immersive virtual worlds.
         </p>
-
-
       </div>
 
-      <div class="relative aspect-square rounded-full overflow-hidden border border-black/10 group shadow-2xl max-w-md mx-auto md:ml-auto">
-        <img 
-          src="https://github.com/Jarvis636431.png" 
-          alt="Jarvis Hub Avatar" 
+      <div
+        class="relative aspect-square rounded-full overflow-hidden border border-black/10 group shadow-2xl max-w-md mx-auto md:ml-auto"
+      >
+        <img
+          src="https://github.com/Jarvis636431.png"
+          alt="Jarvis Hub Avatar"
           class="w-full h-full object-cover"
         />
       </div>
@@ -108,99 +123,156 @@ const structuredData = {
     <!-- Timeline Experience -->
     <section class="animate-in-slide delay-100">
       <div class="flex items-center gap-4 mb-16">
-        <h2 class="text-xs font-pixel text-secondary uppercase tracking-widest">Timeline</h2>
+        <h2 class="text-xs font-pixel text-secondary uppercase tracking-widest">
+          Timeline
+        </h2>
         <span class="h-px flex-1 bg-black/10"></span>
       </div>
 
       <div class="relative border-l border-black/10 ml-3 md:ml-6 space-y-16">
-        {timeline.map((item) => (
-          <div class="relative pl-8 md:pl-12 group">
-            <!-- Timeline Dot -->
-            <div class="absolute -left-[5px] top-2 w-[11px] h-[11px] rounded-full bg-background border-2 border-secondary/30 group-hover:border-accent-cyan group-hover:bg-accent-cyan transition-colors z-10"></div>
-            
-            <div class="grid md:grid-cols-12 gap-4 md:gap-8">
-              <!-- Date & Meta -->
-              <div class="md:col-span-3 flex flex-col md:text-right md:items-end">
-                <span class="text-2xl font-display text-primary font-bold">{item.year}</span>
-                <span class="text-xs font-pixel text-secondary uppercase bg-black/5 px-2 py-1 rounded mt-1 w-fit">{item.type}</span>
-              </div>
+        {
+          timeline.map((item) => (
+            <div class="relative pl-8 md:pl-12 group">
+              {/* Timeline Dot */}
+              <div class="absolute -left-[5px] top-2 w-[11px] h-[11px] rounded-full bg-background border-2 border-secondary/30 group-hover:border-accent-cyan group-hover:bg-accent-cyan transition-colors z-10" />
 
-              <!-- Content -->
-              <div class="md:col-span-9 space-y-3">
-                <h3 class="text-xl font-display text-primary group-hover:text-accent-cyan transition-colors">
-                  {item.title} 
-                  <span class="text-secondary font-normal block md:inline md:ml-2">@ {item.company}</span>
-                </h3>
-                <p class="text-secondary leading-relaxed max-w-2xl">
-                  {item.description}
-                </p>
-                
-                <!-- Stack Tags -->
-                <div class="flex flex-wrap gap-2 pt-2">
-                  {item.stack.map(tech => (
-                    <span class="text-[10px] font-pixel text-secondary/80 border border-black/10 px-2 py-1 rounded hover:border-accent-cyan hover:text-primary transition-colors cursor-default">
-                      {tech}
+              <div class="grid md:grid-cols-12 gap-4 md:gap-8">
+                {/* Date & Meta */}
+                <div class="md:col-span-3 flex flex-col md:text-right md:items-end">
+                  <span class="text-2xl font-display text-primary font-bold">
+                    {item.year}
+                  </span>
+                  <span class="text-xs font-pixel text-secondary uppercase bg-black/5 px-2 py-1 rounded mt-1 w-fit">
+                    {item.type}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div class="md:col-span-9 space-y-3">
+                  <h3 class="text-xl font-display text-primary group-hover:text-accent-cyan transition-colors">
+                    {item.title}
+                    <span class="text-secondary font-normal block md:inline md:ml-2">
+                      @ {item.company}
                     </span>
-                  ))}
+                  </h3>
+                  <p class="text-secondary leading-relaxed max-w-2xl">
+                    {item.description}
+                  </p>
+
+                  {/* Stack Tags */}
+                  <div class="flex flex-wrap gap-2 pt-2">
+                    {item.stack.map((tech) => (
+                      <span class="text-[10px] font-pixel text-secondary/80 border border-black/10 px-2 py-1 rounded hover:border-accent-cyan hover:text-primary transition-colors cursor-default">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-        
+          ))
+        }
+
         <!-- Timeline End -->
-        <div class="absolute -left-[3px] bottom-0 w-[7px] h-[7px] rounded-full bg-black/10"></div>
+        <div
+          class="absolute -left-[3px] bottom-0 w-[7px] h-[7px] rounded-full bg-black/10"
+        >
+        </div>
       </div>
     </section>
 
     <!-- Gaming / Offline Mode -->
     <section class="animate-in-slide delay-200">
-       <div class="flex items-center gap-4 mb-12">
-        <h2 class="text-xs font-pixel text-secondary uppercase tracking-widest">Offline Mode</h2>
+      <div class="flex items-center gap-4 mb-12">
+        <h2 class="text-xs font-pixel text-secondary uppercase tracking-widest">
+          Offline Mode
+        </h2>
         <span class="h-px flex-1 bg-black/10"></span>
       </div>
 
       <div class="grid md:grid-cols-3 gap-6">
-        {games.map((game) => (
-          <div class="relative group overflow-hidden rounded-xl bg-[#111] border border-white/5 p-6 hover:border-accent-cyan/30 transition-colors">
-            <!-- Background Glow -->
-            <div class="absolute -right-10 -top-10 w-32 h-32 bg-accent-cyan/5 rounded-full blur-3xl group-hover:bg-accent-cyan/10 transition-colors"></div>
-            
-            <div class="relative z-10 flex flex-col h-full justify-between gap-8">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-pixel text-accent-cyan uppercase tracking-wider">{game.status}</span>
-                  <span class="text-xs font-mono text-white/40">{game.progress}%</span>
+        {
+          games.map((game) => (
+            <div class="relative group overflow-hidden rounded-xl bg-[#111] border border-white/5 p-6 hover:border-accent-cyan/30 transition-colors">
+              {/* Background Glow */}
+              <div class="absolute -right-10 -top-10 w-32 h-32 bg-accent-cyan/5 rounded-full blur-3xl group-hover:bg-accent-cyan/10 transition-colors" />
+
+              <div class="relative z-10 flex flex-col h-full justify-between gap-8">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-[10px] font-pixel text-accent-cyan uppercase tracking-wider">
+                      {game.status}
+                    </span>
+                    <span class="text-xs font-mono text-white/40">
+                      {game.progress}%
+                    </span>
+                  </div>
+                  <h3 class="text-lg font-display text-white group-hover:text-accent-cyan transition-colors">
+                    {game.name}
+                  </h3>
+                  <p class="text-sm text-white/50 mt-1">{game.desc}</p>
                 </div>
-                <h3 class="text-lg font-display text-white group-hover:text-accent-cyan transition-colors">{game.name}</h3>
-                <p class="text-sm text-white/50 mt-1">{game.desc}</p>
-              </div>
-              
-              <!-- Progress Bar -->
-              <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-accent-cyan/80" style={`width: ${game.progress}%`}></div>
+
+                {/* Progress Bar */}
+                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    class="h-full bg-accent-cyan/80"
+                    style={`width: ${game.progress}%`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </div>
     </section>
 
     <!-- Connect / Footer -->
-    <section class="animate-in-slide delay-300 border-t border-black/10 pt-16 text-center space-y-8">
-      <h2 class="text-3xl md:text-4xl font-display">Ready to build something amazing?</h2>
+    <section
+      class="animate-in-slide delay-300 border-t border-black/10 pt-16 text-center space-y-8"
+    >
+      <h2 class="text-3xl md:text-4xl font-display">
+        Ready to build something amazing?
+      </h2>
       <div class="flex justify-center gap-6">
-        <a href="mailto:hello@jarvishub.com" class="group flex items-center gap-2 text-primary hover:text-accent-cyan transition-colors border-b border-black/10 hover:border-accent-cyan pb-1">
+        <a
+          href="mailto:hello@jarvishub.com"
+          class="group flex items-center gap-2 text-primary hover:text-accent-cyan transition-colors border-b border-black/10 hover:border-accent-cyan pb-1"
+        >
           <span>Send an Email</span>
-          <svg class="w-4 h-4 transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+          <svg
+            class="w-4 h-4 transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg
+          >
         </a>
-        <a href="https://github.com/Jarvis636431" target="_blank" class="group flex items-center gap-2 text-primary hover:text-accent-violet transition-colors border-b border-black/10 hover:border-accent-violet pb-1">
+        <a
+          href="https://github.com/Jarvis636431"
+          target="_blank"
+          class="group flex items-center gap-2 text-primary hover:text-accent-violet transition-colors border-b border-black/10 hover:border-accent-violet pb-1"
+        >
           <span>Follow on GitHub</span>
-          <svg class="w-4 h-4 transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          <svg
+            class="w-4 h-4 transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            ></path></svg
+          >
         </a>
       </div>
     </section>
-
   </div>
 </Layout>
 
@@ -208,34 +280,43 @@ const structuredData = {
   .animate-spin-slow {
     animation: spin 10s linear infinite;
   }
-  
+
   @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .animate-in-fade {
     animation: fadeIn 0.8s ease-out forwards;
     opacity: 0;
   }
-  
+
   .animate-in-slide {
     animation: slideUp 0.8s ease-out forwards;
     opacity: 0;
     transform: translateY(20px);
   }
 
-  .delay-100 { animation-delay: 0.1s; }
-  .delay-200 { animation-delay: 0.2s; }
-
+  .delay-100 {
+    animation-delay: 0.1s;
+  }
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
 
   @keyframes fadeIn {
-    to { opacity: 1; }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes slideUp {
-    to { 
-      opacity: 1; 
+    to {
+      opacity: 1;
       transform: translateY(0);
     }
   }

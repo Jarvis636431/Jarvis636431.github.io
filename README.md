@@ -6,7 +6,7 @@ A modern, high-performance personal portfolio and digital garden built with [Ast
 
 - **Framework**: Built on Astro v5 for lightning-fast performance (Islands Architecture).
 - **Styling**: Tailwind CSS for a utility-first, responsive design system.
-- **Design System**: 
+- **Design System**:
   - **Bento Grid Layout**: Responsive, grid-based card layout.
   - **Spotlight Effect**: Mouse-tracking radial gradient spotlight.
   - **Staggered Animations**: Smooth entrance animations for cards.

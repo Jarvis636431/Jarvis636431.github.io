@@ -30,7 +30,7 @@ const config = {
         glass: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
         neon: "0 0 20px rgba(34, 211, 238, 0.5)",
       },
-      typography: (theme) => ({
+      typography: {
         DEFAULT: {
           css: {
             // 基础颜色系统
@@ -134,7 +134,7 @@ const config = {
             },
           },
         },
-      }),
+      },
     },
   },
   plugins: [typography],

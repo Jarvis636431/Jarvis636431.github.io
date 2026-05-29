@@ -6,7 +6,7 @@ import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true
+    import.meta.env.DEV ? true : data.draft !== true,
   );
   return posts.map((post) => ({
     params: { slug: post.slug },
@@ -23,7 +23,7 @@ const publishDate = new Date(post.data.publishDate).toLocaleDateString(
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }
+  },
 );
 const readingTime = post.data.readingTime ?? 6;
 
@@ -73,14 +73,14 @@ if (post.data.tags.length > 0) {
 // Compute previous/next posts (sorted by publishDate desc)
 const allPosts = (
   await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true
+    import.meta.env.DEV ? true : data.draft !== true,
   )
 )
   .slice()
   .sort(
     (a, b) =>
       new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime()
+      new Date(a.data.publishDate).getTime(),
   );
 const currentIndex = allPosts.findIndex((p) => p.slug === post.slug);
 const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : undefined;
@@ -119,7 +119,9 @@ const nextPost =
         />
       </div>
       <div class="min-w-0 space-y-10 max-w-3xl">
-        <header class="space-y-6 bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10">
+        <header
+          class="space-y-6 bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10"
+        >
           <a
             href="/blogs"
             class="inline-flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors"
@@ -198,7 +200,7 @@ const nextPost =
                       <span class="text-xs text-secondary">
                         {new Date(prevPost.data.publishDate).toLocaleDateString(
                           "en-US",
-                          { year: "numeric", month: "2-digit", day: "2-digit" }
+                          { year: "numeric", month: "2-digit", day: "2-digit" },
                         )}
                       </span>
                     </div>
@@ -219,7 +221,7 @@ const nextPost =
                       <span class="text-xs text-secondary">
                         {new Date(nextPost.data.publishDate).toLocaleDateString(
                           "en-US",
-                          { year: "numeric", month: "2-digit", day: "2-digit" }
+                          { year: "numeric", month: "2-digit", day: "2-digit" },
                         )}
                       </span>
                     </div>

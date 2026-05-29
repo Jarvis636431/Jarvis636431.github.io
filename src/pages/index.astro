@@ -11,7 +11,7 @@ const sortedPosts = postsCollection
   .sort(
     (a, b) =>
       new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime()
+      new Date(a.data.publishDate).getTime(),
   )
   .slice(0, 3); // Show top 3 posts
 
@@ -24,23 +24,10 @@ const featuredProjects = projectsCollection
   .sort(
     (a, b) =>
       new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime()
+      new Date(a.data.publishDate).getTime(),
   )
   .filter(({ data }) => data.featured)
   .slice(0, 4); // Show top 4 featured projects
-
-const stack = [
-  "Astro",
-  "React",
-  "TypeScript",
-  "Tailwind",
-  "Node.js",
-  "Next.js",
-  "SwiftUI",
-  "Figma",
-];
-
-const currentYear = new Date().getFullYear();
 ---
 
 <style>
@@ -526,13 +513,12 @@ const currentYear = new Date().getFullYear();
     const timeDisplay = document.getElementById("local-time");
     if (timeDisplay) {
       const now = new Date();
-      const options = {
+      const options: Intl.DateTimeFormatOptions = {
         timeZone: "Asia/Shanghai",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
       };
-      // @ts-ignore
       const timeString = now.toLocaleTimeString("en-US", options);
       timeDisplay.textContent = timeString + " UTC+8";
     }
@@ -556,7 +542,7 @@ const currentYear = new Date().getFullYear();
         "increment_page_view",
         {
           page_slug: pageSlug,
-        }
+        },
       );
 
       if (!error && newCount !== null) {

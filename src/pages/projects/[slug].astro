@@ -6,7 +6,7 @@ import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects", ({ data }) =>
-    import.meta.env.DEV ? true : data.status !== "archived"
+    import.meta.env.DEV ? true : data.status !== "archived",
   );
   return projects.map((project) => ({
     params: { slug: project.slug },
@@ -17,10 +17,13 @@ export async function getStaticPaths() {
 const { project } = Astro.props as { project: CollectionEntry<"projects"> };
 const { Content } = await project.render();
 
-const publishDate = new Date(project.data.publishDate).toLocaleDateString("en-US", {
-  year: "numeric",
-  month: "long",
-});
+const publishDate = new Date(project.data.publishDate).toLocaleDateString(
+  "en-US",
+  {
+    year: "numeric",
+    month: "long",
+  },
+);
 
 const updatedDate = project.data.updatedDate
   ? new Date(project.data.updatedDate).toLocaleDateString("en-US", {
@@ -34,7 +37,8 @@ const updatedDateIso = project.data.updatedDate
   ? new Date(project.data.updatedDate).toISOString()
   : undefined;
 
-const siteOrigin = Astro.site?.origin ?? Astro.url.origin ?? "https://jarvishub.com";
+const siteOrigin =
+  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvishub.com";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const coverImageUrl = project.data.coverImage
   ? new URL(project.data.coverImage, siteOrigin).toString()
@@ -84,7 +88,8 @@ const allProjects = (
       new Date(a.data.publishDate).getTime(),
   );
 const currentIndex = allProjects.findIndex((p) => p.slug === project.slug);
-const prevProject = currentIndex > 0 ? allProjects[currentIndex - 1] : undefined;
+const prevProject =
+  currentIndex > 0 ? allProjects[currentIndex - 1] : undefined;
 const nextProject =
   currentIndex < allProjects.length - 1
     ? allProjects[currentIndex + 1]
@@ -110,7 +115,9 @@ const nextProject =
   }}
 >
   <article class="project">
-    <header class="project__hero bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10">
+    <header
+      class="project__hero bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10"
+    >
       <a
         class="project__breadcrumb text-sm text-secondary hover:text-primary transition-colors"
         href="/projects"
@@ -120,54 +127,66 @@ const nextProject =
       <div class="project__hero-grid">
         <div class="project__hero-left">
           <div class="project__meta text-sm text-secondary">
-            <span class={`status status--${project.data.status}`}>{project.data.status}</span>
+            <span class={`status status--${project.data.status}`}
+              >{project.data.status}</span
+            >
             <span>{publishDate}</span>
-            {updatedDate && (
-              <>
-                <span>•</span>
-                <span>Updated {updatedDate}</span>
-              </>
-            )}
+            {
+              updatedDate && (
+                <>
+                  <span>•</span>
+                  <span>Updated {updatedDate}</span>
+                </>
+              )
+            }
           </div>
           <h1>{project.data.title}</h1>
           <p class="project__summary text-secondary">{project.data.summary}</p>
           <div class="project__details">
-            {project.data.roles.length > 0 && (
-              <div>
-                <h2>Roles</h2>
-                <p>{project.data.roles.join(", ")}</p>
-              </div>
-            )}
-            {project.data.stack.length > 0 && (
-              <div>
-                <h2>Stack</h2>
-                <p>{project.data.stack.join(" · ")}</p>
-              </div>
-            )}
-            {project.data.externalUrl && (
-              <div>
-                <h2>Live</h2>
-                <a
-                  class="project__link text-primary hover:text-accent-cyan transition-colors"
-                  href={project.data.externalUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Visit project ↗
-                </a>
-              </div>
-            )}
+            {
+              project.data.roles.length > 0 && (
+                <div>
+                  <h2>Roles</h2>
+                  <p>{project.data.roles.join(", ")}</p>
+                </div>
+              )
+            }
+            {
+              project.data.stack.length > 0 && (
+                <div>
+                  <h2>Stack</h2>
+                  <p>{project.data.stack.join(" · ")}</p>
+                </div>
+              )
+            }
+            {
+              project.data.externalUrl && (
+                <div>
+                  <h2>Live</h2>
+                  <a
+                    class="project__link text-primary hover:text-accent-cyan transition-colors"
+                    href={project.data.externalUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Visit project ↗
+                  </a>
+                </div>
+              )
+            }
           </div>
         </div>
         <div class="project__hero-right">
-          {project.data.coverImage && (
-            <img
-              class="project__cover"
-              src={project.data.coverImage}
-              alt={project.data.title}
-              loading="lazy"
-            />
-          )}
+          {
+            project.data.coverImage && (
+              <img
+                class="project__cover"
+                src={project.data.coverImage}
+                alt={project.data.title}
+                loading="lazy"
+              />
+            )
+          }
         </div>
       </div>
     </header>
@@ -190,48 +209,53 @@ const nextProject =
       </div>
     </section>
     {
-        (prevProject || nextProject) && (
-        <nav aria-label="项目导航" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {
-            prevProject && (
-              <a
-                href={`/projects/${prevProject.slug}`}
-                class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-cyan transition-colors"
-              >
-                <div class="text-xs text-secondary uppercase mb-1">
-                  上一个项目
-                </div>
-                <div class="flex items-center justify-between gap-2">
-                  <h3 class="text-primary font-semibold group-hover:text-accent-cyan transition-colors">
-                    {prevProject.data.title}
-                  </h3>
-                  <span class="text-xs text-secondary">
-                    {new Date(prevProject.data.publishDate).toLocaleDateString("en-US", { year: "numeric", month: "long" })}
-                  </span>
-                </div>
-              </a>
-            )
-          }
-          {
-            nextProject && (
-              <a
-                href={`/projects/${nextProject.slug}`}
-                class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-violet transition-colors"
-              >
-                <div class="text-xs text-secondary uppercase mb-1">
-                  下一个项目
-                </div>
-                <div class="flex items-center justify-between gap-2">
-                  <h3 class="text-primary font-semibold group-hover:text-accent-violet transition-colors">
-                    {nextProject.data.title}
-                  </h3>
-                  <span class="text-xs text-secondary">
-                    {new Date(nextProject.data.publishDate).toLocaleDateString("en-US", { year: "numeric", month: "long" })}
-                  </span>
-                </div>
-              </a>
-            )
-          }
+      (prevProject || nextProject) && (
+        <nav
+          aria-label="项目导航"
+          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
+          {prevProject && (
+            <a
+              href={`/projects/${prevProject.slug}`}
+              class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-cyan transition-colors"
+            >
+              <div class="text-xs text-secondary uppercase mb-1">
+                上一个项目
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-primary font-semibold group-hover:text-accent-cyan transition-colors">
+                  {prevProject.data.title}
+                </h3>
+                <span class="text-xs text-secondary">
+                  {new Date(prevProject.data.publishDate).toLocaleDateString(
+                    "en-US",
+                    { year: "numeric", month: "long" },
+                  )}
+                </span>
+              </div>
+            </a>
+          )}
+          {nextProject && (
+            <a
+              href={`/projects/${nextProject.slug}`}
+              class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-violet transition-colors"
+            >
+              <div class="text-xs text-secondary uppercase mb-1">
+                下一个项目
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-primary font-semibold group-hover:text-accent-violet transition-colors">
+                  {nextProject.data.title}
+                </h3>
+                <span class="text-xs text-secondary">
+                  {new Date(nextProject.data.publishDate).toLocaleDateString(
+                    "en-US",
+                    { year: "numeric", month: "long" },
+                  )}
+                </span>
+              </div>
+            </a>
+          )}
         </nav>
       )
     }

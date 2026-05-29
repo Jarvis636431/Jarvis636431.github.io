@@ -3,90 +3,91 @@
 ---
 
 <div class="scene">
-    <div class="cube">
-        <div class="face front"></div>
-        <div class="face back"></div>
-        <div class="face right"></div>
-        <div class="face left"></div>
-        <div class="face top"></div>
-        <div class="face bottom"></div>
-    </div>
+  <div class="cube">
+    <div class="face front"></div>
+    <div class="face back"></div>
+    <div class="face right"></div>
+    <div class="face left"></div>
+    <div class="face top"></div>
+    <div class="face bottom"></div>
+  </div>
 </div>
 
 <style>
-    .scene {
-        width: 60px;
-        height: 60px;
-        perspective: 600px;
-        display: inline-block;
-    }
+  .scene {
+    width: 60px;
+    height: 60px;
+    perspective: 600px;
+    display: inline-block;
+  }
 
-    .cube {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        transform-style: preserve-3d;
-        animation: rotate 10s infinite linear;
-    }
+  .cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: rotate 10s infinite linear;
+  }
 
-    .face {
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        background: rgba(34, 211, 238, 0.1); /* accent-cyan with opacity */
-        border: 2px solid #22d3ee; /* accent-cyan */
-        box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
-        image-rendering: pixelated;
+  .face {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(34, 211, 238, 0.1); /* accent-cyan with opacity */
+    border: 2px solid #22d3ee; /* accent-cyan */
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    image-rendering: pixelated;
 
-        /* Pixel pattern overlay */
-        background-image: linear-gradient(
-                45deg,
-                #22d3ee 25%,
-                transparent 25%,
-                transparent 75%,
-                #22d3ee 75%,
-                #22d3ee
-            ),
-            linear-gradient(
-                45deg,
-                #22d3ee 25%,
-                transparent 25%,
-                transparent 75%,
-                #22d3ee 75%,
-                #22d3ee
-            );
-        background-size: 10px 10px;
-        background-position:
-            0 0,
-            5px 5px;
-        opacity: 0.8;
-    }
+    /* Pixel pattern overlay */
+    background-image:
+      linear-gradient(
+        45deg,
+        #22d3ee 25%,
+        transparent 25%,
+        transparent 75%,
+        #22d3ee 75%,
+        #22d3ee
+      ),
+      linear-gradient(
+        45deg,
+        #22d3ee 25%,
+        transparent 25%,
+        transparent 75%,
+        #22d3ee 75%,
+        #22d3ee
+      );
+    background-size: 10px 10px;
+    background-position:
+      0 0,
+      5px 5px;
+    opacity: 0.8;
+  }
 
-    .front {
-        transform: rotateY(0deg) translateZ(30px);
-    }
-    .back {
-        transform: rotateY(180deg) translateZ(30px);
-    }
-    .right {
-        transform: rotateY(90deg) translateZ(30px);
-    }
-    .left {
-        transform: rotateY(-90deg) translateZ(30px);
-    }
-    .top {
-        transform: rotateX(90deg) translateZ(30px);
-    }
-    .bottom {
-        transform: rotateX(-90deg) translateZ(30px);
-    }
+  .front {
+    transform: rotateY(0deg) translateZ(30px);
+  }
+  .back {
+    transform: rotateY(180deg) translateZ(30px);
+  }
+  .right {
+    transform: rotateY(90deg) translateZ(30px);
+  }
+  .left {
+    transform: rotateY(-90deg) translateZ(30px);
+  }
+  .top {
+    transform: rotateX(90deg) translateZ(30px);
+  }
+  .bottom {
+    transform: rotateX(-90deg) translateZ(30px);
+  }
 
-    @keyframes rotate {
-        0% {
-            transform: rotateX(0deg) rotateY(0deg);
-        }
-        100% {
-            transform: rotateX(360deg) rotateY(360deg);
-        }
+  @keyframes rotate {
+    0% {
+      transform: rotateX(0deg) rotateY(0deg);
     }
+    100% {
+      transform: rotateX(360deg) rotateY(360deg);
+    }
+  }
 </style>

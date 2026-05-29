@@ -15,7 +15,6 @@ const publishDate = new Date(project.data.publishDate).toLocaleDateString(
 );
 
 const link = project.data.externalUrl ?? `/projects/${project.slug}`;
-const linkLabel = project.data.externalUrl ? "VISIT_SITE" : "READ_LOG";
 ---
 
 <a
@@ -62,9 +61,7 @@ const linkLabel = project.data.externalUrl ? "VISIT_SITE" : "READ_LOG";
       >
         {project.data.title}
       </h3>
-      <p
-        class="text-secondary leading-relaxed text-sm"
-      >
+      <p class="text-secondary leading-relaxed text-sm">
         {project.data.summary}
       </p>
     </div>

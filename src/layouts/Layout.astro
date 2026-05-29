@@ -35,7 +35,6 @@ interface LayoutProps {
   title?: string;
   description?: string;
   navLinks?: NavLink[];
-  footerNote?: string;
   seo?: SeoConfig;
 }
 
@@ -49,7 +48,6 @@ const {
     { href: "/blogs", label: "Blogs" },
     { href: "/about", label: "About Me" },
   ],
-  footerNote = "Built with Astro - Designed by Jarvis",
   seo,
 } = Astro.props as LayoutProps;
 
@@ -145,6 +143,7 @@ const structuredData = seo?.structuredData;
     {
       structuredData && (
         <script
+          is:inline
           type="application/ld+json"
           set:html={JSON.stringify(structuredData)}
         />
@@ -204,7 +203,7 @@ const structuredData = seo?.structuredData;
 
         <div class="flex items-center gap-3">
           <button
-            onclick="window.openSearch()"
+            data-search-trigger
             class="hidden md:flex items-center justify-center text-secondary hover:text-accent-cyan transition-colors"
             aria-label="Search"
           >
@@ -298,8 +297,8 @@ const structuredData = seo?.structuredData;
 
         <div class="mt-4 grid grid-cols-2 gap-3">
           <button
-            onclick="window.openSearch()"
             id="mobile-search-btn"
+            data-search-trigger
             class="inline-flex items-center justify-center gap-2 rounded-lg border border-black/10 bg-surface px-4 py-3 text-xs uppercase tracking-wide text-secondary hover:border-accent-cyan/30 hover:text-primary transition-colors"
           >
             <svg
@@ -365,7 +364,9 @@ const structuredData = seo?.structuredData;
         }
       }
 
-      function closeMenu({ restoreFocus = true }: { restoreFocus?: boolean } = {}) {
+      function closeMenu({
+        restoreFocus = true,
+      }: { restoreFocus?: boolean } = {}) {
         if (!isMenuOpen) return;
         setMenuState(false);
         if (restoreFocus && lastFocusedElement instanceof HTMLElement) {
@@ -375,7 +376,11 @@ const structuredData = seo?.structuredData;
       }
 
       function toggleMenu() {
-        isMenuOpen ? closeMenu() : openMenu();
+        if (isMenuOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
       }
 
       menuBtn?.addEventListener("click", toggleMenu);
@@ -404,7 +409,8 @@ const structuredData = seo?.structuredData;
         if (event.key !== "Tab") return;
 
         const focusable = Array.from(mobileLinks).filter(
-          (item) => item instanceof HTMLElement && !item.hasAttribute("disabled")
+          (item) =>
+            item instanceof HTMLElement && !item.hasAttribute("disabled"),
         );
         const first = focusable[0];
         const last = focusable[focusable.length - 1];

@@ -10,7 +10,7 @@ const escapeXml = (value) =>
 
 export async function GET(context) {
   const posts = await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true
+    import.meta.env.DEV ? true : data.draft !== true,
   );
 
   const sortedPosts = posts
@@ -18,7 +18,7 @@ export async function GET(context) {
     .sort(
       (a, b) =>
         new Date(b.data.publishDate).getTime() -
-        new Date(a.data.publishDate).getTime()
+        new Date(a.data.publishDate).getTime(),
     );
 
   const site = context.site?.toString() ?? "https://jarvishub.com";

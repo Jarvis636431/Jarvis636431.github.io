@@ -4,20 +4,22 @@ import { getCollection } from "astro:content";
 
 const posts = (
   await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true
+    import.meta.env.DEV ? true : data.draft !== true,
   )
 )
   .slice()
   .sort(
     (a, b) =>
       new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime()
+      new Date(a.data.publishDate).getTime(),
   );
 
 const latestPost = posts[0];
-const tags = Array.from(new Set(posts.flatMap((post) => post.data.tags))).sort();
+const tags = Array.from(
+  new Set(posts.flatMap((post) => post.data.tags)),
+).sort();
 const years = Array.from(
-  new Set(posts.map((post) => new Date(post.data.publishDate).getFullYear()))
+  new Set(posts.map((post) => new Date(post.data.publishDate).getFullYear())),
 ).sort((a, b) => b - a);
 
 const siteOrigin =
@@ -78,7 +80,11 @@ function formatDate(date: Date) {
           </div>
           <div>
             <span>Latest</span>
-            <strong>{latestPost ? formatDate(latestPost.data.publishDate) : "-"}</strong>
+            <strong
+              >{
+                latestPost ? formatDate(latestPost.data.publishDate) : "-"
+              }</strong
+            >
           </div>
         </aside>
       </div>
@@ -109,7 +115,9 @@ function formatDate(date: Date) {
               {posts.map((post) => (
                 <li class="post-row">
                   <a href={`/blogs/${post.slug}`} class="post-link">
-                    <time datetime={new Date(post.data.publishDate).toISOString()}>
+                    <time
+                      datetime={new Date(post.data.publishDate).toISOString()}
+                    >
                       {formatDate(post.data.publishDate)}
                     </time>
                     <div class="post-main">
@@ -149,7 +157,9 @@ function formatDate(date: Date) {
             tags.length > 0 ? (
               <div class="panel-tags">
                 {tags.map((tag) => (
-                  <a id={`topic-${tag}`} href={`#topic-${tag}`}>{tag}</a>
+                  <a id={`topic-${tag}`} href={`#topic-${tag}`}>
+                    {tag}
+                  </a>
                 ))}
               </div>
             ) : (

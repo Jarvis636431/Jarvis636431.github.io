@@ -4,40 +4,50 @@ import { getCollection } from "astro:content";
 
 const projects = (
   await getCollection("projects", ({ data }) =>
-    import.meta.env.DEV ? true : data.status !== "archived"
+    import.meta.env.DEV ? true : data.status !== "archived",
   )
 )
   .slice()
   .sort(
     (a, b) =>
       new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime()
+      new Date(a.data.publishDate).getTime(),
   );
 
 const featured = projects.filter(({ data }) => data.featured);
-const launchedCount = projects.filter((p) => p.data.status === "launched").length;
-const activeCount = projects.filter((p) => p.data.status === "in-progress").length;
-const stackTags = Array.from(new Set(projects.flatMap((project) => project.data.stack))).sort();
+const launchedCount = projects.filter(
+  (p) => p.data.status === "launched",
+).length;
+const activeCount = projects.filter(
+  (p) => p.data.status === "in-progress",
+).length;
+const stackTags = Array.from(
+  new Set(projects.flatMap((project) => project.data.stack)),
+).sort();
 
 const capabilities = [
   {
     title: "Product Systems",
-    description: "Reservation workflows, role permissions, audit trails, and operational dashboards.",
+    description:
+      "Reservation workflows, role permissions, audit trails, and operational dashboards.",
     tags: ["Vue", "Go", "MariaDB", "Docker"],
   },
   {
     title: "AI Interfaces",
-    description: "Conversational flows, generated outputs, spatial previews, and iteration loops.",
+    description:
+      "Conversational flows, generated outputs, spatial previews, and iteration loops.",
     tags: ["React", "TypeScript", "Three.js"],
   },
   {
     title: "Cross-platform Apps",
-    description: "Campus mobile modules, shared UI foundations, and multi-platform delivery.",
+    description:
+      "Campus mobile modules, shared UI foundations, and multi-platform delivery.",
     tags: ["Flutter", "Dart", "iOS", "Android"],
   },
   {
     title: "Design Engineering",
-    description: "Interaction details, component systems, and interfaces built for repeated use.",
+    description:
+      "Interaction details, component systems, and interfaces built for repeated use.",
     tags: ["Tailwind", "Figma", "Vite"],
   },
 ];
@@ -51,7 +61,8 @@ const projectsStructuredData = {
   "@type": "CollectionPage",
   name: "Jarvis Hub Projects",
   url: pageUrl,
-  description: "Selected systems, AI tools, and campus products I built or contributed to.",
+  description:
+    "Selected systems, AI tools, and campus products I built or contributed to.",
   inLanguage: "en-US",
 };
 
@@ -131,7 +142,7 @@ function projectInitials(title: string) {
           <section class="featured-section" aria-label="Featured projects">
             <div class="section-heading">
               <span>Featured systems</span>
-              <span></span>
+              <span />
             </div>
 
             <div class="featured-list">
@@ -139,7 +150,11 @@ function projectInitials(title: string) {
                 <a href={`/projects/${project.slug}`} class="featured-project">
                   <div class="featured-project__media">
                     {project.data.coverImage ? (
-                      <img src={project.data.coverImage} alt={project.data.title} loading={index === 0 ? "eager" : "lazy"} />
+                      <img
+                        src={project.data.coverImage}
+                        alt={project.data.title}
+                        loading={index === 0 ? "eager" : "lazy"}
+                      />
                     ) : (
                       <div class="project-monogram" aria-hidden="true">
                         {projectInitials(project.data.title)}
@@ -170,7 +185,9 @@ function projectInitials(title: string) {
                       {project.data.stack.length > 0 && (
                         <div>
                           <span>Stack</span>
-                          <strong>{project.data.stack.slice(0, 4).join(" / ")}</strong>
+                          <strong>
+                            {project.data.stack.slice(0, 4).join(" / ")}
+                          </strong>
                         </div>
                       )}
                     </div>
@@ -201,17 +218,19 @@ function projectInitials(title: string) {
         </div>
 
         <div class="capability-grid">
-          {capabilities.map((capability) => (
-            <article class="capability-card">
-              <h2>{capability.title}</h2>
-              <p>{capability.description}</p>
-              <ul>
-                {capability.tags.map((tag) => (
-                  <li>{tag}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
+          {
+            capabilities.map((capability) => (
+              <article class="capability-card">
+                <h2>{capability.title}</h2>
+                <p>{capability.description}</p>
+                <ul>
+                  {capability.tags.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
+              </article>
+            ))
+          }
         </div>
       </section>
 
@@ -222,27 +241,31 @@ function projectInitials(title: string) {
         </div>
 
         <div class="archive-table">
-          {projects.map((project) => (
-            <a href={`/projects/${project.slug}`} class="archive-row">
-              <div class="archive-name">
-                <strong>{project.data.title}</strong>
-                <span>{project.data.summary}</span>
-              </div>
-              <div class="archive-stack">
-                {project.data.stack.slice(0, 3).map((item) => (
-                  <span>{item}</span>
-                ))}
-              </div>
-              <div class="archive-meta">
-                <span class={`status status--${project.data.status}`}>
-                  {project.data.status}
-                </span>
-                <time datetime={new Date(project.data.publishDate).toISOString()}>
-                  {formatDate(project.data.publishDate)}
-                </time>
-              </div>
-            </a>
-          ))}
+          {
+            projects.map((project) => (
+              <a href={`/projects/${project.slug}`} class="archive-row">
+                <div class="archive-name">
+                  <strong>{project.data.title}</strong>
+                  <span>{project.data.summary}</span>
+                </div>
+                <div class="archive-stack">
+                  {project.data.stack.slice(0, 3).map((item) => (
+                    <span>{item}</span>
+                  ))}
+                </div>
+                <div class="archive-meta">
+                  <span class={`status status--${project.data.status}`}>
+                    {project.data.status}
+                  </span>
+                  <time
+                    datetime={new Date(project.data.publishDate).toISOString()}
+                  >
+                    {formatDate(project.data.publishDate)}
+                  </time>
+                </div>
+              </a>
+            ))
+          }
         </div>
       </section>
     </main>
@@ -409,7 +432,11 @@ function projectInitials(title: string) {
     overflow: hidden;
     border: 1px solid rgba(31, 31, 31, 0.08);
     background:
-      linear-gradient(135deg, rgba(47, 111, 109, 0.08), rgba(197, 154, 109, 0.12)),
+      linear-gradient(
+        135deg,
+        rgba(47, 111, 109, 0.08),
+        rgba(197, 154, 109, 0.12)
+      ),
       #f8f7f4;
     border-radius: 12px;
   }
@@ -583,7 +610,10 @@ function projectInitials(title: string) {
 
   .archive-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(180px, 0.8fr) minmax(160px, 0.5fr);
+    grid-template-columns: minmax(0, 1.25fr) minmax(180px, 0.8fr) minmax(
+        160px,
+        0.5fr
+      );
     gap: 1.2rem;
     align-items: center;
     padding: 1rem 0;

@@ -13,8 +13,7 @@ const slugify = (value) =>
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-+|-+$/g, "") || "post";
 
-const formatDate = (date = new Date()) =>
-  date.toISOString().split("T")[0];
+const formatDate = (date = new Date()) => date.toISOString().split("T")[0];
 
 const getArgValue = (flag) => {
   const index = process.argv.indexOf(flag);
@@ -70,14 +69,12 @@ const run = async () => {
   const rl = readline.createInterface({ input, output });
   const title = (await rl.question("Post title: ")).trim();
   const suggestedSlug = slugify(title);
-  const slugInput = (
-    await rl.question(`Slug (${suggestedSlug}): `)
-  ).trim();
+  const slugInput = (await rl.question(`Slug (${suggestedSlug}): `)).trim();
   const slug = slugInput || suggestedSlug;
   const templateInput = (
     await rl.question("Template (md/mdx, default md): ")
   ).trim();
-  await rl.close();
+  rl.close();
 
   await createPost({
     title: title || "Untitled Post",
