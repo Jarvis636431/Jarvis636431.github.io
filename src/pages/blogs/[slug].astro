@@ -27,6 +27,17 @@ const publishDate = new Date(post.data.publishDate).toLocaleDateString(
   },
 );
 const readingTime = post.data.readingTime ?? 6;
+const updatedDate = post.data.updatedDate
+  ? new Date(post.data.updatedDate).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+  : undefined;
+const hasUpdatedDate =
+  post.data.updatedDate &&
+  new Date(post.data.updatedDate).getTime() !==
+    new Date(post.data.publishDate).getTime();
 
 const publishDateIso = new Date(post.data.publishDate).toISOString();
 const updatedDateIso = post.data.updatedDate
@@ -88,6 +99,24 @@ const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : undefined;
 const nextPost =
   currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : undefined;
 const commentTerm = post.data.commentId ?? post.slug;
+const relatedPosts = allPosts
+  .filter((candidate) => candidate.slug !== post.slug)
+  .map((candidate) => {
+    const sharedTags = candidate.data.tags.filter((tag) =>
+      post.data.tags.includes(tag),
+    );
+    return { post: candidate, score: sharedTags.length };
+  })
+  .filter(({ score }) => score > 0 || post.data.tags.length === 0)
+  .sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return (
+      new Date(b.post.data.publishDate).getTime() -
+      new Date(a.post.data.publishDate).getTime()
+    );
+  })
+  .slice(0, 3)
+  .map(({ post }) => post);
 ---
 
 <Layout
@@ -108,6 +137,17 @@ const commentTerm = post.data.commentId ?? post.slug;
     structuredData: articleStructuredData,
   }}
 >
+  <div
+    class="fixed left-0 top-0 z-50 h-1 w-full bg-transparent"
+    aria-hidden="true"
+  >
+    <div
+      id="reading-progress"
+      class="h-full w-0 bg-accent-cyan transition-[width] duration-100"
+    >
+    </div>
+  </div>
+
   <article class="w-full py-12">
     <div
       class="grid gap-10 items-start lg:grid-cols-[minmax(220px,240px)_minmax(0,1fr)]"
@@ -136,6 +176,17 @@ const commentTerm = post.data.commentId ?? post.slug;
             <div class="flex flex-wrap gap-4 text-xs font-mono text-secondary">
               <span>{publishDate}</span>
               <span>{readingTime} min read</span>
+              {
+                hasUpdatedDate && updatedDate && (
+                  <span>Updated {updatedDate}</span>
+                )
+              }
+              <a
+                href="#comments"
+                class="text-accent-cyan transition-colors hover:text-primary"
+              >
+                Comments
+              </a>
             </div>
 
             <h1 class="text-3xl md:text-5xl font-display leading-tight">
@@ -178,6 +229,58 @@ const commentTerm = post.data.commentId ?? post.slug;
             <Content />
           </div>
         </div>
+
+        {
+          relatedPosts.length > 0 && (
+            <section
+              class="border-t border-black/10 pt-8"
+              aria-labelledby="related-posts"
+            >
+              <div class="mb-4 flex items-center justify-between gap-4">
+                <h2
+                  id="related-posts"
+                  class="font-display text-2xl font-semibold"
+                >
+                  Related Posts
+                </h2>
+                <span class="font-mono text-xs uppercase tracking-wide text-secondary">
+                  Keep reading
+                </span>
+              </div>
+              <div class="grid gap-3">
+                {relatedPosts.map((relatedPost) => (
+                  <a
+                    href={`/blogs/${relatedPost.slug}`}
+                    class="group block rounded-xl border border-black/10 bg-surface/80 p-4 transition-colors hover:border-accent-cyan/40"
+                  >
+                    <div class="mb-2 flex flex-wrap items-center gap-3 font-mono text-xs text-secondary">
+                      <time
+                        datetime={new Date(
+                          relatedPost.data.publishDate,
+                        ).toISOString()}
+                      >
+                        {new Date(
+                          relatedPost.data.publishDate,
+                        ).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
+                      </time>
+                      <span>{relatedPost.data.readingTime ?? 5} min read</span>
+                    </div>
+                    <h3 class="font-display text-lg font-semibold transition-colors group-hover:text-accent-cyan">
+                      {relatedPost.data.title}
+                    </h3>
+                    <p class="mt-2 line-clamp-2 text-sm leading-6 text-secondary">
+                      {relatedPost.data.description}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )
+        }
 
         <Comments term={commentTerm} />
 
@@ -239,4 +342,154 @@ const commentTerm = post.data.commentId ?? post.slug;
       </div>
     </div>
   </article>
+
+  <button
+    id="back-to-top"
+    class="fixed bottom-6 right-6 z-40 grid h-11 w-11 translate-y-2 place-items-center rounded-full border border-black/10 bg-surface text-primary opacity-0 shadow-lg shadow-black/10 transition-all duration-200 pointer-events-none hover:border-accent-cyan hover:text-accent-cyan focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
+    type="button"
+    aria-label="Back to top"
+  >
+    ↑
+  </button>
 </Layout>
+
+<style>
+  :global(.prose pre) {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.prose pre code) {
+    background: transparent;
+    padding: 0;
+  }
+
+  :global(.code-copy-button) {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.78);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    line-height: 1;
+    padding: 0.45rem 0.65rem;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  :global(.code-copy-button:hover),
+  :global(.code-copy-button:focus-visible) {
+    border-color: rgba(255, 255, 255, 0.34);
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+  }
+
+  :global(.prose a[data-external-link]::after) {
+    content: "↗";
+    display: inline-block;
+    margin-left: 0.18em;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72em;
+    transform: translateY(-0.08em);
+  }
+
+  :global(.prose img) {
+    border: 1px solid rgba(31, 31, 31, 0.12);
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #reading-progress,
+    #back-to-top,
+    :global(.code-copy-button) {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const progress = document.getElementById("reading-progress");
+  const backToTop = document.getElementById("back-to-top");
+  const article = document.getElementById("blog-article");
+
+  function updateReadingProgress() {
+    if (!progress || !article) return;
+
+    const articleTop = article.offsetTop;
+    const articleHeight = article.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const readableHeight = Math.max(articleHeight - viewportHeight * 0.65, 1);
+    const current = window.scrollY - articleTop;
+    const percent = Math.min(Math.max(current / readableHeight, 0), 1) * 100;
+    progress.style.width = `${percent}%`;
+  }
+
+  function updateBackToTop() {
+    if (!backToTop) return;
+    const visible = window.scrollY > window.innerHeight * 0.8;
+    backToTop.classList.toggle("opacity-0", !visible);
+    backToTop.classList.toggle("pointer-events-none", !visible);
+    backToTop.classList.toggle("translate-y-2", !visible);
+  }
+
+  function enhanceArticleLinks() {
+    if (!article) return;
+
+    article.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
+      const href = link.getAttribute("href");
+      if (!href || href.startsWith("#")) return;
+
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin) {
+        link.dataset.externalLink = "true";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+    });
+  }
+
+  function enhanceCodeBlocks() {
+    if (!article || !window.navigator.clipboard) return;
+
+    article.querySelectorAll("pre").forEach((pre) => {
+      if (pre.querySelector(".code-copy-button")) return;
+
+      const code = pre.querySelector("code");
+      if (!code?.textContent) return;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "code-copy-button";
+      button.textContent = "Copy";
+      button.setAttribute("aria-label", "Copy code");
+      button.addEventListener("click", async () => {
+        await window.navigator.clipboard.writeText(code.textContent ?? "");
+        button.textContent = "Copied";
+        setTimeout(() => {
+          button.textContent = "Copy";
+        }, 1600);
+      });
+
+      pre.append(button);
+    });
+  }
+
+  window.addEventListener("scroll", () => {
+    updateReadingProgress();
+    updateBackToTop();
+  });
+  window.addEventListener("resize", updateReadingProgress);
+  backToTop?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  enhanceArticleLinks();
+  enhanceCodeBlocks();
+  updateReadingProgress();
+  updateBackToTop();
+</script>
