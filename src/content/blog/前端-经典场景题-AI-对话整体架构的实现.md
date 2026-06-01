@@ -1,0 +1,19 @@
+---
+title: "AI 对话整体架构的实现"
+description: "SSE 相比于 WebSocket 是更好的选择，因为 AI 问答都是一问一答的形式，不需要随时随地实施联通"
+commentId: "blog-前端-经典场景题-ai-对话整体架构的实现"
+publishDate: "2025-06-01"
+tags: [
+  "前端", "场景题", "技术笔记", "架构设计"
+]
+draft: true
+readingTime: 1
+---
+
+### 技术选型 
+SSE 相比于 WebSocket 是更好的选择，因为 AI 问答都是一问一答的形式，不需要随时随地实施联通
+### 整体流程
+客户端向服务端的 AI 接口发送问题，使用基本的 POST 请求，后端会返回一个 SessionID，前端可以根据这个 SessionID 来使用 EventSource来建立一个 SSE 链接，从而从服务端获取数据流
+核心即使这个 ID 来确保问题和答案匹配
+
+
