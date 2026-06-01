@@ -173,9 +173,28 @@ const featuredProjects = projectsCollection
       transparent 100%
     );
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-card,
+    .animate-scroll,
+    .animate-music-bar-1,
+    .animate-music-bar-2,
+    .animate-music-bar-3 {
+      animation: none;
+    }
+
+    .animate-card {
+      opacity: 1;
+      transform: none;
+    }
+
+    .spotlight-card::after {
+      transition: none;
+    }
+  }
 </style>
 
-<Layout title="Jarvis Hub | Command Center">
+<Layout title="Jarvis Hub | Command Center" viewCounterSlug="home">
   <div class="py-12 md:py-20 max-w-7xl mx-auto">
     <!-- Bento Grid Container -->
     <div
@@ -400,6 +419,7 @@ const featuredProjects = projectsCollection
       <a
         href="https://github.com/Jarvis636431"
         target="_blank"
+        rel="noopener noreferrer"
         class="animate-card spotlight-card col-span-1 row-span-1 bg-black text-white rounded-3xl p-6 flex flex-col justify-between group hover:bg-[#0d1117] transition-colors relative"
       >
         <!-- Snake Background -->
@@ -506,8 +526,6 @@ const featuredProjects = projectsCollection
 </Layout>
 
 <script>
-  import { supabase } from "../lib/supabase";
-
   // Update local time for Shenzhen (UTC+8)
   function updateTime() {
     const timeDisplay = document.getElementById("local-time");
@@ -529,12 +547,14 @@ const featuredProjects = projectsCollection
 
   // View Counter Logic
   async function initViewCounter() {
+    const container = document.getElementById("footer-view-count");
+    const pageSlug = container?.dataset.viewCounterSlug;
+    if (!pageSlug) return;
+
+    const { supabase } = await import("../lib/supabase");
     if (!supabase) return;
 
-    const pageSlug = "home";
-    // Updated IDs for Footer location
     const viewCountEl = document.getElementById("view-count-value");
-    const container = document.getElementById("footer-view-count");
 
     try {
       // Increment view count using RPC
@@ -554,5 +574,5 @@ const featuredProjects = projectsCollection
     }
   }
 
-  initViewCounter();
+  setTimeout(initViewCounter, 1200);
 </script>

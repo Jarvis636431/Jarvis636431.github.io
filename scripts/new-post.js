@@ -24,6 +24,8 @@ const createPost = async ({ title, slug, template = "md" }) => {
   const fileName = `${slug}.${template}`;
   const filePath = path.join(BLOG_DIR, fileName);
 
+  await fs.mkdir(BLOG_DIR, { recursive: true });
+
   try {
     await fs.access(filePath);
     console.error(`Post already exists: ${fileName}`);

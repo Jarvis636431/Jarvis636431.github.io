@@ -1,5 +1,10 @@
 import { defineCollection, z } from "astro:content";
 
+const optionalUrl = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.string().url().optional(),
+);
+
 const blog = defineCollection({
   type: "content",
   schema: z.object({
@@ -25,7 +30,7 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    externalUrl: z.string().url().optional(),
+    externalUrl: optionalUrl,
     coverImage: z.string().optional(),
   }),
 });

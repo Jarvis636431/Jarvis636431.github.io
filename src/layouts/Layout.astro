@@ -35,6 +35,7 @@ interface LayoutProps {
   title?: string;
   description?: string;
   navLinks?: NavLink[];
+  viewCounterSlug?: string;
   seo?: SeoConfig;
 }
 
@@ -48,6 +49,7 @@ const {
     { href: "/blogs", label: "Blogs" },
     { href: "/about", label: "About Me" },
   ],
+  viewCounterSlug,
   seo,
 } = Astro.props as LayoutProps;
 
@@ -126,6 +128,12 @@ const structuredData = seo?.structuredData;
     <meta name="theme-color" content="#030712" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -445,21 +453,23 @@ const structuredData = seo?.structuredData;
       >
         <div>© 2026 Jarvis Hub</div>
         <div class="flex items-center gap-6">
-          <!-- View Counter -->
-          <div
-            id="footer-view-count"
-            class="flex items-center gap-2 opacity-0 transition-opacity duration-700"
-          >
-            <span class="relative flex h-1.5 w-1.5">
-              <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-cyan opacity-75"
-              ></span>
-              <span
-                class="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent-cyan"
-              ></span>
-            </span>
-            <span><span id="view-count-value">--</span> Viewers</span>
-          </div>
+          {
+            viewCounterSlug && (
+              <div
+                id="footer-view-count"
+                data-view-counter-slug={viewCounterSlug}
+                class="flex items-center gap-2 opacity-0 transition-opacity duration-700"
+              >
+                <span class="relative flex h-1.5 w-1.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-cyan opacity-75" />
+                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent-cyan" />
+                </span>
+                <span>
+                  <span id="view-count-value">--</span> Viewers
+                </span>
+              </div>
+            )
+          }
           <a
             href="https://github.com/Jarvis636431"
             target="_blank"
@@ -477,5 +487,6 @@ const structuredData = seo?.structuredData;
         </div>
       </div>
     </footer>
-  </body><Search />
+    <Search />
+  </body>
 </html>

@@ -2,6 +2,7 @@
   "name": "hub",
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
