@@ -39,7 +39,16 @@ Create a `.env` file in the root directory and add your Supabase credentials (re
 ```ini
 PUBLIC_SUPABASE_URL=your_supabase_project_url
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+PUBLIC_GISCUS_REPO=Jarvis636431/JarvisHub
+PUBLIC_GISCUS_REPO_ID=your_giscus_repo_id
+PUBLIC_GISCUS_CATEGORY=Announcements
+PUBLIC_GISCUS_CATEGORY_ID=your_giscus_category_id
+PUBLIC_GISCUS_THEME=light
 ```
+
+Giscus comments use GitHub Discussions. Get the `PUBLIC_GISCUS_REPO_ID` and
+`PUBLIC_GISCUS_CATEGORY_ID` values from [giscus.app](https://giscus.app) after
+enabling Discussions and installing the Giscus GitHub App for the repository.
 
 ### Development
 

@@ -35,10 +35,12 @@ const createPost = async ({ title, slug, template = "md" }) => {
   }
 
   const publishDate = formatDate();
+  const commentId = `blog-${slug}`;
 
   const content = `---
 title: "${title.replace(/"/g, '\\"')}"
 description: "Write a short summary (min 10 chars)."
+commentId: "${commentId}"
 publishDate: "${publishDate}"
 updatedDate: "${publishDate}"
 heroImage: ""

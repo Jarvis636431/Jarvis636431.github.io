@@ -1,0 +1,55 @@
+---
+interface Props {
+  term: string;
+  title?: string;
+}
+
+const { term, title = "Comments" } = Astro.props as Props;
+
+const repo = import.meta.env.PUBLIC_GISCUS_REPO;
+const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY;
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID;
+const theme = import.meta.env.PUBLIC_GISCUS_THEME || "light";
+
+const isConfigured = Boolean(repo && repoId && category && categoryId);
+---
+
+<section class="mt-16 border-t border-black/10 pt-8" aria-labelledby="comments">
+  <div class="mb-6 flex items-center justify-between gap-4">
+    <h2 id="comments" class="font-display text-2xl font-semibold">{title}</h2>
+    <span class="font-mono text-xs uppercase tracking-wide text-secondary">
+      GitHub Discussions
+    </span>
+  </div>
+
+  {
+    isConfigured ? (
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={repo}
+        data-repo-id={repoId}
+        data-category={category}
+        data-category-id={categoryId}
+        data-mapping="specific"
+        data-term={term}
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme={theme}
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async
+      />
+    ) : (
+      <div class="rounded-xl border border-black/10 bg-surface/80 p-5 text-sm leading-6 text-secondary">
+        Giscus is ready in code, but missing configuration. Set{" "}
+        <code>PUBLIC_GISCUS_REPO</code>, <code>PUBLIC_GISCUS_REPO_ID</code>,{" "}
+        <code>PUBLIC_GISCUS_CATEGORY</code>, and{" "}
+        <code>PUBLIC_GISCUS_CATEGORY_ID</code> to enable comments.
+      </div>
+    )
+  }
+</section>
