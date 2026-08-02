@@ -6,7 +6,7 @@ import tailwind from "@astrojs/tailwind";
 import robotsTxt from "astro-robots-txt";
 import remarkGfm from "remark-gfm";
 
-const SITE_URL = "https://jarvishub.com";
+const SITE_URL = "https://jarvis636431.github.io";
 
 // https://astro.build/config
 export default defineConfig({

@@ -18,7 +18,7 @@ A modern, high-performance personal portfolio and digital garden built with [Ast
 - **Content**: Type-safe content management using Astro Content Collections (MDX & Markdown).
 - **Search**: Integrated client-side fuzzy search with Fuse.js (CMD+K support).
 - **Automation**: Custom CLI scripts for generating new content templates.
-- **Deployment**: Optimized for Vercel.
+- **Deployment**: Published to GitHub Pages with GitHub Actions.
 
 ## 🚀 Getting Started
 
@@ -27,8 +27,8 @@ This project uses [pnpm](https://pnpm.io/) as the package manager.
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/JarvisHub.git
-cd JarvisHub
+git clone https://github.com/Jarvis636431/Jarvis636431.github.io.git
+cd Jarvis636431.github.io
 pnpm install
 ```
 
@@ -39,7 +39,7 @@ Create a `.env` file in the root directory and add your Supabase credentials (re
 ```ini
 PUBLIC_SUPABASE_URL=your_supabase_project_url
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-PUBLIC_GISCUS_REPO=Jarvis636431/JarvisHub
+PUBLIC_GISCUS_REPO=Jarvis636431/Jarvis636431.github.io
 PUBLIC_GISCUS_REPO_ID=your_giscus_repo_id
 PUBLIC_GISCUS_CATEGORY=Announcements
 PUBLIC_GISCUS_CATEGORY_ID=your_giscus_category_id

@@ -21,7 +21,7 @@ export async function GET(context) {
         new Date(a.data.publishDate).getTime(),
     );
 
-  const site = context.site?.toString() ?? "https://jarvishub.com";
+  const site = context.site?.toString() ?? "https://jarvis636431.github.io";
   const siteUrl = site.endsWith("/") ? site.slice(0, -1) : site;
   const items = sortedPosts
     .map((post) => {

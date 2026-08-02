@@ -41,7 +41,7 @@ const updatedDateIso = project.data.updatedDate
   : undefined;
 
 const siteOrigin =
-  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvishub.com";
+  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const coverImageUrl = project.data.coverImage
   ? new URL(project.data.coverImage, siteOrigin).toString()
