@@ -28,6 +28,13 @@ const featuredProjects = projectsCollection
   )
   .filter(({ data }) => data.featured)
   .slice(0, 4); // Show top 4 featured projects
+
+const currentYear = new Date().getFullYear();
+const location = {
+  city: "Beijing",
+  country: "CN",
+  coordinates: "39.9042° N · 116.4074° E",
+};
 ---
 
 <style>
@@ -194,7 +201,7 @@ const featuredProjects = projectsCollection
   }
 </style>
 
-<Layout title="Jarvis Hub | Command Center" viewCounterSlug="home">
+<Layout title="Jarvis Hub | Command Center" lang="en" viewCounterSlug="home">
   <div class="py-12 md:py-20 max-w-7xl mx-auto">
     <!-- Bento Grid Container -->
     <div
@@ -244,10 +251,49 @@ const featuredProjects = projectsCollection
       <div
         class="animate-card spotlight-card col-span-1 row-span-1 bg-[#242424] rounded-3xl relative group flex flex-col justify-between p-6 text-white"
       >
-        <div
-          class="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/116.4074,39.9042,10,0/400x400?access_token=pk.eyJ1IjoiamFydmlzaHViIiwiYSI6ImNrbGZ5a3dodTAwMXoycG8xZnJ5a3dodTAifQ.placeholder')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-500 grayscale group-hover:grayscale-0"
+        <svg
+          class="absolute inset-0 h-full w-full opacity-35 transition-opacity duration-500 group-hover:opacity-55"
+          viewBox="0 0 400 400"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
         >
-        </div>
+          <defs>
+            <pattern
+              id="city-grid"
+              width="44"
+              height="44"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 44 0 L 0 0 0 44"
+                fill="none"
+                stroke="white"
+                stroke-opacity="0.16"
+                stroke-width="1"></path>
+            </pattern>
+            <radialGradient id="location-glow">
+              <stop offset="0" stop-color="#5eead4" stop-opacity="0.55"></stop>
+              <stop offset="1" stop-color="#5eead4" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="400" fill="url(#city-grid)"></rect>
+          <g fill="none" stroke="white" stroke-opacity="0.3" stroke-width="3">
+            <path d="M-20 105 C80 75 125 155 220 126 S335 65 430 104"></path>
+            <path d="M-10 292 C92 260 115 202 213 226 S318 325 420 276"></path>
+            <path d="M92-20 C120 72 84 152 132 222 S175 326 152 430"></path>
+            <path d="M300-20 C263 85 330 145 277 226 S245 329 292 430"></path>
+          </g>
+          <circle cx="215" cy="196" r="72" fill="url(#location-glow)"></circle>
+          <circle cx="215" cy="196" r="8" fill="#5eead4"></circle>
+          <circle
+            cx="215"
+            cy="196"
+            r="15"
+            fill="none"
+            stroke="#5eead4"
+            stroke-opacity="0.7"
+            stroke-width="2"></circle>
+        </svg>
         <div
           class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
         >
@@ -258,7 +304,12 @@ const featuredProjects = projectsCollection
           </p>
         </div>
         <div class="relative z-10">
-          <h3 class="text-2xl font-display font-bold">Beijing, CN</h3>
+          <h3 class="text-2xl font-display font-bold">
+            {location.city}, {location.country}
+          </h3>
+          <p class="text-[10px] font-mono text-white/40">
+            {location.coordinates}
+          </p>
           <p id="local-time" class="text-sm font-mono text-white/60 mt-1">
             --:-- --
           </p>
@@ -306,7 +357,7 @@ const featuredProjects = projectsCollection
       >
         <div class="flex items-center justify-between mb-4 z-10">
           <h3 class="font-display font-bold text-lg">Contributions</h3>
-          <span class="text-xs font-mono text-secondary/60">2024-2025</span>
+          <span class="text-xs font-mono text-secondary/60">{currentYear}</span>
         </div>
 
         <div
@@ -486,10 +537,13 @@ const featuredProjects = projectsCollection
                 class="group bg-white p-4 rounded-xl border border-black/5 shadow-sm hover:shadow-md hover:border-accent-cyan/20 transition-all"
               >
                 <span class="text-xs font-mono text-secondary/60 mb-1 block">
-                  {new Date(post.data.publishDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {new Date(post.data.publishDate).toLocaleDateString(
+                    post.data.language,
+                    {
+                      month: "short",
+                      day: "numeric",
+                    },
+                  )}
                 </span>
                 <h4 class="font-display font-semibold text-primary group-hover:text-accent-cyan transition-colors leading-snug">
                   {post.data.title}
@@ -526,7 +580,7 @@ const featuredProjects = projectsCollection
 </Layout>
 
 <script>
-  // Update local time for Shenzhen (UTC+8)
+  // Update local time for Beijing (UTC+8)
   function updateTime() {
     const timeDisplay = document.getElementById("local-time");
     if (timeDisplay) {

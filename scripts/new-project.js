@@ -37,6 +37,7 @@ const createProject = async ({ title, slug, template = "md" }) => {
   const content = `---
 title: "${title.replace(/"/g, '\\"')}"
 summary: "Project summary (min 10 chars)."
+language: "zh-CN"
 status: "in-progress"
 roles: []
 stack: []

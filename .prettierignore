@@ -1,6 +1,10 @@
 .astro
 .vercel
+content-migration
 dist
 node_modules
 package-lock.json
 pnpm-lock.yaml
+
+# Migrated long-form notes contain hand-formatted examples and code blocks.
+src/content/blog

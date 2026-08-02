@@ -31,13 +31,12 @@ const blogStructuredData = {
   "@type": "Blog",
   name: "Jarvis Hub Blogs",
   url: pageUrl,
-  description:
-    "Notes on frontend engineering, product systems, AI tools, and things I am learning.",
-  inLanguage: "en-US",
+  description: "关于前端工程、产品系统、AI 工具与持续学习的笔记。",
+  inLanguage: "zh-CN",
 };
 
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString("en-US", {
+function formatDate(date: Date, locale = "zh-CN") {
+  return new Date(date).toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -47,6 +46,7 @@ function formatDate(date: Date) {
 
 <Layout
   title="Blogs - Jarvis Hub"
+  lang="en"
   description="Notes on frontend engineering, product systems, AI tools, and things I am learning."
   seo={{
     type: "website",
@@ -82,7 +82,12 @@ function formatDate(date: Date) {
             <span>Latest</span>
             <strong
               >{
-                latestPost ? formatDate(latestPost.data.publishDate) : "-"
+                latestPost
+                  ? formatDate(
+                      latestPost.data.publishDate,
+                      latestPost.data.language,
+                    )
+                  : "-"
               }</strong
             >
           </div>
@@ -113,12 +118,12 @@ function formatDate(date: Date) {
           posts.length > 0 ? (
             <ol class="post-list">
               {posts.map((post) => (
-                <li class="post-row">
+                <li class="post-row" lang={post.data.language}>
                   <a href={`/blogs/${post.slug}`} class="post-link">
                     <time
                       datetime={new Date(post.data.publishDate).toISOString()}
                     >
-                      {formatDate(post.data.publishDate)}
+                      {formatDate(post.data.publishDate, post.data.language)}
                     </time>
                     <div class="post-main">
                       <div class="post-title-line">

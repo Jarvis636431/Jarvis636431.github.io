@@ -45,10 +45,10 @@ export async function GET(context) {
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Jarvis Hub Blogs</title>
-    <description>Notes on frontend engineering, product systems, AI tools, and things I am learning.</description>
+    <title>Jarvis Hub 博客</title>
+    <description>关于前端工程、产品系统、AI 工具与持续学习的笔记。</description>
     <link>${escapeXml(siteUrl)}</link>
-    <language>en-us</language>
+    <language>zh-CN</language>
     ${items}
   </channel>
 </rss>`;

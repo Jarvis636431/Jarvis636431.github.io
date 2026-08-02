@@ -84,6 +84,8 @@ Schema fields defined in `src/content/config.ts`:
 
 - `title` (string): Post title
 - `description` (string): Short summary (min 10 chars)
+- `commentId` (string): Stable identifier used by Giscus
+- `language` (string): BCP 47 content language (defaults to `zh-CN`)
 - `publishDate` (date): Publication date
 - `tags` (array): List of tags
 - `draft` (boolean): If true, hidden in production
@@ -95,6 +97,7 @@ Schema fields defined in `src/content/config.ts`:
 
 - `title` (string): Project name
 - `summary` (string): Brief overview
+- `language` (string): BCP 47 content language (defaults to `zh-CN`)
 - `status` (enum): 'in-progress' | 'launched' | 'archived'
 - `stack` (array): Technologies used
 - `featured` (boolean): Whether to show on the homepage

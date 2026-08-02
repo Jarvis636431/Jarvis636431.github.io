@@ -41,6 +41,7 @@ const createPost = async ({ title, slug, template = "md" }) => {
 title: "${title.replace(/"/g, '\\"')}"
 description: "Write a short summary (min 10 chars)."
 commentId: "${commentId}"
+language: "zh-CN"
 publishDate: "${publishDate}"
 updatedDate: "${publishDate}"
 heroImage: ""

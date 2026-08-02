@@ -1,10 +1,10 @@
 ---
 title: "iDesign2025"
 summary: "占位项目条目，后续补充详情。"
-status: "in-progress"
+status: "archived"
 roles: ["Full Stack Developer"]
 stack: ["Next.js", "TypeScript", "Prisma"]
-featured: true
+featured: false
 publishDate: 2025-01-01
 ---
 

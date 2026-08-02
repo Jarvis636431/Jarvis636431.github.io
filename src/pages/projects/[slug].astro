@@ -18,7 +18,7 @@ const { project } = Astro.props as { project: CollectionEntry<"projects"> };
 const { Content } = await project.render();
 
 const publishDate = new Date(project.data.publishDate).toLocaleDateString(
-  "en-US",
+  project.data.language,
   {
     year: "numeric",
     month: "long",
@@ -26,10 +26,13 @@ const publishDate = new Date(project.data.publishDate).toLocaleDateString(
 );
 
 const updatedDate = project.data.updatedDate
-  ? new Date(project.data.updatedDate).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-    })
+  ? new Date(project.data.updatedDate).toLocaleDateString(
+      project.data.language,
+      {
+        year: "numeric",
+        month: "long",
+      },
+    )
   : undefined;
 
 const publishDateIso = new Date(project.data.publishDate).toISOString();
@@ -53,7 +56,7 @@ const projectStructuredData: Record<string, unknown> = {
   mainEntityOfPage: canonicalUrl,
   datePublished: publishDateIso,
   dateModified: updatedDateIso ?? publishDateIso,
-  inLanguage: "en-US",
+  inLanguage: project.data.language,
   creator: {
     "@type": "Person",
     name: "Jarvis Hub",
@@ -98,6 +101,7 @@ const nextProject =
 
 <Layout
   title={`${project.data.title} - Jarvis Hub`}
+  lang={project.data.language}
   description={project.data.summary}
   seo={{
     canonical: canonicalUrl,
@@ -228,7 +232,7 @@ const nextProject =
                 </h3>
                 <span class="text-xs text-secondary">
                   {new Date(prevProject.data.publishDate).toLocaleDateString(
-                    "en-US",
+                    prevProject.data.language,
                     { year: "numeric", month: "long" },
                   )}
                 </span>
@@ -249,7 +253,7 @@ const nextProject =
                 </h3>
                 <span class="text-xs text-secondary">
                   {new Date(nextProject.data.publishDate).toLocaleDateString(
-                    "en-US",
+                    nextProject.data.language,
                     { year: "numeric", month: "long" },
                   )}
                 </span>

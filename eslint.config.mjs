@@ -27,8 +27,9 @@ const nodeGlobals = {
 export default [
   {
     ignores: [
-      ".astro/",
+      "**/.astro/**",
       ".vercel/",
+      "content-migration/",
       "dist/",
       "node_modules/",
       "package-lock.json",
@@ -48,7 +49,7 @@ export default [
     },
   },
   {
-    files: ["scripts/**/*.js", "*.config.mjs"],
+    files: ["scripts/**/*.{js,mjs}", "*.config.mjs"],
     languageOptions: {
       globals: nodeGlobals,
     },

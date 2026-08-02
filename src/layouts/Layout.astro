@@ -34,6 +34,7 @@ interface SeoConfig {
 interface LayoutProps {
   title?: string;
   description?: string;
+  lang?: string;
   navLinks?: NavLink[];
   viewCounterSlug?: string;
   seo?: SeoConfig;
@@ -44,6 +45,7 @@ const fallbackSite = "https://jarvishub.com";
 const {
   title = "Jarvis Hub - Creative Developer",
   description = "Personal website of Jarvis - crafting web experiences, writing, and sharing experiments in code.",
+  lang = "en",
   navLinks = [
     { href: "/projects", label: "Projects" },
     { href: "/blogs", label: "Blogs" },
@@ -118,10 +120,11 @@ const twitterConfig = {
 };
 
 const structuredData = seo?.structuredData;
+const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -451,7 +454,7 @@ const structuredData = seo?.structuredData;
       <div
         class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-secondary"
       >
-        <div>© 2026 Jarvis Hub</div>
+        <div>© {currentYear} Jarvis Hub</div>
         <div class="flex items-center gap-6">
           {
             viewCounterSlug && (

@@ -19,7 +19,7 @@ const { post } = Astro.props as { post: CollectionEntry<"blog"> };
 const { Content } = await post.render();
 
 const publishDate = new Date(post.data.publishDate).toLocaleDateString(
-  "en-US",
+  post.data.language,
   {
     year: "numeric",
     month: "2-digit",
@@ -28,7 +28,7 @@ const publishDate = new Date(post.data.publishDate).toLocaleDateString(
 );
 const readingTime = post.data.readingTime ?? 6;
 const updatedDate = post.data.updatedDate
-  ? new Date(post.data.updatedDate).toLocaleDateString("en-US", {
+  ? new Date(post.data.updatedDate).toLocaleDateString(post.data.language, {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -72,7 +72,7 @@ const articleStructuredData: Record<string, unknown> = {
   },
   mainEntityOfPage: canonicalUrl,
   url: canonicalUrl,
-  inLanguage: "en-US",
+  inLanguage: post.data.language,
 };
 
 if (heroImageUrl) {
@@ -121,6 +121,7 @@ const relatedPosts = allPosts
 
 <Layout
   title={`${post.data.title} - Jarvis Hub`}
+  lang={post.data.language}
   description={post.data.description}
   seo={{
     canonical: canonicalUrl,
@@ -261,7 +262,7 @@ const relatedPosts = allPosts
                       >
                         {new Date(
                           relatedPost.data.publishDate,
-                        ).toLocaleDateString("en-US", {
+                        ).toLocaleDateString(relatedPost.data.language, {
                           year: "numeric",
                           month: "2-digit",
                           day: "2-digit",
@@ -306,7 +307,7 @@ const relatedPosts = allPosts
                       </h3>
                       <span class="text-xs text-secondary">
                         {new Date(prevPost.data.publishDate).toLocaleDateString(
-                          "en-US",
+                          prevPost.data.language,
                           { year: "numeric", month: "2-digit", day: "2-digit" },
                         )}
                       </span>
@@ -327,7 +328,7 @@ const relatedPosts = allPosts
                       </h3>
                       <span class="text-xs text-secondary">
                         {new Date(nextPost.data.publishDate).toLocaleDateString(
-                          "en-US",
+                          nextPost.data.language,
                           { year: "numeric", month: "2-digit", day: "2-digit" },
                         )}
                       </span>

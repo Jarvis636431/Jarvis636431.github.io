@@ -148,7 +148,7 @@ if ([]) console.log("true")  // true
 继续代码输出题
 ##### 3.Promise
 
-```javaScript
+```javascript
 async function getValue(){
   return 2
 }

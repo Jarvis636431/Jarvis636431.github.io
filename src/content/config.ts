@@ -11,6 +11,7 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string().min(10),
     commentId: z.string().min(1),
+    language: z.string().min(2).default("zh-CN"),
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     heroImage: z.string().optional(),
@@ -25,6 +26,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string().min(10),
+    language: z.string().min(2).default("zh-CN"),
     status: z.enum(["in-progress", "launched", "archived"]).default("launched"),
     roles: z.array(z.string()).default([]),
     stack: z.array(z.string()).default([]),
