@@ -1,0 +1,735 @@
+---
+import Layout from "@layouts/Layout.astro";
+import {
+  openSourceFocus,
+  resumeExperiences,
+  resumeProfile,
+  resumeProjects,
+  resumeSkills,
+} from "../data/resume";
+
+const siteOrigin =
+  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  name: `${resumeProfile.name} Resume`,
+  url: canonicalUrl,
+  inLanguage: "zh-CN",
+  mainEntity: {
+    "@type": "Person",
+    name: resumeProfile.name,
+    jobTitle: "Software Engineer",
+    email: `mailto:${resumeProfile.email}`,
+    url: resumeProfile.website,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Beijing",
+      addressCountry: "CN",
+    },
+    worksFor: {
+      "@type": "Organization",
+      name: "JD.com",
+    },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "Tianjin University",
+    },
+    sameAs: [resumeProfile.github],
+  },
+};
+---
+
+<Layout
+  title="Resume - Jarvis"
+  lang="zh-CN"
+  description="Jarvis 的个人简历：软件工程、AI Agent、跨端应用与全栈产品实践。"
+  seo={{
+    canonical: canonicalUrl,
+    type: "profile",
+    image: { src: "/logo.png", alt: "Jarvis" },
+    structuredData,
+  }}
+>
+  <div class="resume-shell">
+    <div class="resume-toolbar" data-print-hidden>
+      <a href="/about">← 关于我</a>
+      <span>更新于 {resumeProfile.updatedAt}</span>
+      <div>
+        <a href={resumeProfile.github} target="_blank" rel="noreferrer">
+          GitHub ↗
+        </a>
+        <button id="print-resume" type="button">打印 / 保存 PDF</button>
+      </div>
+    </div>
+
+    <article class="resume-paper">
+      <header class="resume-hero">
+        <div>
+          <p class="eyebrow">Resume · 个人简历</p>
+          <h1>{resumeProfile.name}</h1>
+          <p class="headline">{resumeProfile.title}</p>
+        </div>
+
+        <address class="contact-list">
+          <span>{resumeProfile.location}</span>
+          <a href={`mailto:${resumeProfile.email}`}>{resumeProfile.email}</a>
+          <a href={resumeProfile.website}>jarvis636431.github.io</a>
+          <a href={resumeProfile.github} target="_blank" rel="noreferrer">
+            github.com/Jarvis636431
+          </a>
+        </address>
+      </header>
+
+      <section class="resume-summary" aria-labelledby="resume-summary">
+        <h2 id="resume-summary">Profile</h2>
+        <p>{resumeProfile.summary}</p>
+      </section>
+
+      <div class="resume-grid">
+        <main class="resume-main">
+          <section aria-labelledby="experience-heading">
+            <div class="section-title">
+              <h2 id="experience-heading">Experience</h2>
+              <span>经历</span>
+            </div>
+
+            <div class="timeline">
+              {
+                resumeExperiences.map((experience) => (
+                  <article class="timeline-item">
+                    <div class="timeline-meta">
+                      <span>{experience.period}</span>
+                      {experience.location && (
+                        <small>{experience.location}</small>
+                      )}
+                    </div>
+                    <div class="timeline-content">
+                      <h3>{experience.role}</h3>
+                      <p class="organization">{experience.organization}</p>
+                      <p>{experience.summary}</p>
+                      <ul class="highlights">
+                        {experience.highlights.map((highlight) => (
+                          <li>{highlight}</li>
+                        ))}
+                      </ul>
+                      <ul class="tag-list" aria-label="Technology stack">
+                        {experience.stack.map((item) => (
+                          <li>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                ))
+              }
+            </div>
+          </section>
+
+          <section aria-labelledby="projects-heading">
+            <div class="section-title">
+              <h2 id="projects-heading">Selected Projects</h2>
+              <span>项目</span>
+            </div>
+
+            <div class="project-list">
+              {
+                resumeProjects.map((project) => (
+                  <article class="project-item">
+                    <div class="project-heading">
+                      <div>
+                        <h3>{project.name}</h3>
+                        <span>{project.role}</span>
+                      </div>
+                      <a
+                        href={project.href}
+                        target={project.external ? "_blank" : undefined}
+                        rel={project.external ? "noreferrer" : undefined}
+                        aria-label={`查看 ${project.name}`}
+                      >
+                        {project.external ? "↗" : "→"}
+                      </a>
+                    </div>
+                    <p>{project.description}</p>
+                    <ul class="tag-list">
+                      {project.stack.map((item) => (
+                        <li>{item}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))
+              }
+            </div>
+          </section>
+        </main>
+
+        <aside class="resume-aside">
+          <section aria-labelledby="education-heading">
+            <div class="section-title section-title--compact">
+              <h2 id="education-heading">Education</h2>
+              <span>教育</span>
+            </div>
+            <h3>天津大学</h3>
+            <p>学习经历与校园技术团队实践</p>
+          </section>
+
+          <section aria-labelledby="focus-heading">
+            <div class="section-title section-title--compact">
+              <h2 id="focus-heading">Focus</h2>
+              <span>方向</span>
+            </div>
+            <ul class="focus-list">
+              {
+                resumeProfile.focus.map((item, index) => (
+                  <li>
+                    <span>0{index + 1}</span>
+                    {item}
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+
+          <section aria-labelledby="skills-heading">
+            <div class="section-title section-title--compact">
+              <h2 id="skills-heading">Skills</h2>
+              <span>技能</span>
+            </div>
+            <div class="skill-groups">
+              {
+                resumeSkills.map((group) => (
+                  <div>
+                    <h3>{group.label}</h3>
+                    <p>{group.items.join(" · ")}</p>
+                  </div>
+                ))
+              }
+            </div>
+          </section>
+
+          <section aria-labelledby="opensource-heading">
+            <div class="section-title section-title--compact">
+              <h2 id="opensource-heading">Open Source</h2>
+              <span>生态</span>
+            </div>
+            <div class="opensource-list">
+              {
+                openSourceFocus.map((project) => (
+                  <a href={project.href} target="_blank" rel="noreferrer">
+                    <span>
+                      <strong>{project.name}</strong>
+                      <small>{project.description}</small>
+                    </span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                ))
+              }
+            </div>
+          </section>
+        </aside>
+      </div>
+    </article>
+  </div>
+</Layout>
+
+<script>
+  document
+    .getElementById("print-resume")
+    ?.addEventListener("click", () => window.print());
+</script>
+
+<style>
+  .resume-shell {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3rem 0 5rem;
+  }
+
+  .resume-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: rgba(31, 31, 31, 0.58);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .resume-toolbar > div {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .resume-toolbar a,
+  .resume-toolbar button {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(31, 31, 31, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.72);
+    color: rgba(31, 31, 31, 0.72);
+    text-decoration: none;
+    transition: 0.2s ease;
+  }
+
+  .resume-toolbar a:hover,
+  .resume-toolbar button:hover {
+    border-color: rgba(47, 111, 109, 0.45);
+    color: #2f6f6d;
+  }
+
+  .resume-paper {
+    padding: clamp(1.5rem, 5vw, 4rem);
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 24px 70px rgba(31, 31, 31, 0.08);
+  }
+
+  .resume-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: end;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #1f1f1f;
+  }
+
+  .eyebrow,
+  .section-title span,
+  .timeline-meta,
+  .project-heading span,
+  .contact-list {
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.8rem;
+    color: #2f6f6d;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .resume-hero h1 {
+    margin: 0;
+    font-size: clamp(3.6rem, 9vw, 6.8rem);
+    line-height: 0.86;
+  }
+
+  .headline {
+    margin: 1.1rem 0 0;
+    color: rgba(31, 31, 31, 0.66);
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+  }
+
+  .contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin: 0;
+    color: rgba(31, 31, 31, 0.62);
+    font-size: 0.73rem;
+    font-style: normal;
+    text-align: right;
+  }
+
+  .contact-list a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .contact-list a:hover {
+    color: #2f6f6d;
+  }
+
+  .resume-summary {
+    display: grid;
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+  }
+
+  .resume-summary h2,
+  .section-title h2 {
+    margin: 0;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .resume-summary p {
+    max-width: 48rem;
+    margin: 0;
+    color: rgba(31, 31, 31, 0.72);
+    font-size: 1.06rem;
+    line-height: 1.75;
+  }
+
+  .resume-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2.05fr) minmax(15rem, 0.95fr);
+    gap: clamp(2.2rem, 5vw, 4rem);
+    padding-top: 2.5rem;
+  }
+
+  .resume-main,
+  .resume-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .resume-aside {
+    padding-left: 2rem;
+    border-left: 1px solid rgba(31, 31, 31, 0.12);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.35rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.16);
+  }
+
+  .section-title span {
+    color: rgba(31, 31, 31, 0.42);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+  }
+
+  .timeline,
+  .project-list,
+  .skill-groups,
+  .opensource-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    break-inside: avoid;
+  }
+
+  .timeline-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: rgba(31, 31, 31, 0.58);
+    font-size: 0.7rem;
+  }
+
+  .timeline-meta small {
+    color: rgba(31, 31, 31, 0.4);
+  }
+
+  .timeline-content {
+    position: relative;
+    padding: 0 0 1.5rem 1.4rem;
+    border-left: 1px solid rgba(31, 31, 31, 0.16);
+  }
+
+  .timeline-content::before {
+    content: "";
+    position: absolute;
+    top: 0.35rem;
+    left: -0.28rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 2px solid #2f6f6d;
+    border-radius: 999px;
+    background: white;
+  }
+
+  .timeline-content h3,
+  .project-heading h3,
+  .resume-aside h3 {
+    margin: 0;
+    font-size: 1.04rem;
+  }
+
+  .timeline-content > p,
+  .project-item > p,
+  .resume-aside > section > p,
+  .skill-groups p {
+    color: rgba(31, 31, 31, 0.66);
+    font-size: 0.88rem;
+    line-height: 1.62;
+  }
+
+  .organization {
+    margin: 0.15rem 0 0.65rem;
+    color: #2f6f6d !important;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem !important;
+  }
+
+  .highlights {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.7rem 0 0;
+    padding-left: 1.1rem;
+    color: rgba(31, 31, 31, 0.72);
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .highlights li::marker {
+    color: #2f6f6d;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tag-list li {
+    padding: 0.25rem 0.48rem;
+    border: 1px solid rgba(31, 31, 31, 0.1);
+    border-radius: 999px;
+    background: #f8f7f4;
+    color: rgba(31, 31, 31, 0.62);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.62rem;
+  }
+
+  .project-item {
+    padding-bottom: 1.35rem;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+    break-inside: avoid;
+  }
+
+  .project-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .project-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .project-heading span {
+    display: block;
+    margin-top: 0.25rem;
+    color: rgba(31, 31, 31, 0.48);
+    font-size: 0.66rem;
+  }
+
+  .project-heading a {
+    color: #2f6f6d;
+    font-family: "IBM Plex Mono", monospace;
+    text-decoration: none;
+  }
+
+  .focus-list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .focus-list li {
+    display: grid;
+    grid-template-columns: 1.8rem 1fr;
+    gap: 0.6rem;
+    align-items: baseline;
+    color: rgba(31, 31, 31, 0.76);
+    font-size: 0.88rem;
+  }
+
+  .focus-list span {
+    color: #2f6f6d;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.62rem;
+  }
+
+  .skill-groups div {
+    break-inside: avoid;
+  }
+
+  .skill-groups h3 {
+    font-size: 0.77rem;
+  }
+
+  .skill-groups p {
+    margin: 0.35rem 0 0;
+  }
+
+  .opensource-list a {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: inherit;
+    text-decoration: none;
+    break-inside: avoid;
+  }
+
+  .opensource-list a > span:first-child {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .opensource-list strong {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.88rem;
+  }
+
+  .opensource-list small {
+    color: rgba(31, 31, 31, 0.58);
+    font-size: 0.74rem;
+    line-height: 1.5;
+  }
+
+  .opensource-list a > span:last-child {
+    color: #2f6f6d;
+  }
+
+  @media (max-width: 800px) {
+    .resume-shell {
+      padding-top: 1.5rem;
+    }
+
+    .resume-toolbar {
+      grid-template-columns: 1fr auto;
+    }
+
+    .resume-toolbar > span {
+      display: none;
+    }
+
+    .resume-hero,
+    .resume-summary,
+    .resume-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-list {
+      text-align: left;
+    }
+
+    .resume-summary {
+      gap: 0.75rem;
+    }
+
+    .resume-aside {
+      padding: 2rem 0 0;
+      border-top: 1px solid rgba(31, 31, 31, 0.12);
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .resume-paper {
+      padding: 1.35rem;
+      border-radius: 12px;
+    }
+
+    .resume-toolbar > div a {
+      display: none;
+    }
+
+    .timeline-item {
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
+    }
+
+    .timeline-meta {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  @page {
+    size: A4;
+    margin: 11mm;
+  }
+
+  @media print {
+    :global(#main-header),
+    :global(body > footer),
+    :global(#search-dialog),
+    [data-print-hidden] {
+      display: none !important;
+    }
+
+    :global(html),
+    :global(body) {
+      background: white !important;
+    }
+
+    :global(#main) {
+      max-width: none !important;
+      padding: 0 !important;
+    }
+
+    .resume-shell {
+      max-width: none;
+      padding: 0;
+    }
+
+    .resume-paper {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .resume-hero h1 {
+      font-size: 4.5rem;
+    }
+
+    .resume-grid {
+      grid-template-columns: minmax(0, 2fr) minmax(12rem, 0.9fr);
+      gap: 2rem;
+      padding-top: 1.8rem;
+    }
+
+    .resume-main,
+    .resume-aside {
+      gap: 2rem;
+    }
+
+    .resume-aside {
+      padding-left: 1.5rem;
+    }
+
+    .timeline,
+    .project-list,
+    .skill-groups,
+    .opensource-list {
+      gap: 1rem;
+    }
+
+    .timeline-item {
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .timeline-content {
+      padding-bottom: 0.9rem;
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+</style>

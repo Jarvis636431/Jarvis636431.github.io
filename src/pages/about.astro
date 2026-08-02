@@ -3,6 +3,15 @@ import Layout from "@layouts/Layout.astro";
 
 const timeline = [
   {
+    year: "2026",
+    title: "Software Engineer",
+    company: "JD.com",
+    type: "Full-time",
+    description:
+      "Building AI-native software, cross-platform systems, and developer-focused tools.",
+    stack: ["TypeScript", "React", "AI Agents", "Cross-platform"],
+  },
+  {
     year: "2025",
     title: "Frontend Developer",
     company: "Tenio / Tianjin University",
@@ -72,7 +81,18 @@ const structuredData = {
     "@type": "Person",
     name: "Jarvis Hub",
     alternateName: "Jarvis",
-    description: "Creative Developer & Design Engineer",
+    description:
+      "Software Engineer focused on AI-native and cross-platform systems",
+    jobTitle: "Software Engineer",
+    email: "mailto:mengda636431@gmail.com",
+    worksFor: {
+      "@type": "Organization",
+      name: "JD.com",
+    },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "Tianjin University",
+    },
     image: new URL("/logo.png", siteOrigin).toString(),
     sameAs: ["https://github.com/Jarvis636431"],
   },
@@ -82,7 +102,7 @@ const structuredData = {
 <Layout
   title="About - Jarvis Hub"
   lang="en"
-  description="Creative Developer & Design Engineer based in Digital Space."
+  description="Software Engineer at JD.com focused on AI-native software, cross-platform systems, and developer tools."
   seo={{
     canonical: pageUrl,
     type: "profile",
@@ -104,9 +124,9 @@ const structuredData = {
         </h1>
 
         <p class="text-lg text-secondary leading-relaxed max-w-md">
-          I'm Jarvis, a design engineer and digital explorer. When I'm not
-          crafting pixel-perfect interfaces, you'll find me analyzing game
-          mechanics or getting lost in immersive virtual worlds.
+          I'm a software engineer at JD.com, focused on AI-native software,
+          cross-platform systems, and developer tools. Outside of work, you'll
+          probably find me exploring new product ideas or in Apex Legends.
         </p>
       </div>
 
@@ -237,7 +257,7 @@ const structuredData = {
       </h2>
       <div class="flex justify-center gap-6">
         <a
-          href="mailto:hello@jarvishub.com"
+          href="mailto:mengda636431@gmail.com"
           class="group flex items-center gap-2 text-primary hover:text-accent-cyan transition-colors border-b border-black/10 hover:border-accent-cyan pb-1"
         >
           <span>Send an Email</span>
