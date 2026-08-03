@@ -364,26 +364,38 @@ const location = {
       </section>
 
       <!-- 5. Contribution Heatmap -->
-      <a
-        href="https://github.com/Jarvis636431"
-        target="_blank"
-        rel="noopener noreferrer"
+      <section
+        aria-labelledby="contributions-title"
         class="animate-card order-4 col-span-2 min-w-0 md:col-span-3 lg:col-span-2 bg-surface border border-black/10 rounded-2xl md:rounded-3xl p-4 md:p-5 flex flex-col relative group overflow-hidden hover:border-black/20 transition-colors"
       >
         <div class="mb-2 flex items-center justify-between gap-5">
-          <h3 class="font-display text-sm font-semibold">Contributions</h3>
+          <h3
+            id="contributions-title"
+            class="font-display text-sm font-semibold"
+          >
+            Contributions
+          </h3>
           <div
             class="flex items-center gap-3 text-[11px] font-mono text-secondary/60"
           >
             <span>{currentYear}</span>
-            <span class="transition-transform group-hover:translate-x-0.5"
-              >↗</span
+            <a
+              href="https://github.com/Jarvis636431"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View Jarvis636431 on GitHub"
+              class="rounded-sm p-1 text-secondary transition-all hover:text-accent-cyan group-hover:translate-x-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
             >
+              ↗
+            </a>
           </div>
         </div>
 
         <div
           id="contribution-scroll"
+          role="region"
+          aria-label="GitHub contribution heatmap; scroll horizontally to explore"
+          tabindex="0"
           class="contribution-scroll flex min-h-0 flex-1 items-center overflow-x-auto touch-pan-x"
         >
           <img
@@ -392,7 +404,7 @@ const location = {
             class="h-auto w-[640px] max-w-none opacity-80 transition-opacity group-hover:opacity-100 md:w-full md:scale-[1.03]"
           />
         </div>
-      </a>
+      </section>
     </div>
   </div>
 </Layout>
