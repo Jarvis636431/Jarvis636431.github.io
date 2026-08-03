@@ -14,14 +14,6 @@ const posts = (
       new Date(a.data.publishDate).getTime(),
   );
 
-const latestPost = posts[0];
-const tags = Array.from(
-  new Set(posts.flatMap((post) => post.data.tags)),
-).sort();
-const years = Array.from(
-  new Set(posts.map((post) => new Date(post.data.publishDate).getFullYear())),
-).sort((a, b) => b - a);
-
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
 const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
@@ -38,17 +30,18 @@ const blogStructuredData = {
 function formatDate(date: Date, locale = "zh-CN") {
   return new Date(date).toLocaleDateString(locale, {
     year: "numeric",
-    month: "short",
-    day: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   });
 }
 ---
 
 <Layout
-  title="Blogs - Jarvis Hub"
-  lang="en"
-  description="Notes on frontend engineering, product systems, AI tools, and things I am learning."
+  title="博客与笔记 - Jarvis Hub"
+  lang="zh-CN"
+  description="关于前端工程、产品系统、AI 工具与持续学习的笔记。"
   seo={{
+    canonical: pageUrl,
     type: "website",
     image: {
       src: "/logo.png",
@@ -57,371 +50,189 @@ function formatDate(date: Date, locale = "zh-CN") {
     structuredData: blogStructuredData,
   }}
 >
-  <div class="blogs-shell">
+  <div class="blogs-page">
     <header class="blogs-header">
-      <div class="blogs-kicker">
-        <span class="blogs-kicker__dot"></span>
-        Field notes
-      </div>
-
-      <div class="blogs-header__grid">
-        <div class="blogs-intro">
-          <h1>Blogs</h1>
+      <p class="blogs-kicker">Writing</p>
+      <div class="blogs-heading">
+        <div>
+          <h1>博客与笔记</h1>
+          <p>记录前端工程、产品系统、AI 工具，以及持续学习的过程。</p>
         </div>
-
-        <aside class="blogs-stats" aria-label="Blog statistics">
-          <div>
-            <span>Total</span>
-            <strong>{posts.length}</strong>
-          </div>
-          <div>
-            <span>Topics</span>
-            <strong>{tags.length}</strong>
-          </div>
-          <div>
-            <span>Latest</span>
-            <strong
-              >{
-                latestPost
-                  ? formatDate(
-                      latestPost.data.publishDate,
-                      latestPost.data.language,
-                    )
-                  : "-"
-              }</strong
-            >
-          </div>
-        </aside>
+        <div class="blogs-utility">
+          <span>{posts.length} 篇公开文章</span>
+          <a href="/rss.xml">RSS ↗</a>
+        </div>
       </div>
-
-      {
-        tags.length > 0 && (
-          <nav class="topic-strip" aria-label="Topics">
-            {tags.map((tag) => (
-              <a href={`#topic-${tag}`} class="topic-chip">
-                #{tag}
-              </a>
-            ))}
-          </nav>
-        )
-      }
     </header>
 
-    <main class="blogs-layout">
-      <section class="post-index" aria-label="All posts">
-        <div class="section-heading">
-          <span>Archive</span>
-          <span></span>
-        </div>
+    <main>
+      {
+        posts.length > 0 ? (
+          <ol class="post-list" aria-label="全部文章">
+            {posts.map((post) => (
+              <li class="post-item" lang={post.data.language}>
+                <a class="post-link" href={`/blogs/${post.slug}`}>
+                  <time datetime={post.data.publishDate.toISOString()}>
+                    {formatDate(post.data.publishDate, post.data.language)}
+                  </time>
 
-        {
-          posts.length > 0 ? (
-            <ol class="post-list">
-              {posts.map((post) => (
-                <li class="post-row" lang={post.data.language}>
-                  <a href={`/blogs/${post.slug}`} class="post-link">
-                    <time
-                      datetime={new Date(post.data.publishDate).toISOString()}
-                    >
-                      {formatDate(post.data.publishDate, post.data.language)}
-                    </time>
-                    <div class="post-main">
-                      <div class="post-title-line">
-                        <h2>{post.data.title}</h2>
-                        <span>{post.data.readingTime ?? 5} min</span>
-                      </div>
-                      <p>{post.data.description}</p>
-                      {post.data.tags.length > 0 && (
-                        <ul>
-                          {post.data.tags.map((tag) => (
-                            <li>{tag}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                    <span class="post-arrow" aria-hidden="true">
-                      -&gt;
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <div class="empty-state">
-              <h2>No posts yet</h2>
-              <p>Drafts will appear here when they are ready to publish.</p>
-            </div>
-          )
-        }
-      </section>
+                  <div class="post-copy">
+                    <h2>{post.data.title}</h2>
+                    <p>{post.data.description}</p>
+                  </div>
 
-      <aside class="notes-panel" aria-label="Blog metadata">
-        <section>
-          <h2>Topics</h2>
-          {
-            tags.length > 0 ? (
-              <div class="panel-tags">
-                {tags.map((tag) => (
-                  <a id={`topic-${tag}`} href={`#topic-${tag}`}>
-                    {tag}
-                  </a>
-                ))}
-              </div>
-            ) : (
-              <p class="panel-muted">No public topics yet.</p>
-            )
-          }
-        </section>
+                  <div class="post-meta">
+                    <span>{post.data.readingTime ?? 6} min</span>
+                    {post.data.tags.length > 0 && (
+                      <span class="post-topic">{post.data.tags[0]}</span>
+                    )}
+                  </div>
 
-        <section>
-          <h2>Years</h2>
-          {
-            years.length > 0 ? (
-              <div class="year-list">
-                {years.map((year) => (
-                  <span>{year}</span>
-                ))}
-              </div>
-            ) : (
-              <p class="panel-muted">No public posts yet.</p>
-            )
-          }
-        </section>
-
-        <section>
-          <h2>Feeds</h2>
-          <a class="feed-link" href="/rss.xml">
-            RSS feed <span aria-hidden="true">-&gt;</span>
-          </a>
-        </section>
-      </aside>
+                  <span class="post-arrow" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <section class="empty-state">
+            <h2>暂无公开文章</h2>
+            <p>正在整理内容，完成后会在这里发布。</p>
+          </section>
+        )
+      }
     </main>
   </div>
 </Layout>
 
 <style>
-  .blogs-shell {
+  .blogs-page {
     max-width: 72rem;
     margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
+    padding: 4rem 0 2rem;
   }
 
   .blogs-header {
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+    padding-bottom: 3rem;
   }
 
   .blogs-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-bottom: 1.5rem;
+    margin: 0 0 1rem;
     font-family: "IBM Plex Mono", monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.58);
-  }
-
-  .blogs-kicker__dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 999px;
-    background: #2f6f6d;
-    box-shadow: 0 0 0 5px rgba(47, 111, 109, 0.12);
-  }
-
-  .blogs-header__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
-    gap: 2rem;
-    align-items: end;
-  }
-
-  .blogs-intro h1 {
-    margin: 0;
-    font-size: clamp(3.4rem, 9vw, 7rem);
-    line-height: 0.9;
-    letter-spacing: 0;
-  }
-
-  .blogs-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: hidden;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.75);
-    border-radius: 14px;
-  }
-
-  .blogs-stats div {
-    min-width: 0;
-    padding: 1rem;
-    border-right: 1px solid rgba(31, 31, 31, 0.08);
-  }
-
-  .blogs-stats div:last-child {
-    border-right: 0;
-  }
-
-  .blogs-stats span,
-  .notes-panel h2,
-  .section-heading {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgba(31, 31, 31, 0.5);
   }
 
-  .blogs-stats strong {
-    display: block;
-    margin-top: 0.35rem;
-    overflow-wrap: anywhere;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 1.15rem;
-    line-height: 1.2;
-    color: rgba(31, 31, 31, 0.9);
-  }
-
-  .topic-strip {
+  .blogs-heading {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 2rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 3rem;
   }
 
-  .topic-chip,
-  .panel-tags a,
-  .post-main li {
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.7);
-    color: rgba(31, 31, 31, 0.68);
-    border-radius: 999px;
+  .blogs-heading h1 {
+    margin: 0;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
   }
 
-  .topic-chip,
-  .panel-tags a {
-    padding: 0.38rem 0.72rem;
-    font-size: 0.82rem;
-    text-decoration: none;
-    transition:
-      border-color 0.2s ease,
-      color 0.2s ease,
-      background 0.2s ease;
+  .blogs-heading > div > p {
+    margin: 1.25rem 0 0;
+    max-width: 36rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: rgba(31, 31, 31, 0.62);
   }
 
-  .topic-chip:hover,
-  .panel-tags a:hover {
-    border-color: rgba(47, 111, 109, 0.35);
-    background: rgba(47, 111, 109, 0.08);
+  .blogs-utility {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 0.3rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    color: rgba(31, 31, 31, 0.5);
+  }
+
+  .blogs-utility a {
     color: #2f6f6d;
   }
 
-  .blogs-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
-    gap: 3rem;
-    align-items: start;
-    padding-top: 3rem;
-  }
-
-  .section-heading {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .section-heading span:last-child {
-    flex: 1;
-    height: 1px;
-    background: rgba(31, 31, 31, 0.1);
-  }
-
   .post-list {
-    display: grid;
-    gap: 0;
     margin: 0;
     padding: 0;
     list-style: none;
-    border-top: 1px solid rgba(31, 31, 31, 0.1);
+    border-top: 1px solid rgba(31, 31, 31, 0.12);
   }
 
-  .post-row {
-    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+  .post-item {
+    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
   }
 
   .post-link {
     display: grid;
-    grid-template-columns: 9rem minmax(0, 1fr) 2rem;
+    grid-template-columns: 8rem minmax(0, 1fr) 8rem 1.25rem;
     gap: 1.5rem;
-    align-items: start;
-    padding: 1.35rem 0;
-    text-decoration: none;
+    align-items: center;
+    padding: 1.65rem 0;
     color: inherit;
   }
 
-  .post-link time {
-    padding-top: 0.3rem;
+  .post-link time,
+  .post-meta {
     font-family: "IBM Plex Mono", monospace;
-    font-size: 0.78rem;
-    color: rgba(31, 31, 31, 0.48);
+    font-size: 0.7rem;
+    color: rgba(31, 31, 31, 0.47);
   }
 
-  .post-main {
+  .post-copy {
     min-width: 0;
   }
 
-  .post-title-line {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .post-title-line h2 {
+  .post-copy h2 {
     margin: 0;
-    font-size: clamp(1.25rem, 2.4vw, 1.7rem);
-    line-height: 1.2;
-    transition: color 0.2s ease;
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    line-height: 1.3;
+    transition: color 180ms ease;
   }
 
-  .post-title-line span {
-    flex: 0 0 auto;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.74rem;
-    color: rgba(31, 31, 31, 0.42);
+  .post-copy p {
+    display: -webkit-box;
+    margin: 0.5rem 0 0;
+    overflow: hidden;
+    color: rgba(31, 31, 31, 0.58);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
   }
 
-  .post-main p {
-    margin: 0.6rem 0 0;
-    max-width: 44rem;
-    color: rgba(31, 31, 31, 0.62);
-    line-height: 1.65;
-  }
-
-  .post-main ul {
+  .post-meta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin: 0.85rem 0 0;
-    padding: 0;
-    list-style: none;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: flex-end;
+    text-align: right;
   }
 
-  .post-main li {
-    padding: 0.24rem 0.55rem;
-    font-size: 0.72rem;
+  .post-topic {
+    max-width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: rgba(47, 111, 109, 0.8);
   }
 
   .post-arrow {
-    padding-top: 0.25rem;
-    font-family: "IBM Plex Mono", monospace;
-    color: rgba(31, 31, 31, 0.36);
+    color: rgba(31, 31, 31, 0.35);
     transition:
-      color 0.2s ease,
-      transform 0.2s ease;
+      color 180ms ease,
+      transform 180ms ease;
   }
 
   .post-link:hover h2 {
@@ -433,61 +244,22 @@ function formatDate(date: Date, locale = "zh-CN") {
     transform: translateX(3px);
   }
 
-  .notes-panel {
-    position: sticky;
-    top: 6rem;
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .notes-panel section {
-    padding: 1rem;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.62);
-    border-radius: 14px;
-  }
-
-  .notes-panel h2 {
-    margin: 0 0 0.8rem;
-  }
-
-  .panel-tags,
-  .year-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .year-list span {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.8rem;
-    color: rgba(31, 31, 31, 0.68);
-  }
-
-  .panel-muted {
-    margin: 0;
-    color: rgba(31, 31, 31, 0.55);
-    font-size: 0.9rem;
-  }
-
-  .feed-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: #2f6f6d;
-    text-decoration: none;
-    font-size: 0.92rem;
+  .post-link:focus-visible,
+  .blogs-utility a:focus-visible {
+    border-radius: 0.2rem;
+    outline: 2px solid #2f6f6d;
+    outline-offset: 4px;
   }
 
   .empty-state {
-    padding: 2rem;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.66);
-    border-radius: 16px;
+    padding: 3rem 0;
+    border-top: 1px solid rgba(31, 31, 31, 0.12);
+    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
   }
 
   .empty-state h2 {
     margin: 0;
+    font-size: 1.4rem;
   }
 
   .empty-state p {
@@ -495,49 +267,76 @@ function formatDate(date: Date, locale = "zh-CN") {
     color: rgba(31, 31, 31, 0.58);
   }
 
-  @media (max-width: 860px) {
-    .blogs-header__grid,
-    .blogs-layout {
-      grid-template-columns: 1fr;
+  @media (max-width: 760px) {
+    .blogs-page {
+      padding-top: 2.75rem;
     }
 
-    .notes-panel {
-      position: static;
+    .blogs-header {
+      padding-bottom: 2.25rem;
+    }
+
+    .blogs-heading {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .blogs-heading h1 {
+      font-size: clamp(2.8rem, 14vw, 4rem);
+    }
+
+    .blogs-heading > div > p {
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+
+    .blogs-utility {
+      width: 100%;
+      justify-content: space-between;
+      padding-bottom: 0;
     }
 
     .post-link {
-      grid-template-columns: 1fr 1.5rem;
-      gap: 0.75rem;
+      grid-template-columns: minmax(0, 1fr) 1.25rem;
+      gap: 0.5rem 1rem;
+      padding: 1.4rem 0;
     }
 
     .post-link time {
-      grid-column: 1 / -1;
-      padding-top: 0;
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .post-copy {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .post-copy p {
+      -webkit-line-clamp: 2;
+    }
+
+    .post-meta {
+      grid-column: 1;
+      grid-row: 3;
+      flex-direction: row;
+      gap: 0.8rem;
+      align-items: center;
+      text-align: left;
+    }
+
+    .post-arrow {
+      grid-column: 2;
+      grid-row: 1 / 4;
+      align-self: center;
     }
   }
 
-  @media (max-width: 560px) {
-    .blogs-shell {
-      padding: 2rem 0.5rem 4rem;
-    }
-
-    .blogs-stats {
-      grid-template-columns: 1fr;
-    }
-
-    .blogs-stats div {
-      border-right: 0;
-      border-bottom: 1px solid rgba(31, 31, 31, 0.08);
-    }
-
-    .blogs-stats div:last-child {
-      border-bottom: 0;
-    }
-
-    .post-title-line {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 0.4rem;
+  @media (prefers-reduced-motion: reduce) {
+    .post-copy h2,
+    .post-arrow {
+      transition: none;
     }
   }
 </style>
