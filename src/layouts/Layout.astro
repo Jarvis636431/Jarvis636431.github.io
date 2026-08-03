@@ -447,22 +447,25 @@ const currentYear = new Date().getFullYear();
       });
     </script>
 
-    <main id="main" class="flex-1 px-4 md:px-8 max-w-6xl mx-auto w-full">
+    <main
+      id="main"
+      class="min-w-0 flex-1 px-4 md:px-8 max-w-6xl mx-auto w-full"
+    >
       <slot />
     </main>
 
-    <footer class="border-t border-black/10 mt-20">
+    <footer class="border-t border-black/10 mt-12 md:mt-20">
       <div
-        class="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-secondary"
+        class="max-w-6xl mx-auto px-4 py-6 md:py-8 flex flex-row justify-between items-center gap-4 text-xs sm:text-sm text-secondary"
       >
-        <div>© {currentYear} Jarvis Hub</div>
-        <div class="flex items-center gap-6">
+        <div class="whitespace-nowrap">© {currentYear} Jarvis Hub</div>
+        <div class="flex shrink-0 items-center gap-4 sm:gap-6">
           {
             viewCounterSlug && (
               <div
                 id="footer-view-count"
                 data-view-counter-slug={viewCounterSlug}
-                class="flex items-center gap-2 opacity-0 transition-opacity duration-700"
+                class="hidden sm:flex items-center gap-2 opacity-0 transition-opacity duration-700"
               >
                 <span class="relative flex h-1.5 w-1.5">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-cyan opacity-75" />
