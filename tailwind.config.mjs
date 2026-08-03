@@ -17,8 +17,20 @@ const config = {
         midnight: "#1f1f1f",
       },
       fontFamily: {
-        display: ['"Space Grotesk"', "sans-serif"],
-        body: ['"Newsreader"', "serif"],
+        display: [
+          '"Space Grotesk"',
+          '"Noto Sans SC"',
+          '"PingFang SC"',
+          '"Microsoft YaHei"',
+          "sans-serif",
+        ],
+        body: [
+          '"Newsreader"',
+          '"Noto Sans SC"',
+          '"PingFang SC"',
+          '"Microsoft YaHei"',
+          "serif",
+        ],
         pixel: ['"IBM Plex Mono"', "monospace"],
       },
       backgroundImage: {
