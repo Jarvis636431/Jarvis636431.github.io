@@ -107,6 +107,24 @@ const location = {
     );
   }
 
+  .contribution-scroll {
+    scrollbar-width: none;
+  }
+
+  .contribution-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .animate-card {
+      animation-delay: 0s !important;
+    }
+
+    .spotlight-card::after {
+      display: none;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-card {
       animation: none;
@@ -127,15 +145,15 @@ const location = {
   <div class="py-8 md:py-20 max-w-7xl mx-auto">
     <!-- Bento Grid Container -->
     <div
-      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-[minmax(180px,auto)]"
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 md:auto-rows-[minmax(180px,auto)]"
     >
       <!-- 1. Intro Card (Large, 2x2) -->
       <div
-        class="animate-card spotlight-card order-1 col-span-1 md:col-span-2 lg:col-span-2 md:row-span-2 bg-surface border border-black/10 rounded-3xl p-5 md:p-8 flex flex-col justify-between relative group overflow-hidden"
+        class="animate-card spotlight-card order-1 col-span-2 md:col-span-2 lg:col-span-2 md:row-span-2 bg-transparent md:bg-surface border-0 md:border md:border-black/10 rounded-none md:rounded-3xl px-0 py-6 md:p-8 flex flex-col justify-between relative group overflow-hidden"
       >
         <!-- Grid Background -->
         <div
-          class="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none"
+          class="absolute inset-0 hidden md:block bg-grid-pattern opacity-100 pointer-events-none"
         >
         </div>
 
@@ -178,10 +196,10 @@ const location = {
 
       <!-- 2. Location/Map Card (1x1) -->
       <div
-        class="animate-card order-2 col-span-1 row-span-1 lg:aspect-square bg-[#242424] rounded-3xl relative group flex flex-col justify-between overflow-hidden p-5 md:p-6 text-white"
+        class="animate-card order-2 col-span-1 row-span-1 min-h-32 lg:aspect-square bg-[#242424] rounded-2xl md:rounded-3xl relative group flex flex-col justify-between overflow-hidden p-4 md:p-6 text-white"
       >
         <svg
-          class="absolute inset-0 h-full w-full opacity-35 transition-opacity duration-500 group-hover:opacity-55"
+          class="absolute inset-0 hidden md:block h-full w-full opacity-35 transition-opacity duration-500 group-hover:opacity-55"
           viewBox="0 0 400 400"
           preserveAspectRatio="xMidYMid slice"
           aria-hidden="true"
@@ -233,13 +251,16 @@ const location = {
           </p>
         </div>
         <div class="relative z-10">
-          <h3 class="text-2xl font-display font-bold">
+          <h3 class="text-base md:text-2xl font-display font-bold !text-white">
             {location.city}, {location.country}
           </h3>
-          <p class="text-[10px] font-mono text-white/40">
+          <p class="hidden md:block text-[10px] font-mono text-white/40">
             {location.coordinates}
           </p>
-          <p id="local-time" class="text-sm font-mono text-white/60 mt-1">
+          <p
+            id="local-time"
+            class="text-xs md:text-sm font-mono text-white/60 mt-1"
+          >
             --:-- --
           </p>
         </div>
@@ -247,12 +268,12 @@ const location = {
 
       <!-- 3. Music/Vibe Card (1x1) -->
       <div
-        class="animate-card order-3 col-span-1 row-span-1 lg:aspect-square bg-[#1DB954]/10 border border-[#1DB954]/20 rounded-3xl p-5 md:p-6 flex flex-col justify-between group hover:border-[#1DB954]/40 transition-colors relative overflow-hidden"
+        class="animate-card order-3 col-span-1 row-span-1 min-h-32 lg:aspect-square bg-[#1DB954]/10 border border-[#1DB954]/20 rounded-2xl md:rounded-3xl p-4 md:p-6 flex flex-col justify-between group hover:border-[#1DB954]/40 transition-colors relative overflow-hidden"
       >
         <div class="flex justify-between items-start z-10">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="w-8 h-8 text-[#1DB954]"
+            class="w-6 h-6 md:w-8 md:h-8 text-[#1DB954]"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
@@ -276,7 +297,7 @@ const location = {
 
       <!-- 4. Recent Writing -->
       <section
-        class="animate-card order-5 col-span-1 md:col-span-3 lg:col-span-4 py-4 md:py-8"
+        class="animate-card order-5 col-span-2 md:col-span-3 lg:col-span-4 py-8 md:py-8"
         aria-labelledby="recent-writing-title"
       >
         <div class="mb-6 flex items-end justify-between gap-6">
@@ -308,9 +329,9 @@ const location = {
             sortedPosts.map((post) => (
               <a
                 href={`/blogs/${post.slug}`}
-                class="group flex min-h-48 flex-col py-6 lg:px-6 lg:first:pl-0 lg:last:pr-0"
+                class="group flex min-h-0 md:min-h-48 flex-col py-5 md:py-6 lg:px-6 lg:first:pl-0 lg:last:pr-0"
               >
-                <div class="mb-5 flex items-center justify-between gap-3 text-[11px] font-mono text-secondary/60">
+                <div class="mb-2 md:mb-5 flex items-center justify-between gap-3 text-[11px] font-mono text-secondary/60">
                   <time datetime={post.data.publishDate.toISOString()}>
                     {new Date(post.data.publishDate).toLocaleDateString(
                       post.data.language,
@@ -325,10 +346,10 @@ const location = {
                 <h3 class="font-display text-lg font-semibold text-primary group-hover:text-accent-cyan transition-colors leading-snug line-clamp-2">
                   {post.data.title}
                 </h3>
-                <p class="mt-3 text-sm leading-relaxed text-secondary line-clamp-3">
+                <p class="mt-2 md:mt-3 text-sm leading-relaxed text-secondary line-clamp-1 md:line-clamp-3">
                   {post.data.description}
                 </p>
-                <div class="mt-auto flex items-end justify-between gap-3 pt-5">
+                <div class="mt-auto flex items-end justify-between gap-3 pt-3 md:pt-5">
                   <span class="truncate font-mono text-[11px] text-secondary/60">
                     {post.data.tags[0] ?? "Note"}
                   </span>
@@ -347,7 +368,7 @@ const location = {
         href="https://github.com/Jarvis636431"
         target="_blank"
         rel="noopener noreferrer"
-        class="animate-card order-4 col-span-1 md:col-span-3 lg:col-span-2 bg-surface border border-black/10 rounded-3xl p-4 md:p-5 flex flex-col relative group overflow-hidden hover:border-black/20 transition-colors"
+        class="animate-card order-4 col-span-2 md:col-span-3 lg:col-span-2 bg-surface border border-black/10 rounded-2xl md:rounded-3xl p-4 md:p-5 flex flex-col relative group overflow-hidden hover:border-black/20 transition-colors"
       >
         <div class="mb-2 flex items-center justify-between gap-5">
           <h3 class="font-display text-sm font-semibold">Contributions</h3>
@@ -361,11 +382,14 @@ const location = {
           </div>
         </div>
 
-        <div class="flex min-h-0 flex-1 items-center overflow-hidden">
+        <div
+          id="contribution-scroll"
+          class="contribution-scroll flex min-h-0 flex-1 items-center overflow-x-auto touch-pan-x"
+        >
           <img
             src="https://ghchart.rshah.org/2f6f6d/Jarvis636431"
             alt="Jarvis636431's Github Chart"
-            class="h-auto w-full scale-[1.03] opacity-80 transition-opacity group-hover:opacity-100"
+            class="h-auto w-[640px] max-w-none opacity-80 transition-opacity group-hover:opacity-100 md:w-full md:scale-[1.03]"
           />
         </div>
       </a>
@@ -392,6 +416,15 @@ const location = {
 
   setInterval(updateTime, 60_000);
   updateTime();
+
+  // On narrow screens, show the most recent contribution weeks first.
+  const contributionScroll = document.getElementById("contribution-scroll");
+  if (contributionScroll) {
+    requestAnimationFrame(() => {
+      contributionScroll.scrollLeft =
+        contributionScroll.scrollWidth - contributionScroll.clientWidth;
+    });
+  }
 
   // View Counter Logic
   async function initViewCounter() {
