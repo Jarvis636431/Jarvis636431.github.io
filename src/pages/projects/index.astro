@@ -7,50 +7,12 @@ const projects = (
     import.meta.env.DEV ? true : data.status !== "archived",
   )
 )
-  .slice()
+  .filter(({ data }) => data.status !== "archived")
   .sort(
     (a, b) =>
       new Date(b.data.publishDate).getTime() -
       new Date(a.data.publishDate).getTime(),
   );
-
-const featured = projects.filter(({ data }) => data.featured);
-const launchedCount = projects.filter(
-  (p) => p.data.status === "launched",
-).length;
-const activeCount = projects.filter(
-  (p) => p.data.status === "in-progress",
-).length;
-const stackTags = Array.from(
-  new Set(projects.flatMap((project) => project.data.stack)),
-).sort();
-
-const capabilities = [
-  {
-    title: "Product Systems",
-    description:
-      "Reservation workflows, role permissions, audit trails, and operational dashboards.",
-    tags: ["Vue", "Go", "MariaDB", "Docker"],
-  },
-  {
-    title: "AI Interfaces",
-    description:
-      "Conversational flows, generated outputs, spatial previews, and iteration loops.",
-    tags: ["React", "TypeScript", "Three.js"],
-  },
-  {
-    title: "Cross-platform Apps",
-    description:
-      "Campus mobile modules, shared UI foundations, and multi-platform delivery.",
-    tags: ["Flutter", "Dart", "iOS", "Android"],
-  },
-  {
-    title: "Design Engineering",
-    description:
-      "Interaction details, component systems, and interfaces built for repeated use.",
-    tags: ["Tailwind", "Figma", "Vite"],
-  },
-];
 
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
@@ -65,28 +27,17 @@ const projectsStructuredData = {
   inLanguage: "zh-CN",
 };
 
-function formatDate(date: Date, locale = "zh-CN") {
-  return new Date(date).toLocaleDateString(locale, {
-    year: "numeric",
-    month: "short",
-  });
-}
-
-function projectInitials(title: string) {
-  return title
-    .split(/\s|-/)
-    .filter(Boolean)
-    .map((word) => word[0])
-    .join("")
-    .slice(0, 3)
-    .toUpperCase();
-}
+const statusLabel = {
+  launched: "已上线",
+  "in-progress": "开发中",
+  archived: "已归档",
+} as const;
 ---
 
 <Layout
-  title="Projects - Jarvis Hub"
-  lang="en"
-  description="Selected systems, AI tools, and campus products I built or contributed to."
+  title="项目与实践 - Jarvis Hub"
+  lang="zh-CN"
+  description="我参与设计和开发的产品，包括校园服务、实验室系统和 AI 辅助设计工具。"
   seo={{
     canonical: pageUrl,
     type: "website",
@@ -97,644 +48,380 @@ function projectInitials(title: string) {
     structuredData: projectsStructuredData,
   }}
 >
-  <div class="projects-shell">
+  <div class="projects-page">
     <header class="projects-header">
-      <div class="projects-kicker">
-        <span class="projects-kicker__dot"></span>
-        Project index
+      <p>Selected projects</p>
+      <h1>项目与实践</h1>
+      <div class="projects-header__bottom">
+        <span>我参与设计和开发的一些产品与系统。</span>
+        <span>Frontend · Cross-platform · AI</span>
       </div>
-
-      <div class="projects-header__grid">
-        <div class="projects-intro">
-          <h1>Projects</h1>
-        </div>
-
-        <aside class="projects-stats" aria-label="Project statistics">
-          <div>
-            <span>Total</span>
-            <strong>{projects.length}</strong>
-          </div>
-          <div>
-            <span>Launched</span>
-            <strong>{launchedCount}</strong>
-          </div>
-          <div>
-            <span>Active</span>
-            <strong>{activeCount}</strong>
-          </div>
-        </aside>
-      </div>
-
-      {
-        stackTags.length > 0 && (
-          <div class="stack-strip" aria-label="Technology stack">
-            {stackTags.slice(0, 14).map((tag) => (
-              <span>{tag}</span>
-            ))}
-          </div>
-        )
-      }
     </header>
 
-    <main class="projects-main">
+    <main class="projects-grid" aria-label="项目列表">
       {
-        featured.length > 0 && (
-          <section class="featured-section" aria-label="Featured projects">
-            <div class="section-heading">
-              <span>Featured systems</span>
-              <span />
-            </div>
-
-            <div class="featured-list">
-              {featured.map((project, index) => (
-                <a
-                  href={`/projects/${project.slug}`}
-                  class="featured-project"
-                  lang={project.data.language}
-                >
-                  <div class="featured-project__media">
-                    {project.data.coverImage ? (
-                      <img
-                        src={project.data.coverImage}
-                        alt={project.data.title}
-                        loading={index === 0 ? "eager" : "lazy"}
-                      />
-                    ) : (
-                      <div class="project-monogram" aria-hidden="true">
-                        {projectInitials(project.data.title)}
-                      </div>
-                    )}
-                  </div>
-
-                  <div class="featured-project__content">
-                    <div class="project-meta-row">
-                      <span class={`status status--${project.data.status}`}>
-                        {project.data.status}
-                      </span>
-                      <span>
-                        {formatDate(
-                          project.data.publishDate,
-                          project.data.language,
-                        )}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h2>{project.data.title}</h2>
-                      <p>{project.data.summary}</p>
-                    </div>
-
-                    <div class="project-detail-grid">
-                      {project.data.roles.length > 0 && (
-                        <div>
-                          <span>Role</span>
-                          <strong>{project.data.roles.join(", ")}</strong>
-                        </div>
-                      )}
-                      {project.data.stack.length > 0 && (
-                        <div>
-                          <span>Stack</span>
-                          <strong>
-                            {project.data.stack.slice(0, 4).join(" / ")}
-                          </strong>
-                        </div>
-                      )}
-                    </div>
-
-                    {project.data.stack.length > 0 && (
-                      <ul class="project-tags">
-                        {project.data.stack.slice(0, 6).map((item) => (
-                          <li>{item}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  <span class="project-arrow" aria-hidden="true">
-                    -&gt;
-                  </span>
-                </a>
-              ))}
-            </div>
-          </section>
-        )
-      }
-
-      <section class="capabilities-section" aria-label="Capabilities">
-        <div class="section-heading">
-          <span>Capabilities</span>
-          <span></span>
-        </div>
-
-        <div class="capability-grid">
-          {
-            capabilities.map((capability) => (
-              <article class="capability-card">
-                <h2>{capability.title}</h2>
-                <p>{capability.description}</p>
-                <ul>
-                  {capability.tags.map((tag) => (
-                    <li>{tag}</li>
-                  ))}
-                </ul>
-              </article>
-            ))
-          }
-        </div>
-      </section>
-
-      <section class="archive-section" aria-label="Project archive">
-        <div class="section-heading">
-          <span>Archive</span>
-          <span></span>
-        </div>
-
-        <div class="archive-table">
-          {
-            projects.map((project) => (
+        projects.map((project, index) => (
+          <article
+            class:list={[
+              "project-card",
+              !project.data.coverImage && "project-card--text",
+              index === 2 && "project-card--wide",
+            ]}
+            lang={project.data.language}
+          >
+            {project.data.coverImage && (
               <a
+                class="project-card__media"
                 href={`/projects/${project.slug}`}
-                class="archive-row"
-                lang={project.data.language}
+                aria-label={`查看 ${project.data.title} 项目详情`}
               >
-                <div class="archive-name">
-                  <strong>{project.data.title}</strong>
-                  <span>{project.data.summary}</span>
-                </div>
-                <div class="archive-stack">
-                  {project.data.stack.slice(0, 3).map((item) => (
-                    <span>{item}</span>
-                  ))}
-                </div>
-                <div class="archive-meta">
-                  <span class={`status status--${project.data.status}`}>
-                    {project.data.status}
-                  </span>
-                  <time
-                    datetime={new Date(project.data.publishDate).toISOString()}
-                  >
-                    {formatDate(
-                      project.data.publishDate,
-                      project.data.language,
-                    )}
-                  </time>
-                </div>
+                <img
+                  src={project.data.coverImage}
+                  alt={`${project.data.title} 项目封面`}
+                  loading={index === 0 ? "eager" : "lazy"}
+                />
               </a>
-            ))
-          }
-        </div>
-      </section>
+            )}
+
+            <div class="project-card__body">
+              <div class="project-card__meta">
+                <span class={`status status--${project.data.status}`}>
+                  {statusLabel[project.data.status]}
+                </span>
+                <span>{new Date(project.data.publishDate).getFullYear()}</span>
+              </div>
+
+              <div class="project-card__intro">
+                <h2>{project.data.title}</h2>
+                <p>{project.data.summary}</p>
+              </div>
+
+              <dl class="project-card__facts">
+                {project.data.roles.length > 0 && (
+                  <div>
+                    <dt>角色</dt>
+                    <dd>{project.data.roles.join(" · ")}</dd>
+                  </div>
+                )}
+                {project.data.stack.length > 0 && (
+                  <div>
+                    <dt>技术</dt>
+                    <dd>{project.data.stack.slice(0, 5).join(" · ")}</dd>
+                  </div>
+                )}
+              </dl>
+
+              <a class="project-card__link" href={`/projects/${project.slug}`}>
+                查看项目 <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+        ))
+      }
     </main>
   </div>
 </Layout>
 
 <style>
-  .projects-shell {
+  .projects-page {
     max-width: 72rem;
     margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
+    padding: 4rem 0 2rem;
   }
 
   .projects-header {
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+    max-width: 50rem;
+    margin-bottom: 3rem;
   }
 
-  .projects-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-bottom: 1.5rem;
+  .projects-header > p {
+    margin: 0 0 1rem;
     font-family: "IBM Plex Mono", monospace;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.58);
+    color: rgba(31, 31, 31, 0.52);
   }
 
-  .projects-kicker__dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 999px;
-    background: #c59a6d;
-    box-shadow: 0 0 0 5px rgba(197, 154, 109, 0.16);
-  }
-
-  .projects-header__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
-    gap: 2rem;
-    align-items: end;
-  }
-
-  .projects-intro h1 {
+  .projects-header h1 {
     margin: 0;
-    font-size: clamp(3.4rem, 9vw, 7rem);
-    line-height: 0.9;
-    letter-spacing: 0;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.055em;
   }
 
-  .projects-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: hidden;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.75);
-    border-radius: 14px;
-  }
-
-  .projects-stats div {
-    min-width: 0;
-    padding: 1rem;
-    border-right: 1px solid rgba(31, 31, 31, 0.08);
-  }
-
-  .projects-stats div:last-child {
-    border-right: 0;
-  }
-
-  .projects-stats span,
-  .section-heading,
-  .project-meta-row,
-  .project-detail-grid span,
-  .archive-meta time {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.5);
-  }
-
-  .projects-stats strong {
-    display: block;
-    margin-top: 0.35rem;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 1.2rem;
-    color: rgba(31, 31, 31, 0.9);
-  }
-
-  .stack-strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    margin-top: 2rem;
-  }
-
-  .stack-strip span,
-  .project-tags li,
-  .capability-card li,
-  .archive-stack span {
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.7);
-    color: rgba(31, 31, 31, 0.68);
-    border-radius: 999px;
-  }
-
-  .stack-strip span {
-    padding: 0.38rem 0.72rem;
-    font-size: 0.82rem;
-  }
-
-  .projects-main {
-    display: grid;
-    gap: 4rem;
-    padding-top: 3rem;
-  }
-
-  .section-heading {
+  .projects-header__bottom {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 1.75rem;
+    color: rgba(31, 31, 31, 0.62);
   }
 
-  .section-heading span:last-child {
-    flex: 1;
-    height: 1px;
-    background: rgba(31, 31, 31, 0.1);
+  .projects-header__bottom span:first-child {
+    font-size: 1.05rem;
   }
 
-  .featured-list {
+  .projects-header__bottom span:last-child {
+    flex-shrink: 0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+
+  .projects-grid {
     display: grid;
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
   }
 
-  .featured-project {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr) 2rem;
-    gap: 1.4rem;
-    align-items: stretch;
-    padding: 1rem;
+  .project-card {
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    flex-direction: column;
     border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: 16px;
-    color: inherit;
-    text-decoration: none;
+    border-radius: 1.5rem;
+    background: #fff;
     transition:
-      border-color 0.2s ease,
-      background 0.2s ease,
-      transform 0.2s ease;
+      border-color 180ms ease,
+      transform 180ms ease;
   }
 
-  .featured-project:hover {
-    border-color: rgba(47, 111, 109, 0.35);
-    background: rgba(255, 255, 255, 0.92);
+  .project-card:hover {
+    border-color: rgba(47, 111, 109, 0.38);
     transform: translateY(-2px);
   }
 
-  .featured-project__media {
-    min-height: 190px;
-    overflow: hidden;
-    border: 1px solid rgba(31, 31, 31, 0.08);
+  .project-card--text {
+    min-height: 35rem;
     background:
-      linear-gradient(
-        135deg,
-        rgba(47, 111, 109, 0.08),
-        rgba(197, 154, 109, 0.12)
-      ),
-      #f8f7f4;
-    border-radius: 12px;
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      #202523;
+    background-size: 2.5rem 2.5rem;
+    color: white;
   }
 
-  .featured-project__media img {
+  .project-card--text .project-card__body {
+    justify-content: space-between;
+  }
+
+  .project-card--text h2,
+  .project-card--text .project-card__link {
+    color: white;
+  }
+
+  .project-card--text .project-card__intro p,
+  .project-card--text .project-card__meta,
+  .project-card--text .project-card__facts dt,
+  .project-card--text .project-card__facts dd {
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  .project-card--text .project-card__facts {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .project-card--text .status {
+    color: #8bd2c8;
+  }
+
+  .project-card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .project-card--wide:has(.project-card__media) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+  }
+
+  .project-card__media {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #ebece8;
+  }
+
+  .project-card--wide .project-card__media {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .project-card__media img {
     width: 100%;
     height: 100%;
-    min-height: 190px;
     object-fit: cover;
-    display: block;
-    transition: transform 0.45s ease;
+    transition: transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .featured-project:hover img {
-    transform: scale(1.035);
+  .project-card__media:hover img {
+    transform: scale(1.025);
   }
 
-  .project-monogram {
-    display: grid;
-    min-height: 190px;
-    place-items: center;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: clamp(2rem, 5vw, 4rem);
-    font-weight: 700;
-    color: rgba(31, 31, 31, 0.55);
-  }
-
-  .featured-project__content {
+  .project-card__body {
     display: flex;
-    min-width: 0;
+    flex: 1;
     flex-direction: column;
+    gap: 1.75rem;
+    padding: 2rem;
+  }
+
+  .project-card__meta {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.35rem 0;
-  }
-
-  .project-meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.7rem;
-  }
-
-  .status {
-    display: inline-flex;
-    width: fit-content;
-    align-items: center;
-    border-radius: 999px;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    padding: 0.22rem 0.52rem;
     font-family: "IBM Plex Mono", monospace;
     font-size: 0.68rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: rgba(31, 31, 31, 0.5);
   }
 
-  .status--launched {
-    border-color: rgba(47, 111, 109, 0.25);
-    background: rgba(47, 111, 109, 0.08);
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     color: #2f6f6d;
+  }
+
+  .status::before {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: currentColor;
+    content: "";
   }
 
   .status--in-progress {
-    border-color: rgba(197, 154, 109, 0.35);
-    background: rgba(197, 154, 109, 0.12);
-    color: #8a6234;
+    color: #9b682b;
   }
 
-  .featured-project h2 {
-    margin: 0;
-    font-size: clamp(1.8rem, 4vw, 3rem);
+  .project-card__intro h2 {
+    margin: 0 0 0.85rem;
+    font-size: clamp(2rem, 4vw, 3.2rem);
     line-height: 1;
-    transition: color 0.2s ease;
+    letter-spacing: -0.04em;
   }
 
-  .featured-project:hover h2 {
-    color: #2f6f6d;
-  }
-
-  .featured-project p {
-    max-width: 46rem;
-    margin: 0.75rem 0 0;
-    color: rgba(31, 31, 31, 0.62);
-    line-height: 1.65;
-  }
-
-  .project-detail-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .project-detail-grid div {
-    min-width: 0;
-  }
-
-  .project-detail-grid strong {
-    display: block;
-    margin-top: 0.25rem;
-    overflow-wrap: anywhere;
-    font-size: 0.92rem;
-    font-weight: 500;
-    color: rgba(31, 31, 31, 0.74);
-  }
-
-  .project-tags,
-  .capability-card ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
+  .project-card__intro p {
     margin: 0;
-    padding: 0;
-    list-style: none;
+    max-width: 34rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(31, 31, 31, 0.65);
   }
 
-  .project-tags li,
-  .capability-card li,
-  .archive-stack span {
-    padding: 0.26rem 0.56rem;
-    font-size: 0.72rem;
-  }
-
-  .project-arrow {
-    padding-top: 0.35rem;
-    font-family: "IBM Plex Mono", monospace;
-    color: rgba(31, 31, 31, 0.36);
-    transition:
-      color 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .featured-project:hover .project-arrow,
-  .archive-row:hover .project-arrow {
-    color: #2f6f6d;
-    transform: translateX(3px);
-  }
-
-  .capability-grid {
+  .project-card__facts {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .capability-card {
-    display: flex;
-    min-height: 220px;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1.25rem;
-    padding: 1.1rem;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    background: rgba(255, 255, 255, 0.62);
-    border-radius: 14px;
-  }
-
-  .capability-card h2 {
-    margin: 0;
-    font-size: 1.15rem;
-  }
-
-  .capability-card p {
-    margin: 0.7rem 0 0;
-    color: rgba(31, 31, 31, 0.58);
-    font-size: 0.95rem;
-    line-height: 1.55;
-  }
-
-  .archive-table {
+    gap: 0.75rem;
+    margin: auto 0 0;
+    padding-top: 1.25rem;
     border-top: 1px solid rgba(31, 31, 31, 0.1);
   }
 
-  .archive-row {
+  .project-card__facts div {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(180px, 0.8fr) minmax(
-        160px,
-        0.5fr
-      );
-    gap: 1.2rem;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .project-card__facts dt {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    color: rgba(31, 31, 31, 0.45);
+  }
+
+  .project-card__facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: rgba(31, 31, 31, 0.68);
+  }
+
+  .project-card__link {
+    display: inline-flex;
     align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .archive-name {
-    min-width: 0;
-  }
-
-  .archive-name strong {
-    display: block;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 1.08rem;
-    transition: color 0.2s ease;
-  }
-
-  .archive-row:hover .archive-name strong {
+    align-self: flex-start;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: #2f6f6d;
+    transition: gap 180ms ease;
   }
 
-  .archive-name span {
-    display: block;
-    margin-top: 0.25rem;
-    overflow: hidden;
-    color: rgba(31, 31, 31, 0.56);
-    font-size: 0.92rem;
-    line-height: 1.45;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .project-card__link:hover {
+    gap: 0.9rem;
   }
 
-  .archive-stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+  .project-card__media:focus-visible,
+  .project-card__link:focus-visible {
+    outline: 2px solid #2f6f6d;
+    outline-offset: 3px;
   }
 
-  .archive-meta {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 0.7rem;
-  }
-
-  @media (max-width: 980px) {
-    .capability-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (max-width: 760px) {
+    .projects-page {
+      padding-top: 2.75rem;
     }
 
-    .featured-project {
-      grid-template-columns: minmax(150px, 0.38fr) minmax(0, 1fr);
+    .projects-header {
+      margin-bottom: 2.25rem;
     }
 
-    .project-arrow {
-      display: none;
+    .projects-header h1 {
+      font-size: clamp(2.8rem, 14vw, 4rem);
     }
 
-    .archive-row {
-      grid-template-columns: 1fr;
+    .projects-header__bottom {
+      align-items: flex-start;
+      flex-direction: column;
       gap: 0.75rem;
+      margin-top: 1.25rem;
     }
 
-    .archive-meta {
-      justify-content: flex-start;
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .project-card--wide {
+      grid-column: auto;
+    }
+
+    .project-card--wide:has(.project-card__media) {
+      display: flex;
+    }
+
+    .project-card--wide .project-card__media {
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+
+    .project-card,
+    .project-card--text {
+      min-height: 0;
+      border-radius: 1rem;
+    }
+
+    .project-card__body {
+      gap: 1.35rem;
+      padding: 1.4rem;
+    }
+
+    .project-card__intro h2 {
+      font-size: 2.25rem;
     }
   }
 
-  @media (max-width: 780px) {
-    .projects-header__grid,
-    .featured-project {
-      grid-template-columns: 1fr;
-    }
-
-    .featured-project__media,
-    .featured-project__media img,
-    .project-monogram {
-      min-height: 220px;
-    }
-  }
-
-  @media (max-width: 560px) {
-    .projects-shell {
-      padding: 2rem 0.5rem 4rem;
-    }
-
-    .projects-stats,
-    .capability-grid,
-    .project-detail-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .projects-stats div {
-      border-right: 0;
-      border-bottom: 1px solid rgba(31, 31, 31, 0.08);
-    }
-
-    .projects-stats div:last-child {
-      border-bottom: 0;
-    }
-
-    .archive-name span {
-      white-space: normal;
+  @media (prefers-reduced-motion: reduce) {
+    .project-card,
+    .project-card__media img,
+    .project-card__link {
+      transition: none;
     }
   }
 </style>
