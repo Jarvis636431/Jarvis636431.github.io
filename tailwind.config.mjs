@@ -64,9 +64,11 @@ const config = {
 
             // 全局排版
             maxWidth: "65ch",
-            fontFamily: '"Newsreader", serif', // 衬线体正文，提升阅读体验
-            fontSize: "1.125rem", // 18px
-            lineHeight: "1.8",
+            fontFamily:
+              '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+            fontSize: "1.0625rem",
+            lineHeight: "1.85",
+            overflowWrap: "anywhere",
 
             // 标题样式
             "h1, h2, h3, h4": {
@@ -80,10 +82,14 @@ const config = {
               marginBottom: "0.8em",
             },
             h2: {
-              marginTop: "2em",
+              marginTop: "2.4em",
               marginBottom: "0.8em",
-              paddingBottom: "0.2em",
-              borderBottom: "1px solid rgba(0,0,0,0.05)", // 极淡的分割线
+              paddingBottom: "0.35em",
+              borderBottom: "1px solid rgba(31,31,31,0.1)",
+            },
+            h3: {
+              marginTop: "2em",
+              marginBottom: "0.65em",
             },
 
             // 链接交互
@@ -113,7 +119,7 @@ const config = {
               borderLeftColor: "var(--tw-prose-quote-borders)",
               backgroundColor: "rgba(47, 111, 109, 0.05)", // 淡雅的背景色
               padding: "1em 1.5em",
-              borderRadius: "0.5rem",
+              borderRadius: "0",
               quotes: "none",
               marginTop: "1.6em",
               marginBottom: "1.6em",
@@ -133,11 +139,20 @@ const config = {
 
             // 图片样式
             img: {
-              borderRadius: "0.75rem",
-              boxShadow:
-                "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+              borderRadius: "0",
+              boxShadow: "none",
               marginTop: "2em",
               marginBottom: "2em",
+            },
+
+            pre: {
+              borderRadius: "0.35rem",
+              marginTop: "2em",
+              marginBottom: "2em",
+            },
+
+            table: {
+              fontSize: "0.9em",
             },
 
             // 列表微调

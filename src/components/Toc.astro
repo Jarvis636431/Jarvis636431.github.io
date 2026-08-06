@@ -14,7 +14,21 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
   data-toc-id={tocId}
   data-item-class={itemClass}
 >
-  {title && <div class={titleClass}>{title}</div>}
+  {
+    title && (
+      <button
+        class={titleClass}
+        type="button"
+        data-toc-toggle
+        aria-expanded="false"
+      >
+        <>
+          <span>{title}</span>
+          <span aria-hidden="true">＋</span>
+        </>
+      </button>
+    )
+  }
   <nav id={tocId} class={listClass} aria-label={ariaLabel}></nav>
 </aside>
 
@@ -56,6 +70,14 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         fragment.append(link);
       });
       toc.replaceChildren(fragment);
+      const toggle = root.querySelector("[data-toc-toggle]");
+      toggle?.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!expanded));
+        root.classList.toggle("toc-open", !expanded);
+        const icon = toggle.lastElementChild;
+        if (icon) icon.textContent = expanded ? "＋" : "−";
+      });
       const links = Array.from(toc.querySelectorAll(`.${itemClass}`));
       const observer = new IntersectionObserver(
         (entries) => {
@@ -88,60 +110,66 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
 <style>
   :global(.detail__toc) {
     position: sticky;
-    top: 120px;
+    top: 112px;
     align-self: start;
-    padding: 16px;
-    border: 1px solid rgba(31, 31, 31, 0.08);
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(31, 31, 31, 0.05);
+    padding-left: 1rem;
+    border-left: 1px solid rgba(31, 31, 31, 0.13);
   }
 
   :global(.detail__toc-title) {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font:
+      500 0.66rem/1.4 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.5);
-    margin: 6px 8px 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(31, 31, 31, 0.08);
+    color: rgba(31, 31, 31, 0.45);
+    margin: 0 0 1rem;
+  }
+  :global(.detail__toc-title span:last-child) {
+    display: none;
   }
 
   :global(.detail__toc-list) {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.15rem;
     max-height: 60vh;
     overflow: auto;
   }
 
   :global(.detail__toc-item) {
     display: block;
-    padding: 8px 12px;
+    padding: 0.42rem 0 0.42rem 0.75rem;
     border-left: 2px solid transparent;
     color: rgba(31, 31, 31, 0.72);
     text-decoration: none;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    transition: all 0.15s ease;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
   }
 
   :global(.detail__toc-item::before) {
-    content: "•";
-    margin-right: 8px;
-    color: rgba(31, 31, 31, 0.35);
+    content: none;
   }
 
   :global(.detail__toc-item.active) {
     border-left-color: #2f6f6d;
     color: #2f6f6d;
-    background: rgba(47, 111, 109, 0.06);
+    background: transparent;
   }
 
   :global(.detail__toc-item:focus-visible) {
     outline: 2px solid #2f6f6d;
     outline-offset: 2px;
-    background: rgba(47, 111, 109, 0.06);
   }
 
   :global(.detail__toc .toc-depth-1) {
@@ -149,21 +177,46 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
   }
 
   :global(.detail__toc .toc-depth-2) {
-    padding-left: 12px;
-    font-size: 0.92rem;
+    padding-left: 0.75rem;
+    font-size: 0.78rem;
     color: rgba(31, 31, 31, 0.65);
   }
 
   :global(.detail__toc .toc-depth-3) {
-    padding-left: 20px;
-    font-size: 0.88rem;
+    padding-left: 1.5rem;
+    font-size: 0.74rem;
     color: rgba(31, 31, 31, 0.6);
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 1023px) {
     :global(.detail__toc) {
       position: static;
       top: auto;
+      margin-bottom: 2.5rem;
+      padding: 0 0 0.9rem;
+      border-left: 0;
+      border-bottom: 1px solid rgba(31, 31, 31, 0.13);
+    }
+    :global(.detail__toc-title) {
+      margin: 0;
+      cursor: pointer;
+      text-align: left;
+    }
+    :global(.detail__toc-title span:last-child) {
+      display: inline;
+      color: #2f6f6d;
+      font-size: 0.9rem;
+    }
+    :global(.detail__toc-list) {
+      display: none;
+      max-height: none;
+      padding-top: 0.9rem;
+    }
+    :global(.detail__toc.toc-open .detail__toc-list) {
+      display: flex;
+    }
+    :global(.detail__toc-item) {
+      font-size: 0.85rem;
     }
   }
 </style>

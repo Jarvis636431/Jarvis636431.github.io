@@ -82,7 +82,6 @@ if (heroImageUrl) {
 if (post.data.tags.length > 0) {
   articleStructuredData.keywords = post.data.tags.join(", ");
 }
-// Compute previous/next posts (sorted by publishDate desc)
 const allPosts = (
   await getCollection("blog", ({ data }) =>
     import.meta.env.DEV ? true : data.draft !== true,
@@ -94,10 +93,6 @@ const allPosts = (
       new Date(b.data.publishDate).getTime() -
       new Date(a.data.publishDate).getTime(),
   );
-const currentIndex = allPosts.findIndex((p) => p.slug === post.slug);
-const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : undefined;
-const nextPost =
-  currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : undefined;
 const commentTerm = post.data.commentId ?? post.slug;
 const relatedPosts = allPosts
   .filter((candidate) => candidate.slug !== post.slug)
@@ -149,112 +144,88 @@ const relatedPosts = allPosts
     </div>
   </div>
 
-  <article class="w-full py-12">
-    <div
-      class="grid gap-10 items-start lg:grid-cols-[minmax(220px,240px)_minmax(0,1fr)]"
-    >
-      <div>
-        <Toc
-          prefix="blog"
-          articleId="blog-article"
-          tocId="blog-toc"
-          ariaLabel="On-page navigation"
-        />
+  <article class="article-page">
+    <header class="article-hero">
+      <a href="/blogs" class="article-back"
+        ><span aria-hidden="true">←</span> 返回博客</a
+      >
+
+      <div class="article-kicker">
+        <span>Writing</span>
+        {post.data.tags[0] && <span>{post.data.tags[0]}</span>}
       </div>
-      <div class="min-w-0 space-y-10 max-w-3xl">
-        <header
-          class="space-y-6 bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10"
-        >
-          <a
-            href="/blogs"
-            class="inline-flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors"
-          >
-            <span>{"<-"}</span>
-            Back to blogs
-          </a>
 
-          <div class="space-y-3">
-            <div class="flex flex-wrap gap-4 text-xs font-mono text-secondary">
-              <span>{publishDate}</span>
-              <span>{readingTime} min read</span>
-              {
-                hasUpdatedDate && updatedDate && (
-                  <span>Updated {updatedDate}</span>
-                )
-              }
-              <a
-                href="#comments"
-                class="text-accent-cyan transition-colors hover:text-primary"
-              >
-                Comments
-              </a>
-            </div>
+      <h1>{post.data.title}</h1>
+      <p class="article-deck">{post.data.description}</p>
 
-            <h1 class="text-3xl md:text-5xl font-display leading-tight">
-              {post.data.title}
-            </h1>
+      <div class="article-meta">
+        <time datetime={publishDateIso}>{publishDate}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime} 分钟阅读</span>
+        {
+          hasUpdatedDate && updatedDate && (
+            <>
+              <>
+                <span aria-hidden="true">·</span>
+                <span>更新于 {updatedDate}</span>
+              </>
+            </>
+          )
+        }
+        <span aria-hidden="true">·</span>
+        <a href="#comments">参与讨论</a>
+      </div>
 
-            <p class="text-lg text-secondary leading-relaxed">
-              {post.data.description}
-            </p>
+      {
+        post.data.tags.length > 0 && (
+          <div class="article-tags" aria-label="文章标签">
+            {post.data.tags.map((tag) => (
+              <span>{tag}</span>
+            ))}
           </div>
+        )
+      }
 
-          {
-            post.data.tags.length > 0 && (
-              <div class="flex flex-wrap gap-2">
-                {post.data.tags.map((tag) => (
-                  <span class="px-3 py-1 bg-black/5 text-secondary text-xs rounded-full">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )
-          }
+      {
+        post.data.heroImage && (
+          <figure class="article-cover">
+            <img
+              src={post.data.heroImage}
+              alt={post.data.title}
+              loading="eager"
+            />
+          </figure>
+        )
+      }
+    </header>
 
-          {
-            post.data.heroImage && (
-              <div class="relative mt-6">
-                <img
-                  class="w-full h-auto border border-black/10 rounded-xl"
-                  src={post.data.heroImage}
-                  alt={post.data.title}
-                  loading="eager"
-                />
-              </div>
-            )
-          }
-        </header>
+    <div class="article-rule" aria-hidden="true"></div>
 
-        <div id="blog-article">
-          <div class="prose max-w-none">
-            <Content />
-          </div>
+    <div class="article-layout">
+      <Toc
+        prefix="blog"
+        articleId="blog-article"
+        tocId="blog-toc"
+        title="本文目录"
+        ariaLabel="文章目录"
+      />
+
+      <div class="article-main">
+        <div id="blog-article" class="article-content">
+          <div class="prose max-w-none"><Content /></div>
         </div>
 
         {
           relatedPosts.length > 0 && (
-            <section
-              class="border-t border-black/10 pt-8"
-              aria-labelledby="related-posts"
-            >
-              <div class="mb-4 flex items-center justify-between gap-4">
-                <h2
-                  id="related-posts"
-                  class="font-display text-2xl font-semibold"
-                >
-                  Related Posts
-                </h2>
-                <span class="font-mono text-xs uppercase tracking-wide text-secondary">
-                  Keep reading
-                </span>
+            <section class="related" aria-labelledby="related-posts">
+              <div class="section-heading">
+                <h2 id="related-posts">继续阅读</h2>
+                <span>Related notes</span>
               </div>
-              <div class="grid gap-3">
+              <div class="related-list">
                 {relatedPosts.map((relatedPost) => (
-                  <a
-                    href={`/blogs/${relatedPost.slug}`}
-                    class="group block rounded-xl border border-black/10 bg-surface/80 p-4 transition-colors hover:border-accent-cyan/40"
-                  >
-                    <div class="mb-2 flex flex-wrap items-center gap-3 font-mono text-xs text-secondary">
+                  <a href={`/blogs/${relatedPost.slug}`}>
+                    <div class="related-meta">
                       <time
                         datetime={new Date(
                           relatedPost.data.publishDate,
@@ -268,14 +239,12 @@ const relatedPosts = allPosts
                           day: "2-digit",
                         })}
                       </time>
-                      <span>{relatedPost.data.readingTime ?? 5} min read</span>
+                      <span>{relatedPost.data.readingTime ?? 5} 分钟</span>
                     </div>
-                    <h3 class="font-display text-lg font-semibold transition-colors group-hover:text-accent-cyan">
-                      {relatedPost.data.title}
-                    </h3>
-                    <p class="mt-2 line-clamp-2 text-sm leading-6 text-secondary">
-                      {relatedPost.data.description}
-                    </p>
+                    <h3>{relatedPost.data.title}</h3>
+                    <span class="related-arrow" aria-hidden="true">
+                      →
+                    </span>
                   </a>
                 ))}
               </div>
@@ -285,61 +254,9 @@ const relatedPosts = allPosts
 
         <Comments term={commentTerm} />
 
-        {/* Footer / End of Log */}
-        <div class="mt-16 pt-8 border-t border-black/10 text-center">
-          {
-            (prevPost || nextPost) && (
-              <nav
-                aria-label="文章导航"
-                class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 text-left"
-              >
-                {prevPost && (
-                  <a
-                    href={`/blogs/${prevPost.slug}`}
-                    class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-cyan transition-colors"
-                  >
-                    <div class="text-xs text-secondary uppercase mb-1">
-                      上一篇
-                    </div>
-                    <div class="flex items-center justify-between gap-2">
-                      <h3 class="text-primary font-semibold group-hover:text-accent-cyan transition-colors">
-                        {prevPost.data.title}
-                      </h3>
-                      <span class="text-xs text-secondary">
-                        {new Date(prevPost.data.publishDate).toLocaleDateString(
-                          prevPost.data.language,
-                          { year: "numeric", month: "2-digit", day: "2-digit" },
-                        )}
-                      </span>
-                    </div>
-                  </a>
-                )}
-                {nextPost && (
-                  <a
-                    href={`/blogs/${nextPost.slug}`}
-                    class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-violet transition-colors"
-                  >
-                    <div class="text-xs text-secondary uppercase mb-1">
-                      下一篇
-                    </div>
-                    <div class="flex items-center justify-between gap-2">
-                      <h3 class="text-primary font-semibold group-hover:text-accent-violet transition-colors">
-                        {nextPost.data.title}
-                      </h3>
-                      <span class="text-xs text-secondary">
-                        {new Date(nextPost.data.publishDate).toLocaleDateString(
-                          nextPost.data.language,
-                          { year: "numeric", month: "2-digit", day: "2-digit" },
-                        )}
-                      </span>
-                    </div>
-                  </a>
-                )}
-              </nav>
-            )
-          }
-          <span class="inline-block text-xs text-secondary"> End of post </span>
-        </div>
+        <footer class="article-end">
+          <span>文章结束</span><a href="/blogs">查看全部文章 →</a>
+        </footer>
       </div>
     </div>
   </article>
@@ -355,6 +272,201 @@ const relatedPosts = allPosts
 </Layout>
 
 <style>
+  .article-page {
+    padding: 4rem 0 2rem;
+  }
+  .article-hero {
+    max-width: 56rem;
+    margin: 0 auto;
+  }
+  .article-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 3.5rem;
+    color: rgba(31, 31, 31, 0.55);
+    font:
+      500 0.75rem/1 "IBM Plex Mono",
+      monospace;
+    text-decoration: none;
+    transition: color 180ms ease;
+  }
+  .article-back:hover {
+    color: #2f6f6d;
+  }
+  .article-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.25rem;
+    color: #2f6f6d;
+    font:
+      500 0.68rem/1.4 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .article-kicker span + span::before {
+    content: "/";
+    margin-right: 0.8rem;
+    color: rgba(31, 31, 31, 0.24);
+  }
+  .article-hero h1 {
+    max-width: 52rem;
+    margin: 0;
+    font-size: clamp(2.9rem, 7vw, 5.7rem);
+    line-height: 0.98;
+    letter-spacing: -0.06em;
+    text-wrap: balance;
+  }
+  .article-deck {
+    max-width: 44rem;
+    margin: 1.8rem 0 0;
+    color: rgba(31, 31, 31, 0.62);
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.7;
+  }
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 2rem;
+    color: rgba(31, 31, 31, 0.48);
+    font:
+      0.7rem/1.5 "IBM Plex Mono",
+      monospace;
+  }
+  .article-meta a {
+    color: #2f6f6d;
+    text-decoration: none;
+  }
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.1rem;
+    margin-top: 1.25rem;
+    color: rgba(31, 31, 31, 0.56);
+    font:
+      0.72rem/1.5 "IBM Plex Mono",
+      monospace;
+  }
+  .article-tags span::before {
+    content: "#";
+    margin-right: 0.12rem;
+    color: rgba(47, 111, 109, 0.72);
+  }
+  .article-cover {
+    margin: 3rem 0 0;
+  }
+  .article-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid rgba(31, 31, 31, 0.12);
+  }
+  .article-rule {
+    max-width: 64rem;
+    height: 1px;
+    margin: 4rem auto;
+    background: rgba(31, 31, 31, 0.13);
+  }
+  .article-layout {
+    display: grid;
+    grid-template-columns: minmax(11rem, 13rem) minmax(0, 45rem);
+    justify-content: center;
+    gap: clamp(3rem, 7vw, 6rem);
+    align-items: start;
+  }
+  .article-main {
+    min-width: 0;
+  }
+  .article-content {
+    min-width: 0;
+  }
+  .related {
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .section-heading h2 {
+    margin: 0;
+    font-size: 1.55rem;
+  }
+  .section-heading span {
+    color: rgba(31, 31, 31, 0.42);
+    font:
+      0.66rem/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .related-list {
+    border-top: 1px solid rgba(31, 31, 31, 0.1);
+  }
+  .related-list > a {
+    position: relative;
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr) 1.5rem;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.3rem 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.1);
+    color: inherit;
+    text-decoration: none;
+  }
+  .related-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    color: rgba(31, 31, 31, 0.44);
+    font:
+      0.66rem/1.4 "IBM Plex Mono",
+      monospace;
+  }
+  .related-list h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.35;
+    transition: color 180ms ease;
+  }
+  .related-arrow {
+    color: rgba(31, 31, 31, 0.35);
+    transition:
+      transform 180ms ease,
+      color 180ms ease;
+  }
+  .related-list > a:hover h3,
+  .related-list > a:hover .related-arrow {
+    color: #2f6f6d;
+  }
+  .related-list > a:hover .related-arrow {
+    transform: translateX(3px);
+  }
+  .article-end {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 4rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(31, 31, 31, 0.13);
+    color: rgba(31, 31, 31, 0.45);
+    font:
+      0.7rem/1.5 "IBM Plex Mono",
+      monospace;
+  }
+  .article-end a {
+    color: #2f6f6d;
+    text-decoration: none;
+  }
+
   :global(.prose pre) {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -402,12 +514,76 @@ const relatedPosts = allPosts
   :global(.prose img) {
     border: 1px solid rgba(31, 31, 31, 0.12);
     background: rgba(255, 255, 255, 0.72);
+    box-shadow: none;
+  }
+
+  :global(.article-content .prose) {
+    max-width: 100%;
+  }
+  :global(.article-content .prose h2),
+  :global(.article-content .prose h3) {
+    scroll-margin-top: 7rem;
+  }
+  :global(.article-content .prose table) {
+    display: table;
+    min-width: 100%;
+  }
+
+  @media (max-width: 1023px) {
+    .article-layout {
+      display: block;
+      max-width: 45rem;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .article-page {
+      padding-top: 2.5rem;
+    }
+    .article-back {
+      margin-bottom: 2.5rem;
+    }
+    .article-hero h1 {
+      font-size: clamp(2.55rem, 13vw, 4rem);
+    }
+    .article-deck {
+      margin-top: 1.35rem;
+      font-size: 1rem;
+    }
+    .article-rule {
+      margin: 2.75rem 0;
+    }
+    .related-list > a {
+      grid-template-columns: minmax(0, 1fr) 1.25rem;
+      gap: 0.5rem 1rem;
+    }
+    .related-meta {
+      grid-column: 1;
+      flex-direction: row;
+      gap: 0.75rem;
+    }
+    .related-list h3 {
+      grid-column: 1;
+    }
+    .related-arrow {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+    .section-heading span {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #reading-progress,
     #back-to-top,
     :global(.code-copy-button) {
+      transition: none;
+    }
+    .article-back,
+    .related-list h3,
+    .related-arrow {
       transition: none;
     }
   }

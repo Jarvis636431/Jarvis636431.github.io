@@ -4,7 +4,7 @@ interface Props {
   title?: string;
 }
 
-const { term, title = "Comments" } = Astro.props as Props;
+const { term, title = "讨论" } = Astro.props as Props;
 
 const repo = import.meta.env.PUBLIC_GISCUS_REPO;
 const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
@@ -15,7 +15,7 @@ const theme = import.meta.env.PUBLIC_GISCUS_THEME || "light";
 const isConfigured = Boolean(repo && repoId && category && categoryId);
 ---
 
-<section class="mt-16 border-t border-black/10 pt-8" aria-labelledby="comments">
+<section class="mt-20 border-t border-black/10 pt-8" aria-labelledby="comments">
   <div class="mb-6 flex items-center justify-between gap-4">
     <h2 id="comments" class="font-display text-2xl font-semibold">{title}</h2>
     <span class="font-mono text-xs uppercase tracking-wide text-secondary">
@@ -44,11 +44,10 @@ const isConfigured = Boolean(repo && repoId && category && categoryId);
         async
       />
     ) : (
-      <div class="rounded-xl border border-black/10 bg-surface/80 p-5 text-sm leading-6 text-secondary">
-        Giscus is ready in code, but missing configuration. Set{" "}
-        <code>PUBLIC_GISCUS_REPO</code>, <code>PUBLIC_GISCUS_REPO_ID</code>,{" "}
-        <code>PUBLIC_GISCUS_CATEGORY</code>, and{" "}
-        <code>PUBLIC_GISCUS_CATEGORY_ID</code> to enable comments.
+      <div class="border-y border-black/10 py-5 text-sm leading-6 text-secondary">
+        评论区尚未启用，请配置 <code>PUBLIC_GISCUS_REPO</code>、{" "}
+        <code>PUBLIC_GISCUS_REPO_ID</code>、<code>PUBLIC_GISCUS_CATEGORY</code>
+        和 <code>PUBLIC_GISCUS_CATEGORY_ID</code>。
       </div>
     )
   }
