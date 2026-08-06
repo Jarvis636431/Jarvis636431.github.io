@@ -100,9 +100,6 @@ const categories = categoryOrder.filter((category) =>
           ))
         }
       </div>
-      <p class="filter-result" aria-live="polite">
-        <span id="visible-post-count">{posts.length}</span> 篇文章
-      </p>
       {
         posts.length > 0 ? (
           <ol class="post-list" aria-label="全部文章">
@@ -216,8 +213,7 @@ const categories = categoryOrder.filter((category) =>
     display: flex;
     flex-wrap: wrap;
     gap: 0.7rem 1.5rem;
-    padding: 0 0 1.15rem;
-    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+    padding: 0 0 0.45rem;
   }
   .blog-filters button {
     display: inline-flex;
@@ -248,13 +244,6 @@ const categories = categoryOrder.filter((category) =>
     border-radius: 0.15rem;
     outline: 2px solid #2f6f6d;
     outline-offset: 3px;
-  }
-  .filter-result {
-    margin: 0.9rem 0 0;
-    color: rgba(31, 31, 31, 0.4);
-    font:
-      0.65rem/1.4 "IBM Plex Mono",
-      monospace;
   }
   .filter-empty {
     padding: 3rem 0;
@@ -440,7 +429,6 @@ const categories = categoryOrder.filter((category) =>
   const postItems = Array.from(
     document.querySelectorAll<HTMLElement>("[data-post-category]"),
   );
-  const visibleCount = document.getElementById("visible-post-count");
   const filterEmpty = document.querySelector<HTMLElement>(".filter-empty");
 
   filterButtons.forEach((button) => {
@@ -456,7 +444,6 @@ const categories = categoryOrder.filter((category) =>
         item.hidden = !visible;
         if (visible) count += 1;
       });
-      if (visibleCount) visibleCount.textContent = String(count);
       if (filterEmpty) filterEmpty.hidden = count > 0;
     });
   });
