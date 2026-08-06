@@ -29,7 +29,6 @@ export default [
     ignores: [
       "**/.astro/**",
       ".vercel/",
-      "content-migration/",
       "dist/",
       "node_modules/",
       "package-lock.json",
