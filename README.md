@@ -89,7 +89,7 @@ Schema fields defined in `src/content/config.ts`:
 - `publishDate` (date): Publication date
 - `tags` (array): List of tags
 - `draft` (boolean): If true, hidden in production
-- `readingTime` (number): Estimated reading time in minutes
+- Reading time is calculated automatically from the Markdown/MDX body.
 
 #### Projects (`src/content/projects`)
 

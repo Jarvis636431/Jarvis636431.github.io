@@ -1,6 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getBlogCategory } from "@lib/blog";
+import { getBlogCategory, getPostReadingTime } from "@lib/blog";
 import { getCollection } from "astro:content";
 
 const posts = (
@@ -120,7 +120,7 @@ const categories = categoryOrder.filter((category) =>
                   </div>
 
                   <div class="post-meta">
-                    <span>{post.data.readingTime ?? 6} 分钟</span>
+                    <span>{getPostReadingTime(post)} 分钟</span>
                     {post.data.tags.length > 0 && (
                       <span class="post-topic">{post.data.tags[0]}</span>
                     )}

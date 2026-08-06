@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { getPostReadingTime } from "@lib/blog";
 
 type PostEntry = CollectionEntry<"blog">;
 
@@ -13,7 +14,7 @@ const publishDate = new Date(post.data.publishDate).toLocaleDateString(
   },
 );
 
-const readingTime = post.data.readingTime ?? 6;
+const readingTime = getPostReadingTime(post);
 const link = `/blogs/${post.slug}`;
 ---
 

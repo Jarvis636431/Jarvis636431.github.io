@@ -2,7 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Toc from "@components/Toc.astro";
 import Comments from "@components/Comments.astro";
-import { scoreRelatedPost } from "@lib/blog";
+import { getPostReadingTime, scoreRelatedPost } from "@lib/blog";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 
@@ -27,7 +27,7 @@ const publishDate = new Date(post.data.publishDate).toLocaleDateString(
     day: "2-digit",
   },
 );
-const readingTime = post.data.readingTime ?? 6;
+const readingTime = getPostReadingTime(post);
 const updatedDate = post.data.updatedDate
   ? new Date(post.data.updatedDate).toLocaleDateString(post.data.language, {
       year: "numeric",
@@ -229,7 +229,7 @@ const relatedPosts = allPosts
                           day: "2-digit",
                         })}
                       </time>
-                      <span>{relatedPost.data.readingTime ?? 5} 分钟</span>
+                      <span>{getPostReadingTime(relatedPost)} 分钟</span>
                     </div>
                     <h3>{relatedPost.data.title}</h3>
                     <span class="related-arrow" aria-hidden="true">

@@ -47,7 +47,6 @@ updatedDate: "${publishDate}"
 heroImage: ""
 tags: []
 draft: true
-readingTime: 6
 ---
 
 Start writing here.

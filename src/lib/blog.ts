@@ -2,6 +2,32 @@ import type { CollectionEntry } from "astro:content";
 
 type BlogPost = CollectionEntry<"blog">;
 
+const CJK_RE = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g;
+const WORD_RE = /[a-zA-Z0-9]+(?:['’-][a-zA-Z0-9]+)*/g;
+
+/** Estimate reading time for mixed Chinese/English Markdown content. */
+export function getReadingTime(content: string) {
+  const readableContent = content
+    .replace(/^---[\s\S]*?---/m, " ")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_~|=-]/g, " ");
+
+  const cjkCharacters = readableContent.match(CJK_RE)?.length ?? 0;
+  const latinWords =
+    readableContent.replace(CJK_RE, " ").match(WORD_RE)?.length ?? 0;
+
+  // Average reading speeds: roughly 300 CJK characters or 200 words/minute.
+  return Math.max(1, Math.ceil(cjkCharacters / 300 + latinWords / 200));
+}
+
+export function getPostReadingTime(post: BlogPost) {
+  return getReadingTime(post.body);
+}
+
 const hasAnyTag = (tags: string[], candidates: string[]) =>
   candidates.some((candidate) => tags.includes(candidate));
 

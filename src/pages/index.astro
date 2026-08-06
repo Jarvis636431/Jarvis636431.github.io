@@ -1,6 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import { getPostReadingTime } from "@lib/blog";
 
 // Get latest blog posts
 const postsCollection = await getCollection("blog", ({ data }) => {
@@ -341,7 +342,7 @@ const location = {
                       },
                     )}
                   </time>
-                  <span>{post.data.readingTime ?? 6} min</span>
+                  <span>{getPostReadingTime(post)} min</span>
                 </div>
                 <h3 class="font-display text-lg font-semibold text-primary group-hover:text-accent-cyan transition-colors leading-snug line-clamp-2">
                   {post.data.title}
