@@ -1,0 +1,40 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  widths?: number[];
+  sizes?: string;
+}
+
+const {
+  src,
+  alt,
+  caption = alt,
+  widths = [640, 960, 1440],
+  sizes = "(max-width: 768px) 100vw, 720px",
+} = Astro.props as Props;
+---
+
+<figure class="article-figure">
+  <button
+    class="article-image-button"
+    type="button"
+    data-article-image
+    aria-label={`放大图片：${alt}`}
+  >
+    <Picture
+      src={src}
+      formats={["avif", "webp"]}
+      widths={widths}
+      sizes={sizes}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+    />
+  </button>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

@@ -6,6 +6,8 @@ publishDate: "2025-06-01"
 tags: [
   "iDesignLab", "项目文档"
 ]
+series: "iDesignLab 工程文档"
+seriesOrder: 1
 draft: true
 readingTime: 5
 ---
@@ -81,5 +83,4 @@ systemd 就是 linux 自带的一个服务，我们可以通过编写一个.serv
 注意，如果后续更新的话，需要先停止 systemd 服务，否则无法直接上传二进制文件，服务在执行的时候会锁住文件，无法替换
 
 而且注意，数据库不要随意更改，不使用 root 登录，修改数据库也需要先停止 systemd 服务
-
 

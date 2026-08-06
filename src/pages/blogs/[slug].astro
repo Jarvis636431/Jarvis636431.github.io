@@ -2,7 +2,12 @@
 import Layout from "@layouts/Layout.astro";
 import Toc from "@components/Toc.astro";
 import Comments from "@components/Comments.astro";
-import { getPostReadingTime, scoreRelatedPost } from "@lib/blog";
+import {
+  getAdjacentPosts,
+  getPostReadingTime,
+  getSeriesPosts,
+  scoreRelatedPost,
+} from "@lib/blog";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 
@@ -86,6 +91,8 @@ const allPosts = (
       new Date(b.data.publishDate).getTime() -
       new Date(a.data.publishDate).getTime(),
   );
+const seriesPosts = getSeriesPosts(post, allPosts);
+const adjacentPosts = getAdjacentPosts(post, allPosts);
 const commentTerm = post.data.commentId ?? post.slug;
 const commentsConfigured = Boolean(
   import.meta.env.PUBLIC_GISCUS_REPO &&
@@ -187,6 +194,19 @@ const relatedPosts = allPosts
           </div>
         )
       }
+
+      <div class="article-actions" aria-label="文章操作">
+        <button type="button" data-share-article>
+          <span aria-hidden="true">↗</span><span>分享文章</span>
+        </button>
+        <button type="button" data-copy-link>
+          <span aria-hidden="true">⧉</span><span>复制链接</span>
+        </button>
+        <span
+          class="article-action-status"
+          data-action-status
+          aria-live="polite"></span>
+      </div>
     </header>
 
     <div class="article-rule" aria-hidden="true"></div>
@@ -201,9 +221,65 @@ const relatedPosts = allPosts
       />
 
       <div class="article-main">
+        {
+          seriesPosts.length > 0 && (
+            <nav class="series-index" aria-labelledby="series-title">
+              <div class="series-index__heading">
+                <div>
+                  <span>Series</span>
+                  <h2 id="series-title">{post.data.series}</h2>
+                </div>
+                <span>
+                  {seriesPosts.findIndex((item) => item.slug === post.slug) + 1}
+                  /{seriesPosts.length}
+                </span>
+              </div>
+              <ol>
+                {seriesPosts.map((item, index) => (
+                  <li
+                    class={item.slug === post.slug ? "is-current" : undefined}
+                  >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {item.slug === post.slug ? (
+                      <strong aria-current="page">{item.data.title}</strong>
+                    ) : (
+                      <a href={`/blogs/${item.slug}`}>{item.data.title}</a>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+
         <div id="blog-article" class="article-content">
           <div class="prose max-w-none"><Content /></div>
         </div>
+
+        {
+          (adjacentPosts.previous || adjacentPosts.next) && (
+            <nav class="article-pagination" aria-label="文章导航">
+              {adjacentPosts.previous ? (
+                <a href={`/blogs/${adjacentPosts.previous.slug}`} rel="prev">
+                  <span>
+                    ← 上一篇{adjacentPosts.isSeries ? " · 本系列" : ""}
+                  </span>
+                  <strong>{adjacentPosts.previous.data.title}</strong>
+                </a>
+              ) : (
+                <span />
+              )}
+              {adjacentPosts.next && (
+                <a href={`/blogs/${adjacentPosts.next.slug}`} rel="next">
+                  <span>
+                    下一篇{adjacentPosts.isSeries ? " · 本系列" : ""} →
+                  </span>
+                  <strong>{adjacentPosts.next.data.title}</strong>
+                </a>
+              )}
+            </nav>
+          )
+        }
 
         {
           relatedPosts.length > 0 && (
@@ -259,6 +335,16 @@ const relatedPosts = allPosts
   >
     ↑
   </button>
+
+  <dialog class="image-lightbox" data-image-lightbox aria-label="图片预览">
+    <button type="button" data-lightbox-close aria-label="关闭图片预览"
+      >×</button
+    >
+    <figure>
+      <img data-lightbox-image alt="" />
+      <figcaption data-lightbox-caption></figcaption>
+    </figure>
+  </dialog>
 </Layout>
 
 <style>
@@ -356,6 +442,36 @@ const relatedPosts = allPosts
     margin-right: 0.12rem;
     color: rgba(47, 111, 109, 0.72);
   }
+  .article-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 2rem;
+    margin-top: 1.5rem;
+  }
+  .article-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(31, 31, 31, 0.58);
+    font:
+      500 0.7rem/1.5 "IBM Plex Mono",
+      monospace;
+    cursor: pointer;
+  }
+  .article-actions button:hover,
+  .article-actions button:focus-visible {
+    color: #2f6f6d;
+  }
+  .article-action-status {
+    color: #2f6f6d;
+    font:
+      0.68rem/1.5 "IBM Plex Mono",
+      monospace;
+  }
   .article-rule {
     max-width: 64rem;
     height: 1px;
@@ -372,6 +488,67 @@ const relatedPosts = allPosts
   .article-main {
     min-width: 0;
   }
+  .series-index {
+    margin-bottom: 4rem;
+    border-top: 2px solid #2f6f6d;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .series-index__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .series-index__heading span {
+    color: rgba(31, 31, 31, 0.45);
+    font:
+      0.66rem/1.4 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .series-index__heading h2 {
+    margin: 0.2rem 0 0;
+    font-size: 1.45rem;
+  }
+  .series-index ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .series-index li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.08);
+  }
+  .series-index li:last-child {
+    border-bottom: 0;
+  }
+  .series-index li > span {
+    color: rgba(31, 31, 31, 0.35);
+    font:
+      0.68rem/1.6 "IBM Plex Mono",
+      monospace;
+  }
+  .series-index a,
+  .series-index strong {
+    color: rgba(31, 31, 31, 0.68);
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.45;
+    text-decoration: none;
+  }
+  .series-index a:hover,
+  .series-index .is-current strong {
+    color: #2f6f6d;
+  }
+  .series-index .is-current > span {
+    color: #2f6f6d;
+  }
   .article-content {
     min-width: 0;
   }
@@ -379,6 +556,37 @@ const relatedPosts = allPosts
     margin-top: 5rem;
     padding-top: 2rem;
     border-top: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .article-pagination {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    margin-top: 4.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .article-pagination a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  .article-pagination a:last-child {
+    text-align: right;
+  }
+  .article-pagination span {
+    color: rgba(31, 31, 31, 0.42);
+    font:
+      0.66rem/1.4 "IBM Plex Mono",
+      monospace;
+  }
+  .article-pagination strong {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .article-pagination a:hover strong {
+    color: #2f6f6d;
   }
   .section-heading {
     display: flex;
@@ -460,12 +668,36 @@ const relatedPosts = allPosts
 
   :global(.prose pre) {
     position: relative;
+    max-height: none;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
+  :global(.code-toolbar) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 2.5rem;
+    margin: -1rem -1rem 1rem;
+    padding: 0 0.75rem 0 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.035);
+  }
+  :global(.code-identity) {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.65rem;
+  }
+  :global(.code-filename) {
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.82);
+    font:
+      0.68rem/1 "IBM Plex Mono",
+      monospace;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   :global(.code-language) {
-    position: absolute;
-    top: 0.85rem;
-    left: 1rem;
     color: rgba(255, 255, 255, 0.42);
     font:
       0.62rem/1 "IBM Plex Mono",
@@ -480,9 +712,7 @@ const relatedPosts = allPosts
   }
 
   :global(.code-copy-button) {
-    position: absolute;
-    top: 0.7rem;
-    right: 0.7rem;
+    flex: none;
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.08);
@@ -495,6 +725,66 @@ const relatedPosts = allPosts
       background 0.15s ease,
       color 0.15s ease,
       border-color 0.15s ease;
+  }
+  :global(.code-copy-button[data-state="error"]) {
+    border-color: rgba(255, 160, 140, 0.48);
+    color: #ffc1b4;
+  }
+  :global(.code-fold-button) {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.65rem;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    background: #24292e;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.4rem 0.65rem;
+    font:
+      0.64rem/1 "IBM Plex Mono",
+      monospace;
+    cursor: pointer;
+  }
+  :global(.prose pre.is-collapsible:not(.is-expanded)) {
+    max-height: 30rem;
+    overflow: hidden;
+  }
+  :global(.prose pre.is-collapsible:not(.is-expanded)::after) {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 7rem;
+    background: linear-gradient(transparent, #24292e 78%);
+    pointer-events: none;
+  }
+  :global(.prose pre.code-with-lines code) {
+    counter-reset: code-line;
+  }
+  :global(.prose pre.code-with-lines .line) {
+    display: inline-block;
+    width: 100%;
+    min-height: 1.45em;
+  }
+  :global(.prose pre.code-with-lines .line::before) {
+    counter-increment: code-line;
+    content: counter(code-line);
+    display: inline-block;
+    width: 2.5rem;
+    margin-right: 1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.28);
+    text-align: right;
+    padding-right: 0.75rem;
+    user-select: none;
+  }
+  :global(.prose pre .line.is-highlighted) {
+    margin-left: -1rem;
+    width: calc(100% + 2rem);
+    padding-left: 0.85rem;
+    border-left: 2px solid #62b3af;
+    background: rgba(98, 179, 175, 0.12);
   }
 
   :global(.code-copy-button:hover),
@@ -514,9 +804,77 @@ const relatedPosts = allPosts
   }
 
   :global(.prose img) {
+    height: auto;
     border: 1px solid rgba(31, 31, 31, 0.12);
     background: rgba(255, 255, 255, 0.72);
     box-shadow: none;
+  }
+  :global(.article-figure) {
+    margin: 2.5rem 0;
+  }
+  :global(.article-image-button) {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+  }
+  :global(.article-image-button img) {
+    width: 100%;
+    margin: 0;
+  }
+  :global(.article-figure figcaption) {
+    margin-top: 0.7rem;
+    color: rgba(31, 31, 31, 0.5);
+    font:
+      0.72rem/1.5 "IBM Plex Mono",
+      monospace;
+    text-align: center;
+  }
+  .image-lightbox {
+    width: min(94vw, 90rem);
+    max-width: none;
+    height: min(92vh, 70rem);
+    max-height: none;
+    padding: 3rem;
+    border: 0;
+    background: rgba(16, 19, 18, 0.96);
+    color: #fff;
+  }
+  .image-lightbox::backdrop {
+    background: rgba(10, 12, 12, 0.78);
+    backdrop-filter: blur(8px);
+  }
+  .image-lightbox > button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    background: transparent;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+  .image-lightbox figure {
+    display: grid;
+    height: 100%;
+    margin: 0;
+    place-items: center;
+  }
+  .image-lightbox img {
+    max-width: 100%;
+    max-height: calc(100% - 3rem);
+    object-fit: contain;
+  }
+  .image-lightbox figcaption {
+    color: rgba(255, 255, 255, 0.68);
+    font:
+      0.72rem/1.5 "IBM Plex Mono",
+      monospace;
   }
 
   :global(.article-content .prose) {
@@ -614,6 +972,24 @@ const relatedPosts = allPosts
     .section-heading span {
       display: none;
     }
+    .article-actions {
+      flex-wrap: wrap;
+    }
+    .article-action-status {
+      width: 100%;
+    }
+    .article-pagination {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .article-pagination a:last-child {
+      text-align: left;
+    }
+    .image-lightbox {
+      width: 100vw;
+      height: 100vh;
+      padding: 3.5rem 1rem 1rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -672,38 +1048,219 @@ const relatedPosts = allPosts
   }
 
   function enhanceCodeBlocks() {
-    if (!article || !window.navigator.clipboard) return;
+    if (!article) return;
+
+    const parseHighlightedLines = (value: string) => {
+      const lines = new Set<number>();
+      value.split(",").forEach((part) => {
+        const [start, end = start] = part.split("-").map(Number);
+        if (!Number.isFinite(start) || !Number.isFinite(end)) return;
+        for (let line = start; line <= end; line += 1) lines.add(line);
+      });
+      return lines;
+    };
+
+    const copyText = async (value: string) => {
+      if (!window.navigator.clipboard?.writeText)
+        throw new Error("Copy is unavailable");
+      await window.navigator.clipboard.writeText(value);
+    };
 
     article.querySelectorAll("pre").forEach((pre) => {
       if (pre.querySelector(".code-copy-button")) return;
-
       const code = pre.querySelector("code");
       if (!code?.textContent) return;
 
+      const meta = code.dataset.codeMeta ?? pre.dataset.codeMeta ?? "";
+      const filename = meta.match(/(?:title|filename)=["']([^"']+)["']/)?.[1];
+      const highlightExpression = meta.match(/\{([\d,\s-]+)\}/)?.[1] ?? "";
+      const showLineNumbers =
+        /(?:^|\s)(?:lineNumbers|showLineNumbers)(?:\s|$)/i.test(meta);
+      const forceCollapse = /(?:^|\s)collapse(?:\s|$)/i.test(meta);
       const languageClass = Array.from(code.classList).find((className) =>
         className.startsWith("language-"),
       );
+
+      const toolbar = document.createElement("div");
+      toolbar.className = "code-toolbar";
+      const identity = document.createElement("span");
+      identity.className = "code-identity";
+      if (filename) {
+        const filenameLabel = document.createElement("span");
+        filenameLabel.className = "code-filename";
+        filenameLabel.textContent = filename;
+        identity.append(filenameLabel);
+      }
       if (languageClass) {
         const language = document.createElement("span");
         language.className = "code-language";
         language.textContent = languageClass.replace("language-", "");
-        pre.append(language);
+        identity.append(language);
       }
+      toolbar.append(identity);
 
       const button = document.createElement("button");
       button.type = "button";
       button.className = "code-copy-button";
       button.textContent = "Copy";
-      button.setAttribute("aria-label", "Copy code");
+      button.setAttribute("aria-label", "复制代码");
       button.addEventListener("click", async () => {
-        await window.navigator.clipboard.writeText(code.textContent ?? "");
-        button.textContent = "Copied";
+        try {
+          await copyText(code.textContent ?? "");
+          button.dataset.state = "success";
+          button.textContent = "Copied";
+        } catch {
+          button.dataset.state = "error";
+          button.textContent = "复制失败";
+        }
         setTimeout(() => {
           button.textContent = "Copy";
+          delete button.dataset.state;
         }, 1600);
       });
+      toolbar.append(button);
+      pre.prepend(toolbar);
 
-      pre.append(button);
+      const lines = Array.from(code.querySelectorAll<HTMLElement>(".line"));
+      if (showLineNumbers && lines.length > 0)
+        pre.classList.add("code-with-lines");
+      const highlightedLines = parseHighlightedLines(highlightExpression);
+      lines.forEach((line, index) => {
+        if (highlightedLines.has(index + 1))
+          line.classList.add("is-highlighted");
+      });
+
+      if ((forceCollapse || lines.length > 24) && lines.length > 0) {
+        pre.classList.add("is-collapsible");
+        const foldButton = document.createElement("button");
+        foldButton.type = "button";
+        foldButton.className = "code-fold-button";
+        foldButton.textContent = `展开 ${lines.length} 行代码`;
+        foldButton.setAttribute("aria-expanded", "false");
+        foldButton.addEventListener("click", () => {
+          const expanded = pre.classList.toggle("is-expanded");
+          foldButton.setAttribute("aria-expanded", String(expanded));
+          foldButton.textContent = expanded
+            ? "收起代码"
+            : `展开 ${lines.length} 行代码`;
+        });
+        pre.append(foldButton);
+      }
+    });
+  }
+
+  function enhanceArticleImages() {
+    if (!article) return;
+    const lightbox = document.querySelector<HTMLDialogElement>(
+      "[data-image-lightbox]",
+    );
+    const preview = lightbox?.querySelector<HTMLImageElement>(
+      "[data-lightbox-image]",
+    );
+    const caption = lightbox?.querySelector<HTMLElement>(
+      "[data-lightbox-caption]",
+    );
+
+    const openImage = (image: HTMLImageElement) => {
+      if (!lightbox || !preview || !caption) return;
+      preview.src = image.currentSrc || image.src;
+      preview.alt = image.alt;
+      caption.textContent =
+        image.closest("figure")?.querySelector("figcaption")?.textContent ??
+        image.alt;
+      lightbox.showModal();
+    };
+
+    article.querySelectorAll<HTMLImageElement>("img").forEach((image) => {
+      image.loading = "lazy";
+      image.decoding = "async";
+      const setIntrinsicDimensions = () => {
+        if (!image.hasAttribute("width") && image.naturalWidth)
+          image.width = image.naturalWidth;
+        if (!image.hasAttribute("height") && image.naturalHeight)
+          image.height = image.naturalHeight;
+      };
+      if (image.complete) setIntrinsicDimensions();
+      else
+        image.addEventListener("load", setIntrinsicDimensions, { once: true });
+
+      const parent = image.parentElement;
+      if (parent?.matches("[data-article-image]")) {
+        parent.addEventListener("click", () => openImage(image));
+        return;
+      }
+      if (!parent || parent.tagName !== "P" || parent.children.length !== 1)
+        return;
+
+      const figure = document.createElement("figure");
+      figure.className = "article-figure";
+      const zoomButton = document.createElement("button");
+      zoomButton.type = "button";
+      zoomButton.className = "article-image-button";
+      zoomButton.setAttribute(
+        "aria-label",
+        `放大图片：${image.alt || "文章图片"}`,
+      );
+      parent.before(figure);
+      zoomButton.append(image);
+      figure.append(zoomButton);
+      if (image.alt) {
+        const figureCaption = document.createElement("figcaption");
+        figureCaption.textContent = image.alt;
+        figure.append(figureCaption);
+      }
+      parent.remove();
+
+      zoomButton.addEventListener("click", () => openImage(image));
+    });
+
+    lightbox
+      ?.querySelector("[data-lightbox-close]")
+      ?.addEventListener("click", () => lightbox.close());
+    lightbox?.addEventListener("click", (event) => {
+      if (event.target === lightbox) lightbox.close();
+    });
+  }
+
+  function setupArticleActions() {
+    const shareButton = document.querySelector<HTMLButtonElement>(
+      "[data-share-article]",
+    );
+    const copyButton =
+      document.querySelector<HTMLButtonElement>("[data-copy-link]");
+    const status = document.querySelector<HTMLElement>("[data-action-status]");
+    let statusTimer: number | undefined;
+    const announce = (message: string) => {
+      if (!status) return;
+      status.textContent = message;
+      window.clearTimeout(statusTimer);
+      statusTimer = window.setTimeout(() => (status.textContent = ""), 2200);
+    };
+    const copyUrl = async () => {
+      try {
+        await window.navigator.clipboard.writeText(window.location.href);
+        announce("链接已复制");
+      } catch {
+        announce("复制失败，请从地址栏复制");
+      }
+    };
+
+    copyButton?.addEventListener("click", copyUrl);
+    if (!window.navigator.share) shareButton?.setAttribute("hidden", "");
+    shareButton?.addEventListener("click", async () => {
+      try {
+        await window.navigator.share({
+          title: document.title,
+          text: document.querySelector<HTMLMetaElement>(
+            'meta[name="description"]',
+          )?.content,
+          url: window.location.href,
+        });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError")
+          return;
+        await copyUrl();
+      }
     });
   }
 
@@ -748,7 +1305,9 @@ const relatedPosts = allPosts
 
   enhanceArticleLinks();
   enhanceCodeBlocks();
+  enhanceArticleImages();
   enhanceTablesAndHeadings();
+  setupArticleActions();
   updateReadingProgress();
   updateBackToTop();
 </script>

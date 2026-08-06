@@ -5,6 +5,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import robotsTxt from "astro-robots-txt";
 import remarkGfm from "remark-gfm";
+import remarkCodeMeta from "./src/lib/remark-code-meta.mjs";
 
 const SITE_URL = "https://jarvis636431.github.io";
 
@@ -37,11 +38,22 @@ export default defineConfig({
   },
   markdown: {
     syntaxHighlight: "shiki",
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: [remarkGfm, remarkCodeMeta],
     rehypePlugins: [],
     shikiConfig: {
       wrap: true,
       theme: "github-dark",
+      transformers: [
+        {
+          name: "preserve-code-meta",
+          pre(node) {
+            const meta = this.options.meta?.__raw;
+            if (typeof meta === "string" && meta.trim()) {
+              node.properties["data-code-meta"] = meta;
+            }
+          },
+        },
+      ],
     },
     smartypants: true,
   },

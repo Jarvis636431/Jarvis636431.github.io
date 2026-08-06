@@ -6,6 +6,8 @@ publishDate: "2025-06-01"
 tags: [
   "iDesignLab", "项目文档"
 ]
+series: "iDesignLab 工程文档"
+seriesOrder: 3
 draft: true
 readingTime: 2
 ---

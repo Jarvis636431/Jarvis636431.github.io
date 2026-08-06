@@ -6,6 +6,8 @@ publishDate: "2025-06-01"
 tags: [
   "React", "前端", "技术笔记"
 ]
+series: "前端八股"
+seriesOrder: 1
 draft: true
 readingTime: 3
 ---

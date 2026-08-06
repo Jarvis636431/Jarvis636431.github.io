@@ -88,8 +88,35 @@ Schema fields defined in `src/content/config.ts`:
 - `language` (string): BCP 47 content language (defaults to `zh-CN`)
 - `publishDate` (date): Publication date
 - `tags` (array): List of tags
+- `series` (string, optional): Shared title for a sequence of posts
+- `seriesOrder` (positive integer, optional): Reading order inside the series
 - `draft` (boolean): If true, hidden in production
 - Reading time is calculated automatically from the Markdown/MDX body.
+
+Article images written with regular Markdown receive lazy loading, captions from
+their alt text, and click-to-zoom behavior. For responsive AVIF/WebP output with
+intrinsic dimensions, use `ArticleImage` in an MDX post:
+
+```mdx
+import ArticleImage from "@components/ArticleImage.astro";
+import screenshot from "../../assets/blog/screenshot.png";
+
+<ArticleImage
+  src={screenshot}
+  alt="Dashboard overview"
+  caption="Optional caption"
+/>
+```
+
+Fenced code blocks accept a filename, line numbers, highlighted lines, and an
+explicit collapse flag. Blocks longer than 24 lines collapse automatically:
+
+````md
+```ts title="src/example.ts" lineNumbers {2,4-6} collapse
+const first = true;
+const highlighted = true;
+```
+````
 
 #### Projects (`src/content/projects`)
 

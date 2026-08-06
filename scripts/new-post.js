@@ -20,7 +20,13 @@ const getArgValue = (flag) => {
   return index !== -1 ? process.argv[index + 1] : undefined;
 };
 
-const createPost = async ({ title, slug, template = "md" }) => {
+const createPost = async ({
+  title,
+  slug,
+  template = "md",
+  series,
+  seriesOrder,
+}) => {
   const fileName = `${slug}.${template}`;
   const filePath = path.join(BLOG_DIR, fileName);
 
@@ -36,6 +42,9 @@ const createPost = async ({ title, slug, template = "md" }) => {
 
   const publishDate = formatDate();
   const commentId = `blog-${slug}`;
+  const seriesFields = series
+    ? `series: "${series.replace(/"/g, '\\"')}"\nseriesOrder: ${seriesOrder || 1}\n`
+    : "";
 
   const content = `---
 title: "${title.replace(/"/g, '\\"')}"
@@ -46,7 +55,7 @@ publishDate: "${publishDate}"
 updatedDate: "${publishDate}"
 heroImage: ""
 tags: []
-draft: true
+${seriesFields}draft: true
 ---
 
 Start writing here.
@@ -60,11 +69,22 @@ const run = async () => {
   const titleArg = getArgValue("--title");
   const slugArg = getArgValue("--slug");
   const templateArg = getArgValue("--template");
+  const seriesArg = getArgValue("--series");
+  const seriesOrderArg = Number(getArgValue("--series-order"));
   const template = templateArg === "mdx" ? "mdx" : "md";
 
   if (titleArg) {
     const slug = slugArg || slugify(titleArg);
-    await createPost({ title: titleArg, slug, template });
+    await createPost({
+      title: titleArg,
+      slug,
+      template,
+      series: seriesArg,
+      seriesOrder:
+        Number.isInteger(seriesOrderArg) && seriesOrderArg > 0
+          ? seriesOrderArg
+          : 1,
+    });
     return;
   }
 
@@ -78,12 +98,18 @@ const run = async () => {
   const templateInput = (
     await rl.question("Template (md/mdx, default md): ")
   ).trim();
+  const series = (await rl.question("Series (optional): ")).trim();
+  const seriesOrderInput = series
+    ? (await rl.question("Series order (default 1): ")).trim()
+    : "";
   rl.close();
 
   await createPost({
     title: title || "Untitled Post",
     slug,
     template: templateInput === "mdx" ? "mdx" : "md",
+    series,
+    seriesOrder: Number.parseInt(seriesOrderInput, 10) || 1,
   });
 };
 

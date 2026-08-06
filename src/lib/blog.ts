@@ -28,6 +28,50 @@ export function getPostReadingTime(post: BlogPost) {
   return getReadingTime(post.body);
 }
 
+export function getSeriesPosts(current: BlogPost, posts: BlogPost[]) {
+  if (!current.data.series) return [];
+
+  return posts
+    .filter((post) => post.data.series === current.data.series)
+    .slice()
+    .sort((a, b) => {
+      const orderDifference =
+        (a.data.seriesOrder ?? Number.MAX_SAFE_INTEGER) -
+        (b.data.seriesOrder ?? Number.MAX_SAFE_INTEGER);
+      if (orderDifference !== 0) return orderDifference;
+      return a.data.publishDate.getTime() - b.data.publishDate.getTime();
+    });
+}
+
+export function getAdjacentPosts(current: BlogPost, posts: BlogPost[]) {
+  const seriesPosts = getSeriesPosts(current, posts);
+  if (seriesPosts.length > 1) {
+    const index = seriesPosts.findIndex((post) => post.slug === current.slug);
+    return {
+      previous: index > 0 ? seriesPosts[index - 1] : undefined,
+      next: index < seriesPosts.length - 1 ? seriesPosts[index + 1] : undefined,
+      isSeries: true,
+    };
+  }
+
+  const chronologicalPosts = posts
+    .slice()
+    .sort(
+      (a, b) => a.data.publishDate.getTime() - b.data.publishDate.getTime(),
+    );
+  const index = chronologicalPosts.findIndex(
+    (post) => post.slug === current.slug,
+  );
+  return {
+    previous: index > 0 ? chronologicalPosts[index - 1] : undefined,
+    next:
+      index >= 0 && index < chronologicalPosts.length - 1
+        ? chronologicalPosts[index + 1]
+        : undefined,
+    isSeries: false,
+  };
+}
+
 const hasAnyTag = (tags: string[], candidates: string[]) =>
   candidates.some((candidate) => tags.includes(candidate));
 

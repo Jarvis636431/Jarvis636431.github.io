@@ -6,10 +6,11 @@ publishDate: "2025-06-01"
 tags: [
   "iDesignLab", "项目文档"
 ]
+series: "iDesignLab 工程文档"
+seriesOrder: 2
 draft: true
 readingTime: 1
 ---
 
 mariadb 密码 idesign1895
-
 
