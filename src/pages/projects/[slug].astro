@@ -1,6 +1,5 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import Toc from "@components/Toc.astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 
@@ -16,24 +15,6 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props as { project: CollectionEntry<"projects"> };
 const { Content } = await project.render();
-
-const publishDate = new Date(project.data.publishDate).toLocaleDateString(
-  project.data.language,
-  {
-    year: "numeric",
-    month: "long",
-  },
-);
-
-const updatedDate = project.data.updatedDate
-  ? new Date(project.data.updatedDate).toLocaleDateString(
-      project.data.language,
-      {
-        year: "numeric",
-        month: "long",
-      },
-    )
-  : undefined;
 
 const publishDateIso = new Date(project.data.publishDate).toISOString();
 const updatedDateIso = project.data.updatedDate
@@ -97,6 +78,11 @@ const nextProject =
   currentIndex < allProjects.length - 1
     ? allProjects[currentIndex + 1]
     : undefined;
+const statusLabel = {
+  launched: "已上线",
+  "in-progress": "开发中",
+  archived: "已归档",
+} as const;
 ---
 
 <Layout
@@ -118,146 +104,90 @@ const nextProject =
     structuredData: projectStructuredData,
   }}
 >
-  <article class="project">
-    <header
-      class="project__hero bg-surface/80 border border-black/5 rounded-2xl p-8 md:p-10"
+  <article class="case-study">
+    <a class="case-back" href="/projects"
+      ><span aria-hidden="true">←</span> 返回项目</a
     >
-      <a
-        class="project__breadcrumb text-sm text-secondary hover:text-primary transition-colors"
-        href="/projects"
-      >
-        ← Back to all projects
-      </a>
-      <div class="project__hero-grid">
-        <div class="project__hero-left">
-          <div class="project__meta text-sm text-secondary">
-            <span class={`status status--${project.data.status}`}
-              >{project.data.status}</span
-            >
-            <span>{publishDate}</span>
-            {
-              updatedDate && (
-                <>
-                  <span>•</span>
-                  <span>Updated {updatedDate}</span>
-                </>
-              )
-            }
-          </div>
-          <h1>{project.data.title}</h1>
-          <p class="project__summary text-secondary">{project.data.summary}</p>
-          <div class="project__details">
-            {
-              project.data.roles.length > 0 && (
-                <div>
-                  <h2>Roles</h2>
-                  <p>{project.data.roles.join(", ")}</p>
-                </div>
-              )
-            }
-            {
-              project.data.stack.length > 0 && (
-                <div>
-                  <h2>Stack</h2>
-                  <p>{project.data.stack.join(" · ")}</p>
-                </div>
-              )
-            }
-            {
-              project.data.externalUrl && (
-                <div>
-                  <h2>Live</h2>
-                  <a
-                    class="project__link text-primary hover:text-accent-cyan transition-colors"
-                    href={project.data.externalUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Visit project ↗
-                  </a>
-                </div>
-              )
-            }
-          </div>
+
+    <header
+      class:list={["case-hero", !project.data.coverImage && "case-hero--text"]}
+    >
+      <div class="case-hero__copy">
+        <div class="case-hero__eyebrow">
+          <span>Project file</span>
+          <span>{new Date(project.data.publishDate).getFullYear()}</span>
         </div>
-        <div class="project__hero-right">
+        <div>
+          <span class={`case-status case-status--${project.data.status}`}>
+            <i aria-hidden="true"></i>{statusLabel[project.data.status]}
+          </span>
+          <h1>{project.data.title}</h1>
+          <p>{project.data.summary}</p>
           {
-            project.data.coverImage && (
-              <img
-                class="project__cover"
-                src={project.data.coverImage}
-                alt={project.data.title}
-                loading="lazy"
-              />
+            project.data.stack.length > 0 && (
+              <div class="case-hero__stack" aria-label="项目技术栈">
+                {project.data.stack.map((item) => (
+                  <span>{item}</span>
+                ))}
+              </div>
             )
           }
         </div>
+        {
+          project.data.externalUrl && (
+            <a
+              class="case-live"
+              href={project.data.externalUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              访问项目 <span aria-hidden="true">↗</span>
+            </a>
+          )
+        }
+      </div>
+
+      <div class="case-visual" aria-label={`${project.data.title} 项目视觉`}>
+        {
+          project.data.coverImage ? (
+            <img
+              src={project.data.coverImage}
+              alt={`${project.data.title} 项目封面`}
+              loading="eager"
+            />
+          ) : (
+            <div class="case-monogram" aria-hidden="true">
+              {project.data.title.slice(0, 2).toUpperCase()}
+            </div>
+          )
+        }
+        <span class="case-visual__label">Selected work / Jarvis Hub</span>
       </div>
     </header>
 
-    <section class="project__content">
-      <div
-        class="project__content-grid grid gap-10 items-start lg:grid-cols-[minmax(220px,240px)_minmax(0,1fr)]"
-      >
-        <Toc
-          prefix="project"
-          articleId="project-article"
-          tocId="project-toc"
-          ariaLabel="On-page navigation"
-        />
-        <div class="project__article" id="project-article">
-          <div class="prose max-w-none">
-            <Content />
-          </div>
-        </div>
+    <section class="case-body">
+      <div class="case-article" id="project-article">
+        <div class="prose max-w-none"><Content /></div>
       </div>
     </section>
     {
       (prevProject || nextProject) && (
-        <nav
-          aria-label="项目导航"
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
+        <nav aria-label="项目导航" class="case-navigation">
           {prevProject && (
-            <a
-              href={`/projects/${prevProject.slug}`}
-              class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-cyan transition-colors"
-            >
-              <div class="text-xs text-secondary uppercase mb-1">
-                上一个项目
-              </div>
-              <div class="flex items-center justify-between gap-2">
-                <h3 class="text-primary font-semibold group-hover:text-accent-cyan transition-colors">
-                  {prevProject.data.title}
-                </h3>
-                <span class="text-xs text-secondary">
-                  {new Date(prevProject.data.publishDate).toLocaleDateString(
-                    prevProject.data.language,
-                    { year: "numeric", month: "long" },
-                  )}
-                </span>
-              </div>
+            <a href={`/projects/${prevProject.slug}`}>
+              <span>上一个项目</span>
+              <strong>{prevProject.data.title}</strong>
+              <i aria-hidden="true">←</i>
             </a>
           )}
           {nextProject && (
             <a
               href={`/projects/${nextProject.slug}`}
-              class="group block px-4 py-4 bg-surface border border-black/10 rounded-lg hover:border-accent-violet transition-colors"
+              class="case-navigation__next"
             >
-              <div class="text-xs text-secondary uppercase mb-1">
-                下一个项目
-              </div>
-              <div class="flex items-center justify-between gap-2">
-                <h3 class="text-primary font-semibold group-hover:text-accent-violet transition-colors">
-                  {nextProject.data.title}
-                </h3>
-                <span class="text-xs text-secondary">
-                  {new Date(nextProject.data.publishDate).toLocaleDateString(
-                    nextProject.data.language,
-                    { year: "numeric", month: "long" },
-                  )}
-                </span>
-              </div>
+              <span>下一个项目</span>
+              <strong>{nextProject.data.title}</strong>
+              <i aria-hidden="true">→</i>
             </a>
           )}
         </nav>
@@ -267,140 +197,324 @@ const nextProject =
 </Layout>
 
 <style>
-  .project {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+  .case-study {
+    padding: 3rem 0 2rem;
   }
-
-  .project__hero {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .project__hero-grid {
-    display: grid;
-    grid-template-columns: 1.6fr 0.9fr;
-    gap: 24px;
-    align-items: start;
-  }
-
-  .project__hero-left,
-  .project__hero-right {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .project__hero-right {
-    align-items: flex-end;
-  }
-
-  .project__meta {
-    display: flex;
-    gap: 10px;
+  .case-back {
+    display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: rgba(31, 31, 31, 0.55);
+    font:
+      500 0.72rem/1 "IBM Plex Mono",
+      monospace;
+    text-decoration: none;
+    transition: color 180ms ease;
+  }
+  .case-back:hover {
+    color: #2f6f6d;
   }
 
-  .project__hero h1 {
-    margin: 0;
-    font-size: clamp(2.4rem, 4vw, 3.2rem);
-  }
-
-  .project__summary {
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.7;
-    max-width: 720px;
-  }
-
-  .project__details {
+  .case-hero {
+    position: relative;
     display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    min-height: 35rem;
+    overflow: hidden;
+    grid-template-columns: minmax(0, 0.9fr) minmax(22rem, 1.1fr);
+    border-radius: 1.5rem;
+    background: #202523;
+    color: white;
   }
-
-  .project__details h2 {
-    margin: 0 0 6px;
-    font-size: 0.95rem;
+  .case-hero::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
+    mask-image: linear-gradient(90deg, #000, transparent 75%);
+  }
+  .case-hero__copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(2rem, 5vw, 4.5rem);
+  }
+  .case-hero__eyebrow {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: rgba(255, 255, 255, 0.46);
+    font:
+      0.66rem/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.13em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: rgba(107, 107, 107, 0.7);
   }
-
-  .project__details p,
-  .project__link {
+  .case-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    color: rgba(255, 255, 255, 0.68);
+    font:
+      0.7rem/1 "IBM Plex Mono",
+      monospace;
+  }
+  .case-status i {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: #8bd2c8;
+    box-shadow: 0 0 0 0.25rem rgba(139, 210, 200, 0.1);
+  }
+  .case-status--in-progress i {
+    background: #e7bd70;
+    box-shadow: 0 0 0 0.25rem rgba(231, 189, 112, 0.1);
+  }
+  .case-status--archived i {
+    background: #999;
+    box-shadow: none;
+  }
+  .case-hero h1 {
     margin: 0;
+    color: white;
+    font-size: clamp(3.2rem, 6.5vw, 6.4rem);
+    line-height: 0.92;
+    letter-spacing: -0.065em;
+    overflow-wrap: anywhere;
+  }
+  .case-hero__copy p {
+    max-width: 32rem;
+    margin: 1.5rem 0 0;
+    color: rgba(255, 255, 255, 0.58);
+    font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+  .case-hero__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+  }
+  .case-hero__stack span {
+    padding: 0.38rem 0.58rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.3rem;
+    color: rgba(255, 255, 255, 0.58);
+    font:
+      0.61rem/1.2 "IBM Plex Mono",
+      monospace;
+  }
+  .case-live {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 2rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+    color: white;
+    font:
+      0.72rem/1 "IBM Plex Mono",
+      monospace;
     text-decoration: none;
   }
-
-  .project__cover {
-    width: 100%;
-    height: auto;
-    border-radius: 20px;
-    border: 1px solid rgba(31, 31, 31, 0.08);
-    background: #ffffff;
-    object-fit: cover;
-    max-width: 420px;
+  .case-live span {
+    transition: transform 180ms ease;
   }
-
-  .project__content {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+  .case-live:hover span {
+    transform: translate(3px, -3px);
   }
-
-  .project__article {
+  .case-visual {
+    position: relative;
+    display: grid;
     min-width: 0;
-    max-width: 760px;
+    place-items: center;
+    margin: 1.25rem;
+    overflow: hidden;
+    border-radius: 0.8rem;
+    background: #e5e1d7;
+  }
+  .case-visual::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  .case-visual img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .case-monogram {
+    color: rgba(32, 37, 35, 0.86);
+    font:
+      600 clamp(5rem, 14vw, 10rem)/1 "Space Grotesk",
+      sans-serif;
+    letter-spacing: -0.09em;
+  }
+  .case-visual__label {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 0.25rem;
+    background: rgba(32, 37, 35, 0.86);
+    color: rgba(255, 255, 255, 0.7);
+    font:
+      0.58rem/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .project__article h2,
-  .project__article h3 {
-    scroll-margin-top: 120px;
+  .case-body {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: clamp(4rem, 9vw, 7rem) 0;
+  }
+  .case-article {
+    min-width: 0;
+  }
+  :global(.case-article .prose) {
+    max-width: 100%;
+  }
+  :global(.case-article .prose h2) {
+    position: relative;
+    margin-top: 2.8em;
+    padding: 1rem 0 0;
+    border-top: 2px solid #1f1f1f;
+    border-bottom: 0;
+    font-size: 1.8em;
+  }
+  :global(.case-article .prose h2:first-child) {
+    margin-top: 0;
+  }
+  :global(.case-article .prose h3) {
+    color: #2f6f6d;
+  }
+  :global(.case-article .prose img) {
+    border: 1px solid rgba(31, 31, 31, 0.12);
+    border-radius: 0.5rem;
+    background: white;
+    box-shadow: none;
   }
 
-  .status {
-    text-transform: capitalize;
-    padding: 4px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(31, 31, 31, 0.08);
+  .case-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid rgba(31, 31, 31, 0.13);
+    border-bottom: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .case-navigation a {
+    position: relative;
+    display: flex;
+    min-height: 9rem;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.5rem 4rem 1.5rem 1.5rem;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      background 180ms ease,
+      color 180ms ease;
+  }
+  .case-navigation a + a {
+    border-left: 1px solid rgba(31, 31, 31, 0.13);
+  }
+  .case-navigation span {
+    margin-bottom: 0.6rem;
+    color: rgba(31, 31, 31, 0.44);
+    font:
+      0.62rem/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .case-navigation strong {
+    font:
+      600 clamp(1.4rem, 3vw, 2rem)/1.1 "Space Grotesk",
+      "Noto Sans SC",
+      sans-serif;
+  }
+  .case-navigation i {
+    position: absolute;
+    right: 1.5rem;
+    color: #2f6f6d;
+    font-style: normal;
+    font-size: 1.25rem;
+  }
+  .case-navigation__next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  .case-navigation a:hover {
+    background: #202523;
+    color: white;
+  }
+  .case-navigation a:hover span {
+    color: rgba(255, 255, 255, 0.5);
   }
 
-  .status--launched {
-    background: rgba(34, 197, 94, 0.12);
-    border-color: rgba(34, 197, 94, 0.3);
-    color: rgba(21, 128, 61, 0.95);
-  }
-
-  .status--in-progress {
-    background: rgba(250, 204, 21, 0.12);
-    border-color: rgba(250, 204, 21, 0.3);
-    color: rgba(161, 98, 7, 0.95);
-  }
-
-  .status--archived {
-    background: rgba(31, 31, 31, 0.05);
-    border-color: rgba(31, 31, 31, 0.12);
-    color: rgba(107, 107, 107, 0.9);
-  }
-
-  @media (max-width: 720px) {
-    .project__hero-grid {
+  @media (max-width: 900px) {
+    .case-hero {
       grid-template-columns: 1fr;
     }
-
-    .project__hero-right {
-      align-items: stretch;
+    .case-hero__copy {
+      min-height: 28rem;
     }
-
-    .project__cover {
-      max-width: 100%;
+    .case-visual {
+      min-height: 26rem;
     }
+  }
 
-    .project__details {
+  @media (max-width: 600px) {
+    .case-study {
+      padding-top: 2.25rem;
+    }
+    .case-hero {
+      min-height: 0;
+      border-radius: 1rem;
+    }
+    .case-hero__copy {
+      min-height: 25rem;
+      padding: 1.5rem;
+    }
+    .case-hero h1 {
+      font-size: clamp(3rem, 18vw, 4.5rem);
+    }
+    .case-hero__copy p {
+      font-size: 0.95rem;
+    }
+    .case-visual {
+      min-height: 19rem;
+      margin: 0.65rem;
+    }
+    .case-body {
+      padding: 3.5rem 0;
+    }
+    .case-navigation {
       grid-template-columns: 1fr;
+    }
+    .case-navigation a + a {
+      border-top: 1px solid rgba(31, 31, 31, 0.13);
+      border-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .case-back,
+    .case-live span,
+    .case-navigation a {
+      transition: none;
     }
   }
 </style>
