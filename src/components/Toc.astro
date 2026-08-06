@@ -45,7 +45,7 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
       const toc = document.getElementById(tocId);
       if (!article || !toc) return;
 
-      const headings = Array.from(article.querySelectorAll("h1, h2, h3"));
+      const headings = Array.from(article.querySelectorAll("h2, h3"));
       const slugify = (s) =>
         s
           .toLowerCase()
@@ -53,13 +53,21 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
           .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
           .replace(/^-+|-+$/g, "");
       const items = [];
+      const usedIds = new Map();
       headings.forEach((h) => {
         const text = h.textContent || "";
-        const id = h.id || slugify(text);
-        if (!h.id) h.id = id;
-        const depth = h.tagName === "H1" ? 1 : h.tagName === "H2" ? 2 : 3;
+        const baseId = h.id || slugify(text) || "section";
+        const occurrence = usedIds.get(baseId) || 0;
+        const id = occurrence === 0 ? baseId : `${baseId}-${occurrence + 1}`;
+        usedIds.set(baseId, occurrence + 1);
+        h.id = id;
+        const depth = h.tagName === "H2" ? 2 : 3;
         items.push({ id, depth, text });
       });
+      if (items.length < 2) {
+        root.setAttribute("hidden", "");
+        return;
+      }
       const fragment = document.createDocumentFragment();
       items.forEach((item) => {
         const link = document.createElement("a");

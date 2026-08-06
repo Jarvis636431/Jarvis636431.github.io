@@ -1,5 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import { getBlogCategory } from "@lib/blog";
 import { getCollection } from "astro:content";
 
 const posts = (
@@ -34,6 +35,24 @@ function formatDate(date: Date, locale = "zh-CN") {
     day: "2-digit",
   });
 }
+
+const categoryCounts = posts.reduce((counts, post) => {
+  const category = getBlogCategory(post.data.tags);
+  counts.set(category, (counts.get(category) ?? 0) + 1);
+  return counts;
+}, new Map<string, number>());
+const categoryOrder = [
+  "前端",
+  "AI 与算法",
+  "面经",
+  "项目记录",
+  "周报",
+  "数据库",
+  "其他",
+];
+const categories = categoryOrder.filter((category) =>
+  categoryCounts.has(category),
+);
 ---
 
 <Layout
@@ -66,11 +85,33 @@ function formatDate(date: Date, locale = "zh-CN") {
     </header>
 
     <main>
+      <div class="blog-filters" aria-label="文章分类">
+        <button type="button" data-category="全部" aria-pressed="true">
+          <span>全部</span><small>{posts.length}</small>
+        </button>
+        {
+          categories.map((category) => (
+            <button type="button" data-category={category} aria-pressed="false">
+              <>
+                <span>{category}</span>
+                <small>{categoryCounts.get(category)}</small>
+              </>
+            </button>
+          ))
+        }
+      </div>
+      <p class="filter-result" aria-live="polite">
+        <span id="visible-post-count">{posts.length}</span> 篇文章
+      </p>
       {
         posts.length > 0 ? (
           <ol class="post-list" aria-label="全部文章">
             {posts.map((post) => (
-              <li class="post-item" lang={post.data.language}>
+              <li
+                class="post-item"
+                lang={post.data.language}
+                data-post-category={getBlogCategory(post.data.tags)}
+              >
                 <a class="post-link" href={`/blogs/${post.slug}`}>
                   <time datetime={post.data.publishDate.toISOString()}>
                     {formatDate(post.data.publishDate, post.data.language)}
@@ -82,7 +123,7 @@ function formatDate(date: Date, locale = "zh-CN") {
                   </div>
 
                   <div class="post-meta">
-                    <span>{post.data.readingTime ?? 6} min</span>
+                    <span>{post.data.readingTime ?? 6} 分钟</span>
                     {post.data.tags.length > 0 && (
                       <span class="post-topic">{post.data.tags[0]}</span>
                     )}
@@ -102,6 +143,7 @@ function formatDate(date: Date, locale = "zh-CN") {
           </section>
         )
       }
+      <div class="filter-empty" hidden>这个分类下暂时没有文章。</div>
     </main>
   </div>
 </Layout>
@@ -168,6 +210,56 @@ function formatDate(date: Date, locale = "zh-CN") {
     padding: 0;
     list-style: none;
     border-top: 1px solid rgba(31, 31, 31, 0.12);
+  }
+
+  .blog-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem 1.5rem;
+    padding: 0 0 1.15rem;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+  }
+  .blog-filters button {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    padding: 0.3rem 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    color: rgba(31, 31, 31, 0.48);
+    font:
+      0.72rem/1.4 "IBM Plex Mono",
+      monospace;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+  .blog-filters button small {
+    font-size: 0.58rem;
+    color: rgba(31, 31, 31, 0.3);
+  }
+  .blog-filters button:hover,
+  .blog-filters button[aria-pressed="true"] {
+    border-bottom-color: #2f6f6d;
+    color: #2f6f6d;
+  }
+  .blog-filters button:focus-visible {
+    border-radius: 0.15rem;
+    outline: 2px solid #2f6f6d;
+    outline-offset: 3px;
+  }
+  .filter-result {
+    margin: 0.9rem 0 0;
+    color: rgba(31, 31, 31, 0.4);
+    font:
+      0.65rem/1.4 "IBM Plex Mono",
+      monospace;
+  }
+  .filter-empty {
+    padding: 3rem 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+    color: rgba(31, 31, 31, 0.55);
   }
 
   .post-item {
@@ -340,3 +432,32 @@ function formatDate(date: Date, locale = "zh-CN") {
     }
   }
 </style>
+
+<script>
+  const filterButtons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-category]"),
+  );
+  const postItems = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-post-category]"),
+  );
+  const visibleCount = document.getElementById("visible-post-count");
+  const filterEmpty = document.querySelector<HTMLElement>(".filter-empty");
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const category = button.dataset.category ?? "全部";
+      let count = 0;
+      filterButtons.forEach((item) =>
+        item.setAttribute("aria-pressed", String(item === button)),
+      );
+      postItems.forEach((item) => {
+        const visible =
+          category === "全部" || item.dataset.postCategory === category;
+        item.hidden = !visible;
+        if (visible) count += 1;
+      });
+      if (visibleCount) visibleCount.textContent = String(count);
+      if (filterEmpty) filterEmpty.hidden = count > 0;
+    });
+  });
+</script>

@@ -14,7 +14,6 @@ const blog = defineCollection({
     language: z.string().min(2).default("zh-CN"),
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    heroImage: z.string().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     readingTime: z.number().int().positive().optional(),

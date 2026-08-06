@@ -2,6 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Toc from "@components/Toc.astro";
 import Comments from "@components/Comments.astro";
+import { scoreRelatedPost } from "@lib/blog";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 
@@ -47,10 +48,6 @@ const updatedDateIso = post.data.updatedDate
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
-const heroImageUrl = post.data.heroImage
-  ? new URL(post.data.heroImage, siteOrigin).toString()
-  : undefined;
-
 const articleStructuredData: Record<string, unknown> = {
   "@context": "https://schema.org",
   "@type": "Article",
@@ -75,10 +72,6 @@ const articleStructuredData: Record<string, unknown> = {
   inLanguage: post.data.language,
 };
 
-if (heroImageUrl) {
-  articleStructuredData.image = [heroImageUrl];
-}
-
 if (post.data.tags.length > 0) {
   articleStructuredData.keywords = post.data.tags.join(", ");
 }
@@ -94,15 +87,22 @@ const allPosts = (
       new Date(a.data.publishDate).getTime(),
   );
 const commentTerm = post.data.commentId ?? post.slug;
+const commentsConfigured = Boolean(
+  import.meta.env.PUBLIC_GISCUS_REPO &&
+  import.meta.env.PUBLIC_GISCUS_REPO_ID &&
+  import.meta.env.PUBLIC_GISCUS_CATEGORY &&
+  import.meta.env.PUBLIC_GISCUS_CATEGORY_ID,
+);
+const titleLength = Array.from(post.data.title).length;
+const titleSize =
+  titleLength > 30 ? "long" : titleLength > 18 ? "medium" : "short";
 const relatedPosts = allPosts
   .filter((candidate) => candidate.slug !== post.slug)
-  .map((candidate) => {
-    const sharedTags = candidate.data.tags.filter((tag) =>
-      post.data.tags.includes(tag),
-    );
-    return { post: candidate, score: sharedTags.length };
-  })
-  .filter(({ score }) => score > 0 || post.data.tags.length === 0)
+  .map((candidate) => ({
+    post: candidate,
+    score: scoreRelatedPost(post, candidate),
+  }))
+  .filter(({ score }) => score > 0)
   .sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return (
@@ -121,12 +121,6 @@ const relatedPosts = allPosts
   seo={{
     canonical: canonicalUrl,
     type: "article",
-    image: post.data.heroImage
-      ? {
-          src: post.data.heroImage,
-          alt: post.data.title,
-        }
-      : undefined,
     publishedTime: publishDateIso,
     modifiedTime: updatedDateIso,
     tags: post.data.tags,
@@ -155,7 +149,9 @@ const relatedPosts = allPosts
         {post.data.tags[0] && <span>{post.data.tags[0]}</span>}
       </div>
 
-      <h1>{post.data.title}</h1>
+      <h1 class={`article-title article-title--${titleSize}`}>
+        {post.data.title}
+      </h1>
       <p class="article-deck">{post.data.description}</p>
 
       <div class="article-meta">
@@ -172,8 +168,14 @@ const relatedPosts = allPosts
             </>
           )
         }
-        <span aria-hidden="true">·</span>
-        <a href="#comments">参与讨论</a>
+        {
+          (commentsConfigured || import.meta.env.DEV) && (
+            <>
+              <span aria-hidden="true">·</span>
+              <a href="#comments">参与讨论</a>
+            </>
+          )
+        }
       </div>
 
       {
@@ -183,18 +185,6 @@ const relatedPosts = allPosts
               <span>{tag}</span>
             ))}
           </div>
-        )
-      }
-
-      {
-        post.data.heroImage && (
-          <figure class="article-cover">
-            <img
-              src={post.data.heroImage}
-              alt={post.data.title}
-              loading="eager"
-            />
-          </figure>
         )
       }
     </header>
@@ -319,6 +309,16 @@ const relatedPosts = allPosts
     letter-spacing: -0.06em;
     text-wrap: balance;
   }
+  .article-title--medium {
+    font-size: clamp(2.65rem, 6vw, 4.8rem);
+    line-height: 1.02;
+  }
+  .article-title--long {
+    max-width: 56rem;
+    font-size: clamp(2.25rem, 5vw, 3.9rem);
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+  }
   .article-deck {
     max-width: 44rem;
     margin: 1.8rem 0 0;
@@ -355,15 +355,6 @@ const relatedPosts = allPosts
     content: "#";
     margin-right: 0.12rem;
     color: rgba(47, 111, 109, 0.72);
-  }
-  .article-cover {
-    margin: 3rem 0 0;
-  }
-  .article-cover img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: 1px solid rgba(31, 31, 31, 0.12);
   }
   .article-rule {
     max-width: 64rem;
@@ -471,6 +462,17 @@ const relatedPosts = allPosts
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
+  :global(.code-language) {
+    position: absolute;
+    top: 0.85rem;
+    left: 1rem;
+    color: rgba(255, 255, 255, 0.42);
+    font:
+      0.62rem/1 "IBM Plex Mono",
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
   :global(.prose pre code) {
     background: transparent;
@@ -528,6 +530,38 @@ const relatedPosts = allPosts
     display: table;
     min-width: 100%;
   }
+  :global(.table-scroll) {
+    width: 100%;
+    margin: 2em 0;
+    overflow-x: auto;
+    border-top: 1px solid rgba(31, 31, 31, 0.12);
+    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+  }
+  :global(.table-scroll table) {
+    margin: 0;
+  }
+  :global(.heading-anchor) {
+    margin-left: 0.45rem;
+    color: rgba(47, 111, 109, 0.42);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.65em;
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition:
+      opacity 160ms ease,
+      color 160ms ease;
+  }
+  :global(.article-content h2:hover .heading-anchor),
+  :global(.article-content h3:hover .heading-anchor),
+  :global(.heading-anchor:focus-visible) {
+    color: #2f6f6d;
+    opacity: 1;
+  }
+  :global(.prose input[type="checkbox"]) {
+    margin-right: 0.55rem;
+    accent-color: #2f6f6d;
+  }
 
   @media (max-width: 1023px) {
     .article-layout {
@@ -546,6 +580,13 @@ const relatedPosts = allPosts
     }
     .article-hero h1 {
       font-size: clamp(2.55rem, 13vw, 4rem);
+    }
+    .article-title--medium {
+      font-size: clamp(2.3rem, 11vw, 3.35rem);
+    }
+    .article-title--long {
+      font-size: clamp(2rem, 9.5vw, 2.85rem);
+      line-height: 1.12;
     }
     .article-deck {
       margin-top: 1.35rem;
@@ -639,6 +680,16 @@ const relatedPosts = allPosts
       const code = pre.querySelector("code");
       if (!code?.textContent) return;
 
+      const languageClass = Array.from(code.classList).find((className) =>
+        className.startsWith("language-"),
+      );
+      if (languageClass) {
+        const language = document.createElement("span");
+        language.className = "code-language";
+        language.textContent = languageClass.replace("language-", "");
+        pre.append(language);
+      }
+
       const button = document.createElement("button");
       button.type = "button";
       button.className = "code-copy-button";
@@ -656,6 +707,36 @@ const relatedPosts = allPosts
     });
   }
 
+  function enhanceTablesAndHeadings() {
+    if (!article) return;
+
+    article.querySelectorAll("table").forEach((table) => {
+      if (table.parentElement?.classList.contains("table-scroll")) return;
+      const wrapper = document.createElement("div");
+      wrapper.className = "table-scroll";
+      wrapper.tabIndex = 0;
+      wrapper.setAttribute("role", "region");
+      wrapper.setAttribute("aria-label", "可横向滚动的数据表格");
+      table.before(wrapper);
+      wrapper.append(table);
+    });
+
+    article
+      .querySelectorAll<HTMLElement>("h2[id], h3[id]")
+      .forEach((heading) => {
+        if (heading.querySelector(".heading-anchor")) return;
+        const anchor = document.createElement("a");
+        anchor.className = "heading-anchor";
+        anchor.href = `#${heading.id}`;
+        anchor.textContent = "#";
+        anchor.setAttribute(
+          "aria-label",
+          `链接到“${heading.textContent?.trim() ?? "本节"}”`,
+        );
+        heading.append(anchor);
+      });
+  }
+
   window.addEventListener("scroll", () => {
     updateReadingProgress();
     updateBackToTop();
@@ -667,6 +748,7 @@ const relatedPosts = allPosts
 
   enhanceArticleLinks();
   enhanceCodeBlocks();
+  enhanceTablesAndHeadings();
   updateReadingProgress();
   updateBackToTop();
 </script>

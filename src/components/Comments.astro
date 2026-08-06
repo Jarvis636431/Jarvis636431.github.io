@@ -15,40 +15,48 @@ const theme = import.meta.env.PUBLIC_GISCUS_THEME || "light";
 const isConfigured = Boolean(repo && repoId && category && categoryId);
 ---
 
-<section class="mt-20 border-t border-black/10 pt-8" aria-labelledby="comments">
-  <div class="mb-6 flex items-center justify-between gap-4">
-    <h2 id="comments" class="font-display text-2xl font-semibold">{title}</h2>
-    <span class="font-mono text-xs uppercase tracking-wide text-secondary">
-      GitHub Discussions
-    </span>
-  </div>
-
-  {
-    isConfigured ? (
-      <script
-        is:inline
-        src="https://giscus.app/client.js"
-        data-repo={repo}
-        data-repo-id={repoId}
-        data-category={category}
-        data-category-id={categoryId}
-        data-mapping="specific"
-        data-term={term}
-        data-strict="1"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme={theme}
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async
-      />
-    ) : (
-      <div class="border-y border-black/10 py-5 text-sm leading-6 text-secondary">
-        评论区尚未启用，请配置 <code>PUBLIC_GISCUS_REPO</code>、{" "}
-        <code>PUBLIC_GISCUS_REPO_ID</code>、<code>PUBLIC_GISCUS_CATEGORY</code>
-        和 <code>PUBLIC_GISCUS_CATEGORY_ID</code>。
+{
+  (isConfigured || import.meta.env.DEV) && (
+    <section
+      class="mt-20 border-t border-black/10 pt-8"
+      aria-labelledby="comments"
+    >
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <h2 id="comments" class="font-display text-2xl font-semibold">
+          {title}
+        </h2>
+        <span class="font-mono text-xs uppercase tracking-wide text-secondary">
+          GitHub Discussions
+        </span>
       </div>
-    )
-  }
-</section>
+
+      {isConfigured ? (
+        <script
+          is:inline
+          src="https://giscus.app/client.js"
+          data-repo={repo}
+          data-repo-id={repoId}
+          data-category={category}
+          data-category-id={categoryId}
+          data-mapping="specific"
+          data-term={term}
+          data-strict="1"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="bottom"
+          data-theme={theme}
+          data-lang="zh-CN"
+          crossorigin="anonymous"
+          async
+        />
+      ) : (
+        <div class="border-y border-black/10 py-5 text-sm leading-6 text-secondary">
+          评论区尚未启用，请配置 <code>PUBLIC_GISCUS_REPO</code>、{" "}
+          <code>PUBLIC_GISCUS_REPO_ID</code>、
+          <code>PUBLIC_GISCUS_CATEGORY</code>和{" "}
+          <code>PUBLIC_GISCUS_CATEGORY_ID</code>。
+        </div>
+      )}
+    </section>
+  )
+}
