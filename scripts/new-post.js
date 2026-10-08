@@ -53,7 +53,6 @@ commentId: "${commentId}"
 language: "zh-CN"
 publishDate: "${publishDate}"
 updatedDate: "${publishDate}"
-heroImage: ""
 tags: []
 ${seriesFields}draft: true
 ---
