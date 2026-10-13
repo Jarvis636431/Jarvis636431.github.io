@@ -50,7 +50,12 @@ export default [
   {
     files: ["scripts/**/*.{js,mjs}", "*.config.mjs"],
     languageOptions: {
-      globals: nodeGlobals,
+      globals: {
+        ...nodeGlobals,
+        fetch: "readonly",
+        AbortSignal: "readonly",
+        URLSearchParams: "readonly",
+      },
     },
   },
   {

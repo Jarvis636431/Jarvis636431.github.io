@@ -124,7 +124,6 @@ const structuredData = {
                   <strong>
                     #{pullRequest.number} · {pullRequest.title}
                   </strong>
-                  <span>{pullRequest.description}</span>
                   <time datetime={pullRequest.mergedAt}>
                     Merged {formatMergeDate(pullRequest.mergedAt)}
                   </time>
@@ -253,11 +252,6 @@ const structuredData = {
   }
   .contribution-links strong {
     font-weight: 500;
-  }
-  .contribution-links span {
-    color: #666;
-    font-size: 0.9rem;
-    line-height: 1.6;
   }
   a:hover {
     text-decoration: underline;

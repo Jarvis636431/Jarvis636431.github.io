@@ -14,7 +14,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "new:post": "node scripts/new-post.js",
-    "new:project": "node scripts/new-project.js"
+    "new:project": "node scripts/new-project.js",
+    "sync:contributions": "node scripts/sync-contributions.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.8",

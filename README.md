@@ -133,11 +133,28 @@ Schema fields defined in `src/content/config.ts`:
 
 ## 📂 Project Structure
 
-The About page's merged PR records are maintained in
-`src/data/contributions.ts`. Verify the PR author and GitHub `merged_at` value
-before adding an entry, then update `contributionsVerifiedAt`. The page groups
-records by repository, sorts them by merge time, and formats dates in
-`Asia/Shanghai`. This is a maintained snapshot; the GitHub link shows live results.
+The About page displays GitHub metadata directly from
+`src/data/contributions.generated.json`: repository, PR number, original title,
+and merge time. This file is maintained by the sync script.
+
+`Sync merged PR contributions` runs daily at midnight (00:00 in Asia/Shanghai,
+16:00 UTC), and can be triggered manually from the Actions tab. It queries
+PRs authored by `Jarvis636431`, excludes their own repositories, verifies actual
+merge times, and keeps existing records if search results temporarily omit them.
+API errors or incomplete results fail the run without changing the snapshot.
+
+When metadata changes, the workflow verifies the site, commits only the generated
+JSON to `main`, and calls the existing deployment workflow directly. Manual runs
+also redeploy unchanged data, allowing a failed deployment to be retried. It uses
+the built-in `GITHUB_TOKEN`; no personal token is needed. Repository rules must
+allow the bot to push to `main`. The workflow must be on the default branch to
+run on a schedule; GitHub may delay scheduled runs or disable them after 60 days
+of inactivity in a public repository.
+
+Run `pnpm sync:contributions` locally (optional `GH_TOKEN` for higher API limits).
+Dates are displayed
+in `Asia/Shanghai`. The displayed verification date changes only when metadata
+changes, avoiding commits for unchanged scheduled checks.
 
 ```text
 /
