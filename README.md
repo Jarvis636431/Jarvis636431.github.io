@@ -133,6 +133,12 @@ Schema fields defined in `src/content/config.ts`:
 
 ## 📂 Project Structure
 
+The About page's merged PR records are maintained in
+`src/data/contributions.ts`. Verify the PR author and GitHub `merged_at` value
+before adding an entry, then update `contributionsVerifiedAt`. The page groups
+records by repository, sorts them by merge time, and formats dates in
+`Asia/Shanghai`. This is a maintained snapshot; the GitHub link shows live results.
+
 ```text
 /
 ├── public/            # Static assets (images, favicon)

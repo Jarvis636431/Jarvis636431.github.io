@@ -1,6 +1,13 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { resumeProfile } from "../data/resume";
+import {
+  contributionProjects,
+  contributionSearchUrl,
+  contributionsVerifiedAt,
+  formatMergeDate,
+  mergedPullRequestCount,
+} from "../data/contributions";
 
 const description =
   "Software engineer at JD.com, focused on AI applications, cross-platform engineering, and developer tools.";
@@ -91,61 +98,50 @@ const structuredData = {
       </dl>
     </section>
 
-    <section class="about-section" aria-labelledby="contributions-title">
+    <section
+      id="open-source"
+      class="about-section"
+      aria-labelledby="contributions-title"
+    >
       <h2 id="contributions-title">Open-source contributions</h2>
+      <p class="contribution-summary">
+        {mergedPullRequestCount} merged PRs across {contributionProjects.length}
+        projects · Verified <time datetime={contributionsVerifiedAt}>
+          {formatMergeDate(contributionsVerifiedAt + "T00:00:00+08:00")}
+        </time>
+      </p>
       <div class="contribution-links">
-        <div>
-          <h3>SwitchHosts</h3>
-          <a
-            href="https://github.com/oldj/SwitchHosts/pull/1051"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <strong
-              >#1051 · Show the macOS tray panel over full-screen apps</strong
-            >
-            <span
-              >Used a non-activating native panel to display the tray window
-              above full-screen apps, and corrected mouse event handling to
-              prevent accidental dismissal on pointer movement.</span
-            >
-            <time datetime="2026-09-30">September 30, 2026</time>
-          </a>
-        </div>
-        <div>
-          <h3>Taro</h3>
-          <a
-            href="https://github.com/NervJS/taro/pull/19459"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <strong
-              >#19459 · Fix template aliases after removing event listeners</strong
-            >
-            <span
-              >Aligned template selection with node initialization to prevent
-              mini-program runtime crashes when Text and Image nodes lose their
-              last event listener.</span
-            >
-            <time datetime="2026-07-21">July 21, 2026</time>
-          </a>
-          <a
-            href="https://github.com/NervJS/taro/pull/19273"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <strong
-              >#19273 · Support project initialization in the current directory</strong
-            >
-            <span
-              >Added support for taro init ., deriving the project name from the
-              current directory, with tests for path resolution and
-              initialization.</span
-            >
-            <time datetime="2026-07-17">July 17, 2026</time>
-          </a>
-        </div>
+        {
+          contributionProjects.map((project) => (
+            <div>
+              <h3>{project.name}</h3>
+              {project.pullRequests.map((pullRequest) => (
+                <a
+                  href={`https://github.com/${project.repository}/pull/${pullRequest.number}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <strong>
+                    #{pullRequest.number} · {pullRequest.title}
+                  </strong>
+                  <span>{pullRequest.description}</span>
+                  <time datetime={pullRequest.mergedAt}>
+                    Merged {formatMergeDate(pullRequest.mergedAt)}
+                  </time>
+                </a>
+              ))}
+            </div>
+          ))
+        }
       </div>
+      <a
+        class="contribution-search"
+        href={contributionSearchUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View all merged PRs on GitHub ↗
+      </a>
     </section>
   </article>
 </Layout>
@@ -221,6 +217,19 @@ const structuredData = {
     margin: 0.3rem 0 0;
     color: #666;
     font-size: 0.85rem;
+  }
+  .contribution-summary {
+    margin: -0.5rem 0 1.5rem;
+    color: #666;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .contribution-search {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: #2f6f6d;
+    font-size: 0.85rem;
+    text-underline-offset: 0.3em;
   }
   .contribution-links {
     display: grid;
