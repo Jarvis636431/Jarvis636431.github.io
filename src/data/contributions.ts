@@ -44,17 +44,6 @@ export const contributionProjects = [
   );
 
 export const mergedPullRequestCount = mergedPullRequests.length;
-export const contributionYears = [
-  ...new Set(mergedPullRequests.map((pr) => getMergeYear(pr.mergedAt))),
-].sort((a, b) => b.localeCompare(a));
-
-export function getMergeYear(mergedAt: string) {
-  return new Intl.DateTimeFormat("en", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-  }).format(new Date(mergedAt));
-}
-
 export function formatMergeDate(date: string) {
   return new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Shanghai",

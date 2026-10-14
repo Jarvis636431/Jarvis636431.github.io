@@ -1,9 +1,7 @@
 ---
 import {
   contributionProjects,
-  contributionYears,
   formatMergeDate,
-  getMergeYear,
   mergedPullRequests,
 } from "../data/contributions";
 
@@ -11,88 +9,47 @@ interface Props {
   compact?: boolean;
 }
 const { compact = false } = Astro.props;
-const limit = compact ? 6 : 20;
 ---
 
 <div
   class:list={["contributions", compact && "contributions--compact"]}
-  data-contributions
-  data-compact={String(compact)}
-  data-limit={limit}
+  data-contributions={compact ? undefined : true}
+  data-page-size={compact ? undefined : 6}
 >
-  <div class="repositories">
-    <h3>Contributed repositories</h3>
-    <ul aria-label="Contributed repositories">
-      {
-        contributionProjects.map((project) => (
+  {
+    !compact && (
+      <div class="repositories">
+        <h3>Contributed repositories</h3>
+        <ul aria-label="Filter by repository">
           <li>
-            <a href={project.url} target="_blank" rel="noopener noreferrer">
-              {project.repository}
-              <span aria-label={`${project.count} merged pull requests`}>
-                {project.count}
-              </span>
-            </a>
+            <button
+              type="button"
+              data-repository=""
+              aria-pressed="true"
+              disabled
+            >
+              All repositories <span>{mergedPullRequests.length}</span>
+            </button>
           </li>
-        ))
-      }
-    </ul>
-  </div>
-
-  <form
-    class="filter-controls"
-    data-filters
-    hidden
-    role="search"
-    aria-label="Filter contributions"
-  >
-    <label>
-      <span>Repository</span>
-      <select name="repository">
-        <option value="">All repositories</option>
-        {
-          contributionProjects.map((project) => (
-            <option value={project.repository}>
-              {project.repository} ({project.count})
-            </option>
-          ))
-        }
-      </select>
-    </label>
-    {
-      !compact && (
-        <>
-          <label>
-            <span>Merge year</span>
-            <select name="year">
-              <option value="">All years</option>
-              {contributionYears.map((year) => (
-                <option value={year}>{year}</option>
-              ))}
-            </select>
-          </label>
-          <label class="keyword-filter">
-            <span>Search contributions</span>
-            <input
-              type="search"
-              name="q"
-              placeholder="Title, PR number, label or description"
-              autocomplete="off"
-            />
-          </label>
-          <label>
-            <span>Sort by</span>
-            <select name="sort">
-              <option value="newest">Recently merged</option>
-              <option value="oldest">Oldest first</option>
-            </select>
-          </label>
-        </>
-      )
-    }
-    <button type="reset" class="reset-filters" data-reset hidden
-      >Clear filters</button
-    >
-  </form>
+          {contributionProjects.map((project) => (
+            <li>
+              <button
+                type="button"
+                data-repository={project.repository}
+                aria-pressed="false"
+                disabled
+              >
+                {project.repository}
+                <span aria-label={`${project.count} merged pull requests`}>
+                  {project.count}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
 
   <p
     class="results-count"
@@ -100,6 +57,7 @@ const limit = compact ? 6 : 20;
     role="status"
     aria-live="polite"
     aria-atomic="true"
+    tabindex="-1"
   >
     {
       compact
@@ -113,26 +71,11 @@ const limit = compact ? 6 : 20;
     aria-label={compact ? "Recent contributions" : "Merged pull requests"}
   >
     {
-      mergedPullRequests.map((pr, index) => (
+      mergedPullRequests.slice(0, compact ? 6 : undefined).map((pr) => (
         <li
           class="contribution-entry"
           data-entry
           data-repository={pr.repository}
-          data-year={getMergeYear(pr.mergedAt)}
-          data-search={
-            compact
-              ? undefined
-              : [
-                  pr.title,
-                  pr.repository,
-                  String(pr.number),
-                  ...pr.labels,
-                  pr.body,
-                ]
-                  .join(" ")
-                  .toLowerCase()
-          }
-          hidden={compact && index >= 6}
         >
           <article>
             <div class="entry-meta">
@@ -235,21 +178,27 @@ const limit = compact ? 6 : 20;
     }
   </ul>
 
-  <div class="empty-state" data-empty hidden>
-    <h3>No matching contributions</h3>
-    <p>Try another repository, year or search term.</p>
-    <button type="button" data-clear>Clear filters</button>
-  </div>
   {
     !compact && (
-      <button type="button" class="show-more" data-more hidden>
-        Show more contributions
-      </button>
+      <nav
+        class="pagination"
+        aria-label="Contribution pages"
+        data-pagination
+        hidden
+      >
+        <button type="button" data-previous disabled>
+          Previous
+        </button>
+        <div class="pagination-pages" data-pages />
+        <button type="button" data-next disabled>
+          Next
+        </button>
+      </nav>
     )
   }
   {
     compact && (
-      <a class="all-contributions" href="/contributions" data-all>
+      <a class="all-contributions" href="/contributions">
         View all contributions
       </a>
     )
@@ -260,125 +209,134 @@ const limit = compact ? 6 : 20;
   for (const root of document.querySelectorAll<HTMLElement>(
     "[data-contributions]",
   )) {
-    const form = root.querySelector<HTMLFormElement>("[data-filters]");
-    const list = root.querySelector<HTMLUListElement>(".contribution-list");
     const status = root.querySelector<HTMLElement>("[data-results]");
-    const empty = root.querySelector<HTMLElement>("[data-empty]");
-    const reset = root.querySelector<HTMLButtonElement>("[data-reset]");
-    if (!form || !list || !status || !empty || !reset) continue;
-
-    const compact = root.dataset.compact === "true";
-    const pageSize = Number(root.dataset.limit);
-    let visibleLimit = pageSize;
+    if (!status) continue;
+    const pageSize = Number(root.dataset.pageSize);
     const entries = Array.from(
       root.querySelectorAll<HTMLLIElement>("[data-entry]"),
     );
-    const repository = form.querySelector<HTMLSelectElement>(
-      'select[name="repository"]',
-    )!;
-    const year = form.querySelector<HTMLSelectElement>('select[name="year"]');
-    const search = form.querySelector<HTMLInputElement>('input[name="q"]');
-    const sort = form.querySelector<HTMLSelectElement>('select[name="sort"]');
-    const more = root.querySelector<HTMLButtonElement>("[data-more]");
-    const all = root.querySelector<HTMLAnchorElement>("[data-all]");
+    const repositoryButtons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("button[data-repository]"),
+    );
+    const repositories = new Set(
+      repositoryButtons.map((button) => button.dataset.repository),
+    );
+    const pagination = root.querySelector<HTMLElement>("[data-pagination]");
+    const pages = root.querySelector<HTMLElement>("[data-pages]");
+    const previous = root.querySelector<HTMLButtonElement>("[data-previous]");
+    const next = root.querySelector<HTMLButtonElement>("[data-next]");
+    let repository = "";
+    let currentPage = 1;
 
     const readUrl = () => {
       const params = new URL(window.location.href).searchParams;
-      for (const control of [repository, year, search, sort]) {
-        if (!control) continue;
-        control.value =
-          params.get(control.name) ?? (control.name === "sort" ? "newest" : "");
-        if (control instanceof HTMLSelectElement && control.selectedIndex < 0) {
-          control.value = control.name === "sort" ? "newest" : "";
-        }
-      }
+      const requestedRepository = params.get("repository") ?? "";
+      repository = repositories.has(requestedRepository)
+        ? requestedRepository
+        : "";
+      const requestedPage = Number(params.get("page") ?? 1);
+      currentPage =
+        Number.isInteger(requestedPage) && requestedPage > 0
+          ? requestedPage
+          : 1;
     };
 
-    const update = (writeUrl = true) => {
-      const keyword = search?.value.trim().toLowerCase() ?? "";
-      const terms = keyword.split(/\s+/).filter(Boolean);
+    const update = (historyMode?: "push" | "replace") => {
       const matching = entries.filter(
-        (entry) =>
-          (!repository.value ||
-            entry.dataset.repository === repository.value) &&
-          (!year?.value || entry.dataset.year === year.value) &&
-          terms.every((term) => entry.dataset.search?.includes(term)),
+        (entry) => !repository || entry.dataset.repository === repository,
       );
-      if (sort?.value === "oldest") matching.reverse();
-      for (const entry of entries) entry.hidden = true;
-      for (const entry of matching.slice(0, visibleLimit)) {
-        entry.hidden = false;
-        list.append(entry);
-      }
-      const shown = Math.min(visibleLimit, matching.length);
-      status.textContent = compact
-        ? `Latest ${shown} of ${matching.length} merged PRs${repository.value ? ` in ${repository.value}` : ""}`
-        : `Showing ${shown} of ${matching.length} matching PRs`;
-      empty.hidden = matching.length !== 0;
-      list.hidden = matching.length === 0;
-      reset.hidden =
-        !repository.value &&
-        !year?.value &&
-        !keyword &&
-        sort?.value !== "oldest";
-      if (more) {
-        more.hidden = shown >= matching.length;
-        more.textContent = `Show ${Math.min(pageSize, matching.length - shown)} more contributions`;
-      }
-      if (all) {
-        const url = new URL("/contributions", window.location.origin);
-        if (repository.value)
-          url.searchParams.set("repository", repository.value);
-        all.href = url.pathname + url.search;
-      }
-      if (writeUrl) {
-        const url = new URL(window.location.href);
-        for (const control of [repository, year, search, sort]) {
-          if (!control) continue;
-          const value = control.value.trim();
-          if (value && !(control.name === "sort" && value === "newest"))
-            url.searchParams.set(control.name, value);
-          else url.searchParams.delete(control.name);
-        }
-        window.history.replaceState(
-          null,
-          "",
-          url.pathname + url.search + url.hash,
+      const pageCount = Math.max(1, Math.ceil(matching.length / pageSize));
+      currentPage = Math.min(currentPage, pageCount);
+      const start = (currentPage - 1) * pageSize;
+      const visible = new Set(matching.slice(start, start + pageSize));
+      for (const entry of entries) entry.hidden = !visible.has(entry);
+      for (const button of repositoryButtons) {
+        button.disabled = false;
+        button.setAttribute(
+          "aria-pressed",
+          String(button.dataset.repository === repository),
         );
       }
+      const scope = repository ? ` in ${repository}` : "";
+      status.textContent = matching.length
+        ? `Showing ${start + 1}–${start + visible.size} of ${matching.length} PRs${scope}`
+        : "No contributions yet";
+
+      if (pagination && pages && previous && next) {
+        pagination.hidden = pageCount <= 1;
+        previous.disabled = currentPage === 1;
+        previous.dataset.page = String(currentPage - 1);
+        next.disabled = currentPage === pageCount;
+        next.dataset.page = String(currentPage + 1);
+        pages.replaceChildren();
+        const displayedPages = new Set([1, pageCount]);
+        for (
+          let number = Math.max(1, currentPage - 1);
+          number <= Math.min(pageCount, currentPage + 1);
+          number++
+        )
+          displayedPages.add(number);
+        let lastPage = 0;
+        for (const number of [...displayedPages].sort((a, b) => a - b)) {
+          if (lastPage && number - lastPage > 1) {
+            const gap = document.createElement("span");
+            gap.textContent = "…";
+            gap.setAttribute("aria-hidden", "true");
+            pages.append(gap);
+          }
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = String(number);
+          button.dataset.page = String(number);
+          button.setAttribute("aria-label", `Page ${number}`);
+          if (number === currentPage)
+            button.setAttribute("aria-current", "page");
+          pages.append(button);
+          lastPage = number;
+        }
+      }
+      if (historyMode) {
+        const url = new URL(window.location.href);
+        if (repository) url.searchParams.set("repository", repository);
+        else url.searchParams.delete("repository");
+        if (currentPage > 1) url.searchParams.set("page", String(currentPage));
+        else url.searchParams.delete("page");
+        const href = url.pathname + url.search + url.hash;
+        if (historyMode === "replace")
+          window.history.replaceState(null, "", href);
+        else if (
+          href !==
+          window.location.pathname +
+            window.location.search +
+            window.location.hash
+        )
+          window.history.pushState(null, "", href);
+      }
     };
 
-    const filter = () => {
-      visibleLimit = pageSize;
-      update();
-    };
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      filter();
-    });
-    form.addEventListener("input", filter);
-    form.addEventListener("reset", () => {
-      repository.value = "";
-      if (year) year.value = "";
-      if (search) search.value = "";
-      if (sort) sort.value = "newest";
-      filter();
-    });
-    root
-      .querySelector("[data-clear]")
-      ?.addEventListener("click", () => form.reset());
-    more?.addEventListener("click", () => {
-      visibleLimit += pageSize;
-      update(false);
+    root.addEventListener("click", (event) => {
+      if (!(event.target instanceof HTMLElement)) return;
+      const button = event.target.closest<HTMLButtonElement>(
+        "button[data-repository], button[data-page]",
+      );
+      if (!button || button.disabled) return;
+      if (button.dataset.repository !== undefined) {
+        repository = button.dataset.repository;
+        currentPage = 1;
+        update("push");
+      } else {
+        currentPage = Number(button.dataset.page);
+        update("push");
+        status.scrollIntoView({ block: "start" });
+        status.focus({ preventScroll: true });
+      }
     });
     window.addEventListener("popstate", () => {
       readUrl();
-      visibleLimit = pageSize;
-      update(false);
+      update();
     });
     readUrl();
-    update();
-    form.hidden = false;
+    update("replace");
   }
 </script>
 
@@ -406,7 +364,7 @@ const limit = compact ? 6 : 20;
     padding: 0;
     list-style: none;
   }
-  .repositories a {
+  .repositories button {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -417,56 +375,17 @@ const limit = compact ? 6 : 20;
     font-size: 0.8rem;
     overflow-wrap: anywhere;
   }
-  .repositories a:hover {
+  .repositories button:hover,
+  .repositories button[aria-pressed="true"] {
     border-color: #2f6f6d;
     color: #2f6f6d;
+    background: #2f6f6d0d;
+    text-decoration: none;
   }
-  .repositories a span {
+  .repositories button span {
     color: #6b6b6b;
     font-family: "IBM Plex Mono", monospace;
     font-size: 0.7rem;
-  }
-  .filter-controls {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 1fr);
-    gap: 1rem;
-    align-items: end;
-    margin-bottom: 1.5rem;
-  }
-  .filter-controls label {
-    display: grid;
-    min-width: 0;
-    gap: 0.5rem;
-  }
-  .filter-controls label > span {
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 0.8rem;
-  }
-  .keyword-filter {
-    grid-column: 1 / 3;
-    grid-row: 2;
-  }
-  .filter-controls label:last-of-type {
-    grid-column: 3;
-    grid-row: 1;
-  }
-  input,
-  select {
-    width: 100%;
-    min-width: 0;
-    height: 2.75rem;
-    padding: 0.6rem 0.75rem;
-    background: #fff;
-    color: #1f1f1f;
-    border: 1px solid #1f1f1f26;
-    border-radius: 8px;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 0.8rem;
-  }
-  .reset-filters {
-    grid-column: 3;
-    grid-row: 2;
-    justify-self: start;
   }
   button,
   .all-contributions {
@@ -484,9 +403,7 @@ const limit = compact ? 6 : 20;
   }
   a:focus-visible,
   button:focus-visible,
-  summary:focus-visible,
-  input:focus-visible,
-  select:focus-visible {
+  summary:focus-visible {
     outline: 2px solid #2f6f6d;
     outline-offset: 4px;
   }
@@ -613,38 +530,48 @@ const limit = compact ? 6 : 20;
     margin-top: 0.75rem;
     color: #2f6f6d;
   }
-  .empty-state {
-    padding: 2rem 0;
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 1.5rem;
     border-top: 1px solid #1f1f1f1a;
   }
-  .empty-state h3 {
-    font-size: 1rem;
-    font-weight: 500;
+  .pagination-pages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
   }
-  .empty-state p {
-    margin: 0.5rem 0;
-    color: #6b6b6b;
-  }
-  .show-more {
-    width: 100%;
-    margin-top: 0.5rem;
-    padding: 0.75rem;
+  .pagination :global(button) {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
     border: 1px solid #1f1f1f1a;
     border-radius: 8px;
+    color: #2f6f6d;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.85rem;
+  }
+  .pagination :global(button[aria-current="page"]) {
+    border-color: #2f6f6d;
+    background: #2f6f6d0d;
+  }
+  .pagination :global(button:disabled) {
+    color: #6b6b6b;
+    opacity: 0.5;
+    cursor: default;
+  }
+  .pagination :global(button:focus-visible) {
+    outline: 2px solid #2f6f6d;
+    outline-offset: 4px;
   }
   .all-contributions {
     display: inline-block;
     margin-top: 1rem;
-  }
-  .contributions--compact .filter-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-  }
-  .contributions--compact .filter-controls label {
-    flex: 1;
-    max-width: 24rem;
-    min-width: min(100%, 15rem);
   }
   .contributions--compact .contribution-entry {
     padding: 1.1rem 0;
@@ -653,24 +580,6 @@ const limit = compact ? 6 : 20;
     font-size: 1rem;
   }
   @media (max-width: 640px) {
-    .filter-controls {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-    .keyword-filter {
-      grid-column: 1 / -1;
-      grid-row: auto;
-    }
-    .filter-controls label:last-of-type {
-      grid-column: auto;
-      grid-row: auto;
-    }
-    .reset-filters {
-      grid-column: auto;
-      grid-row: auto;
-    }
-    .filter-controls label:first-child {
-      grid-column: 1 / -1;
-    }
     .entry-stats {
       gap: 0.6rem 1rem;
     }

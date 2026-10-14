@@ -1,6 +1,23 @@
 {
   "pullRequests": [
     {
+      "repository": "web-infra-dev/rsbuild",
+      "number": 8670,
+      "title": "fix(core): recognize charset attributes in custom HTML templates",
+      "url": "https://github.com/web-infra-dev/rsbuild/pull/8670",
+      "body": "## Motivation\n\nCustom templates containing `<meta charset=utf-8>` or `<meta charset = 'utf-8'>` receive a second charset declaration. Similar attribute names or text inside quoted attribute values can also suppress the default declaration incorrectly.\n\nFixes #8669.\n\n## Changes\n\nRecognize charset attributes independently of value quoting and whitespace around `=`, while skipping quoted attribute values and requiring an attribute boundary. Preserve the template's existing declaration.\n\nAdd an HTML build regression covering unquoted and spaced declarations plus misleading attribute text. Exclude the two syntax fixtures from formatting so their input remains intact.\n\nValidation: the new regression failed before the fix; `pnpm run build`, `pnpm run e2e cases/html` (75 tests), and `pnpm check` passed.",
+      "labels": [],
+      "createdAt": "2026-10-14T05:28:50Z",
+      "mergedAt": "2026-10-14T06:44:32Z",
+      "additions": 61,
+      "deletions": 1,
+      "changedFiles": 6,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 2,
+      "mergedBy": "chenjiahan"
+    },
+    {
       "repository": "Tencent/WeKnora",
       "number": 4224,
       "title": "fix(frontend): preserve nonempty lists when pressing Enter",

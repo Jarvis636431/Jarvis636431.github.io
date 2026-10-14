@@ -138,11 +138,12 @@ The About page displays GitHub metadata directly from
 creation and merge times, labels, descriptions, change statistics, and discussion
 counts. This file is maintained by the sync script.
 
-About shows contribution totals, linked repositories, and the latest six merged
-PRs with a repository filter. `/contributions` contains the full archive with
-repository, merge-year, and keyword filters, chronological sorting, and expandable
-PR descriptions. Filter selections are preserved in the URL. Dates use
-`Asia/Shanghai`. The snapshot contains only PR records; no sync timestamp is stored.
+About shows contribution totals and the latest six merged PRs, with a link to
+the complete archive. `/contributions` contains the full archive in reverse chronological
+order, with repository filters, six PRs per page, and expandable PR descriptions.
+The selected repository and page are preserved in the URL; switching repositories
+returns to the first page. Dates use `Asia/Shanghai`. The snapshot contains only PR records; no sync
+timestamp is stored.
 
 `Sync merged PR contributions` runs daily at midnight (00:00 in Asia/Shanghai,
 16:00 UTC), and can be triggered manually from the Actions tab. It queries
