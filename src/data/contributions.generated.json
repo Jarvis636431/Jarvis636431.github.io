@@ -1,6 +1,23 @@
 {
   "pullRequests": [
     {
+      "repository": "web-infra-dev/rspack",
+      "number": 16087,
+      "title": "docs: update renamed crates in project architecture",
+      "url": "https://github.com/web-infra-dev/rspack/pull/16087",
+      "body": "## Motivation\n\nThe English and Chinese project architecture guides still point contributors to crate names replaced by #13547 and #12532.\n\nCloses #16086.\n\n## Changes\n\n- Replace `rspack_futures` with `rspack_parallel` and describe its iterator consumers and scoped async execution utilities.\n- Replace `rspack_plugin_warn_sensitive_module` with `rspack_plugin_case_sensitive` and describe case-conflict warnings for module names and output filenames.\n- Keep both locales in sync.\n\nValidation: `git diff --check` passed. Verified that all 87 documented crate directories exist, both locale crate lists match, and the existing JavaScript API architecture link target exists. No headings or links changed. The website build was attempted but did not complete: local dependencies are absent, and the command was stopped after producing no output. No runtime code changed.",
+      "labels": [],
+      "createdAt": "2026-10-14T09:15:32Z",
+      "mergedAt": "2026-10-14T09:21:53Z",
+      "additions": 4,
+      "deletions": 4,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "chenjiahan"
+    },
+    {
       "repository": "web-infra-dev/rsbuild",
       "number": 8670,
       "title": "fix(core): recognize charset attributes in custom HTML templates",
