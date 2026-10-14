@@ -140,7 +140,8 @@ counts. This file is maintained by the sync script.
 
 About shows contribution totals and the latest six merged PRs, with a link to
 the complete archive. `/contributions` contains the full archive in reverse chronological
-order, with repository filters, six PRs per page, and expandable PR descriptions.
+order, with repository filters, six PRs per page, and expandable PR descriptions rendered
+as sanitized GitHub-flavored Markdown (including tables, task lists and code blocks).
 The selected repository and page are preserved in the URL; switching repositories
 returns to the first page. Dates use `Asia/Shanghai`. The snapshot contains only PR records; no sync
 timestamp is stored.

@@ -1,6 +1,8 @@
 ---
+import Markdown from "./Markdown.astro";
 import {
   contributionProjects,
+  contributionSearchUrl,
   formatMergeDate,
   mergedPullRequests,
 } from "../data/contributions";
@@ -164,7 +166,9 @@ const { compact = false } = Astro.props;
                 {pr.body.trim() && (
                   <details class="entry-description">
                     <summary>PR description</summary>
-                    <div>{pr.body}</div>
+                    <div>
+                      <Markdown content={pr.body} />
+                    </div>
                     <a href={pr.url} target="_blank" rel="noopener noreferrer">
                       View discussion on GitHub
                     </a>
@@ -180,20 +184,29 @@ const { compact = false } = Astro.props;
 
   {
     !compact && (
-      <nav
-        class="pagination"
-        aria-label="Contribution pages"
-        data-pagination
-        hidden
-      >
-        <button type="button" data-previous disabled>
-          Previous
-        </button>
-        <div class="pagination-pages" data-pages />
-        <button type="button" data-next disabled>
-          Next
-        </button>
-      </nav>
+      <footer class="contributions-footer">
+        <a
+          href={contributionSearchUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View merged PRs on GitHub
+        </a>
+        <nav
+          class="pagination"
+          aria-label="Contribution pages"
+          data-pagination
+          hidden
+        >
+          <button type="button" data-previous disabled>
+            Previous
+          </button>
+          <div class="pagination-pages" data-pages />
+          <button type="button" data-next disabled>
+            Next
+          </button>
+        </nav>
+      </footer>
     )
   }
   {
@@ -521,7 +534,6 @@ const { compact = false } = Astro.props;
     border-radius: 8px;
     background: #f8f7f4;
     color: #525252;
-    white-space: pre-wrap;
     overflow-wrap: anywhere;
     line-height: 1.7;
   }
@@ -530,14 +542,30 @@ const { compact = false } = Astro.props;
     margin-top: 0.75rem;
     color: #2f6f6d;
   }
+  .contributions-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #1f1f1f1a;
+  }
+  .contributions-footer > a {
+    color: #2f6f6d;
+    font-size: 0.85rem;
+  }
+  .contributions-footer > a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
   .pagination {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 0.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #1f1f1f1a;
+    margin-left: auto;
   }
   .pagination-pages {
     display: flex;

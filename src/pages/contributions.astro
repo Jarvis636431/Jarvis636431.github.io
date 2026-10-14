@@ -3,7 +3,6 @@ import Layout from "@layouts/Layout.astro";
 import Contributions from "../components/Contributions.astro";
 import {
   contributionProjects,
-  contributionSearchUrl,
   mergedPullRequestCount,
 } from "../data/contributions";
 const description =
@@ -43,11 +42,6 @@ const pageUrl = new URL(
       </p>
     </header>
     <Contributions />
-    <footer class="contributions-footer">
-      <a href={contributionSearchUrl} target="_blank" rel="noopener noreferrer"
-        >View merged PRs on GitHub</a
-      >
-    </footer>
   </div>
 </Layout>
 
@@ -82,15 +76,6 @@ const pageUrl = new URL(
     font-family: "Space Grotesk", sans-serif;
     color: #1f1f1f;
     font-size: 0.9rem;
-  }
-  .contributions-footer {
-    margin-top: 2rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid #1f1f1f1a;
-  }
-  .contributions-footer a {
-    color: #2f6f6d;
-    font-size: 0.85rem;
   }
   a:hover {
     text-decoration: underline;

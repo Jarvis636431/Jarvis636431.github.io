@@ -1,0 +1,152 @@
+---
+import { renderMarkdown } from "../lib/markdown.mjs";
+
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+const html = await renderMarkdown(content);
+---
+
+<div class="markdown-body" set:html={html} />
+
+<style>
+  .markdown-body {
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .markdown-body :global(> :first-child) {
+    margin-top: 0;
+  }
+  .markdown-body :global(> :last-child) {
+    margin-bottom: 0;
+  }
+  .markdown-body :global(p),
+  .markdown-body :global(ul),
+  .markdown-body :global(ol),
+  .markdown-body :global(blockquote),
+  .markdown-body :global(pre),
+  .markdown-body :global(table),
+  .markdown-body :global(details) {
+    margin: 1rem 0;
+  }
+  .markdown-body :global(h1),
+  .markdown-body :global(h2),
+  .markdown-body :global(h3),
+  .markdown-body :global(h4),
+  .markdown-body :global(h5),
+  .markdown-body :global(h6) {
+    margin: 1.5rem 0 0.75rem;
+    color: #1f1f1f;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .markdown-body :global(h1) {
+    font-size: 1.5rem;
+  }
+  .markdown-body :global(h2) {
+    font-size: 1.25rem;
+  }
+  .markdown-body :global(h3) {
+    font-size: 1.05rem;
+  }
+  .markdown-body :global(h4),
+  .markdown-body :global(h5),
+  .markdown-body :global(h6) {
+    font-size: 0.9rem;
+  }
+  .markdown-body :global(ul),
+  .markdown-body :global(ol) {
+    padding-left: 1.5rem;
+  }
+  .markdown-body :global(ul) {
+    list-style: disc;
+  }
+  .markdown-body :global(ol) {
+    list-style: decimal;
+  }
+  .markdown-body :global(li + li) {
+    margin-top: 0.3rem;
+  }
+  .markdown-body :global(li > p) {
+    margin: 0.4rem 0;
+  }
+  .markdown-body :global(li > ul),
+  .markdown-body :global(li > ol) {
+    margin: 0.4rem 0;
+  }
+  .markdown-body :global(.task-list-item) {
+    list-style: none;
+  }
+  .markdown-body :global(input[type="checkbox"]) {
+    margin-right: 0.4rem;
+    accent-color: #2f6f6d;
+  }
+  .markdown-body :global(a) {
+    color: #2f6f6d;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .markdown-body :global(a:focus-visible),
+  .markdown-body :global(summary:focus-visible) {
+    outline: 2px solid #2f6f6d;
+    outline-offset: 4px;
+  }
+  .markdown-body :global(blockquote) {
+    padding-left: 1rem;
+    border-left: 3px solid #2f6f6d40;
+    color: #6b6b6b;
+  }
+  .markdown-body :global(code) {
+    padding: 0.15rem 0.3rem;
+    background: #1f1f1f08;
+    border-radius: 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.85em;
+  }
+  .markdown-body :global(pre) {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 1rem;
+    border: 1px solid #1f1f1f1a;
+    border-radius: 8px;
+    background: #fff;
+    line-height: 1.65;
+    white-space: pre;
+  }
+  .markdown-body :global(pre code) {
+    padding: 0;
+    background: none;
+    overflow-wrap: normal;
+  }
+  .markdown-body :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  .markdown-body :global(th),
+  .markdown-body :global(td) {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #1f1f1f26;
+    text-align: left;
+  }
+  .markdown-body :global(th) {
+    background: #1f1f1f05;
+    font-weight: 600;
+  }
+  .markdown-body :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  .markdown-body :global(hr) {
+    margin: 1.5rem 0;
+    border: 0;
+    border-top: 1px solid #1f1f1f1a;
+  }
+  .markdown-body :global(summary) {
+    cursor: pointer;
+  }
+</style>
