@@ -135,7 +135,14 @@ Schema fields defined in `src/content/config.ts`:
 
 The About page displays GitHub metadata directly from
 `src/data/contributions.generated.json`: repository, PR number, original title,
-and merge time. This file is maintained by the sync script.
+creation and merge times, labels, descriptions, change statistics, and discussion
+counts. This file is maintained by the sync script.
+
+About shows contribution totals, linked repositories, and the latest six merged
+PRs with a repository filter. `/contributions` contains the full archive with
+repository, merge-year, and keyword filters, chronological sorting, and expandable
+PR descriptions. Filter selections are preserved in the URL. Dates use
+`Asia/Shanghai`. The snapshot contains only PR records; no sync timestamp is stored.
 
 `Sync merged PR contributions` runs daily at midnight (00:00 in Asia/Shanghai,
 16:00 UTC), and can be triggered manually from the Actions tab. It queries
@@ -152,9 +159,7 @@ run on a schedule; GitHub may delay scheduled runs or disable them after 60 days
 of inactivity in a public repository.
 
 Run `pnpm sync:contributions` locally (optional `GH_TOKEN` for higher API limits).
-Dates are displayed
-in `Asia/Shanghai`. The displayed verification date changes only when metadata
-changes, avoiding commits for unchanged scheduled checks.
+Unchanged metadata does not produce a commit.
 
 ```text
 /

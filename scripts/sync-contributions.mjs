@@ -52,7 +52,21 @@ export async function fetchContributions(request) {
         typeof pr.title !== "string" ||
         !pr.title.trim() ||
         typeof pr.merged_at !== "string" ||
-        !Number.isFinite(Date.parse(pr.merged_at))
+        !Number.isFinite(Date.parse(pr.merged_at)) ||
+        typeof pr.created_at !== "string" ||
+        !Number.isFinite(Date.parse(pr.created_at)) ||
+        pr.html_url !== `https://github.com/${repository}/pull/${number}` ||
+        (pr.body !== null && typeof pr.body !== "string") ||
+        !Array.isArray(pr.labels) ||
+        pr.labels.some((label) => typeof label.name !== "string") ||
+        [
+          "additions",
+          "deletions",
+          "changed_files",
+          "commits",
+          "comments",
+          "review_comments",
+        ].some((field) => !Number.isInteger(pr[field]) || pr[field] < 0)
       ) {
         throw new Error(`Unverified merged PR: ${repository}#${number}`);
       }
@@ -60,7 +74,18 @@ export async function fetchContributions(request) {
         repository,
         number: pr.number,
         title: pr.title,
+        url: pr.html_url,
+        body: pr.body ?? "",
+        labels: pr.labels.map((label) => label.name).sort(),
+        createdAt: pr.created_at,
         mergedAt: pr.merged_at,
+        additions: pr.additions,
+        deletions: pr.deletions,
+        changedFiles: pr.changed_files,
+        commits: pr.commits,
+        comments: pr.comments,
+        reviewComments: pr.review_comments,
+        mergedBy: pr.merged_by?.login ?? null,
       });
     }
     page++;
@@ -73,7 +98,7 @@ export async function fetchContributions(request) {
   return [...records.values()];
 }
 
-export function mergeSnapshot(previous, incoming, now = new Date()) {
+export function mergeSnapshot(previous, incoming) {
   // Retain known contributions if GitHub's search index temporarily omits them.
   const records = new Map(
     previous.pullRequests.map((pr) => [`${pr.repository}#${pr.number}`, pr]),
@@ -85,19 +110,12 @@ export function mergeSnapshot(previous, incoming, now = new Date()) {
     b.number - a.number;
   const pullRequests = [...records.values()].sort(sort);
   const changed =
+    Object.keys(previous).some((key) => key !== "pullRequests") ||
     JSON.stringify(pullRequests) !==
-    JSON.stringify(previous.pullRequests.slice().sort(sort));
+      JSON.stringify(previous.pullRequests.slice().sort(sort));
   return {
     changed,
     snapshot: {
-      syncedAt: changed
-        ? new Intl.DateTimeFormat("en-CA", {
-            timeZone: "Asia/Shanghai",
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-          }).format(now)
-        : previous.syncedAt,
       pullRequests,
     },
   };

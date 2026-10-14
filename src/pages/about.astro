@@ -1,11 +1,9 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import Contributions from "../components/Contributions.astro";
 import { resumeProfile } from "../data/resume";
 import {
   contributionProjects,
-  contributionSearchUrl,
-  contributionsVerifiedAt,
-  formatMergeDate,
   mergedPullRequestCount,
 } from "../data/contributions";
 
@@ -105,42 +103,9 @@ const structuredData = {
     >
       <h2 id="contributions-title">Open-source contributions</h2>
       <p class="contribution-summary">
-        {mergedPullRequestCount} merged PRs across {contributionProjects.length}
-        projects · Verified <time datetime={contributionsVerifiedAt}>
-          {formatMergeDate(contributionsVerifiedAt + "T00:00:00+08:00")}
-        </time>
+        {mergedPullRequestCount} merged PRs across {contributionProjects.length} repositories
       </p>
-      <div class="contribution-links">
-        {
-          contributionProjects.map((project) => (
-            <div>
-              <h3>{project.name}</h3>
-              {project.pullRequests.map((pullRequest) => (
-                <a
-                  href={`https://github.com/${project.repository}/pull/${pullRequest.number}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <strong>
-                    #{pullRequest.number} · {pullRequest.title}
-                  </strong>
-                  <time datetime={pullRequest.mergedAt}>
-                    Merged {formatMergeDate(pullRequest.mergedAt)}
-                  </time>
-                </a>
-              ))}
-            </div>
-          ))
-        }
-      </div>
-      <a
-        class="contribution-search"
-        href={contributionSearchUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        View all merged PRs on GitHub ↗
-      </a>
+      <Contributions compact />
     </section>
   </article>
 </Layout>
@@ -222,36 +187,6 @@ const structuredData = {
     color: #666;
     font-size: 0.8rem;
     line-height: 1.6;
-  }
-  .contribution-search {
-    display: inline-block;
-    margin-top: 1.5rem;
-    color: #2f6f6d;
-    font-size: 0.85rem;
-    text-underline-offset: 0.3em;
-  }
-  .contribution-links {
-    display: grid;
-    gap: 1.25rem;
-  }
-  .contribution-links h3 {
-    margin: 0 0 1rem;
-    font-size: 1.05rem;
-    font-weight: 600;
-  }
-  .contribution-links a {
-    display: grid;
-    gap: 0.5rem;
-  }
-  .contribution-links a + a {
-    margin-top: 1.25rem;
-  }
-  .contribution-links time {
-    color: #666;
-    font-size: 0.8rem;
-  }
-  .contribution-links strong {
-    font-weight: 500;
   }
   a:hover {
     text-decoration: underline;

@@ -1,54 +1,65 @@
 import snapshot from "./contributions.generated.json";
 
 export interface MergedPullRequest {
+  repository: string;
   number: number;
   title: string;
+  url: string;
+  body: string;
+  labels: string[];
+  createdAt: string;
   mergedAt: string;
+  additions: number;
+  deletions: number;
+  changedFiles: number;
+  commits: number;
+  comments: number;
+  reviewComments: number;
+  mergedBy: string | null;
 }
 
-export interface ContributionProject {
-  repository: string;
-  name: string;
-  pullRequests: MergedPullRequest[];
-}
-
-export const contributionsVerifiedAt = snapshot.syncedAt;
 export const contributionSearchUrl =
-  "https://github.com/search?q=author%3AJarvis636431+is%3Apr+is%3Amerged+-user%3AJarvis636431&type=pullrequests";
+  "https://github.com/search?q=author%3AJarvis636431+is%3Apr+is%3Amerged+is%3Apublic+-user%3AJarvis636431&type=pullrequests";
 
-const projects = new Map<string, ContributionProject>();
-for (const pullRequest of snapshot.pullRequests) {
-  const { repository, ...metadata } = pullRequest;
-  let project = projects.get(repository);
-  if (!project) {
-    project = {
-      repository,
-      name: repository.split("/")[1],
-      pullRequests: [],
-    };
-    projects.set(repository, project);
-  }
-  project.pullRequests.push(metadata);
-}
-
-export const contributionProjects = [...projects.values()]
-  .map((project) => ({
-    ...project,
-    pullRequests: project.pullRequests.sort((a, b) =>
-      b.mergedAt.localeCompare(a.mergedAt),
-    ),
-  }))
-  .sort((a, b) =>
-    b.pullRequests[0].mergedAt.localeCompare(a.pullRequests[0].mergedAt),
+export const mergedPullRequests: MergedPullRequest[] = snapshot.pullRequests
+  .slice()
+  .sort(
+    (a, b) =>
+      b.mergedAt.localeCompare(a.mergedAt) ||
+      a.repository.localeCompare(b.repository) ||
+      b.number - a.number,
   );
 
-export const mergedPullRequestCount = snapshot.pullRequests.length;
+export const contributionProjects = [
+  ...new Set(mergedPullRequests.map((pr) => pr.repository)),
+]
+  .map((repository) => ({
+    repository,
+    url: `https://github.com/${repository}`,
+    count: mergedPullRequests.filter((pr) => pr.repository === repository)
+      .length,
+  }))
+  .sort(
+    (a, b) => b.count - a.count || a.repository.localeCompare(b.repository),
+  );
 
-export function formatMergeDate(mergedAt: string) {
+export const mergedPullRequestCount = mergedPullRequests.length;
+export const contributionYears = [
+  ...new Set(mergedPullRequests.map((pr) => getMergeYear(pr.mergedAt))),
+].sort((a, b) => b.localeCompare(a));
+
+export function getMergeYear(mergedAt: string) {
+  return new Intl.DateTimeFormat("en", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+  }).format(new Date(mergedAt));
+}
+
+export function formatMergeDate(date: string) {
   return new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Shanghai",
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
-  }).format(new Date(mergedAt));
+  }).format(new Date(date));
 }

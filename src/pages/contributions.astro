@@ -1,0 +1,103 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Contributions from "../components/Contributions.astro";
+import {
+  contributionProjects,
+  contributionSearchUrl,
+  mergedPullRequestCount,
+} from "../data/contributions";
+const description =
+  "Merged open-source pull requests by Jarvis. Browse contributions by repository, merge year and keyword.";
+const pageUrl = new URL(
+  "/contributions",
+  Astro.site ?? "https://jarvis636431.github.io",
+).toString();
+---
+
+<Layout
+  title="Open-source contributions - Jarvis Hub"
+  lang="en"
+  description={description}
+  seo={{
+    canonical: pageUrl,
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Jarvis open-source contributions",
+      description,
+      url: pageUrl,
+      inLanguage: "en",
+    },
+  }}
+>
+  <div class="contributions-page">
+    <header class="contributions-header">
+      <a class="back-link" href="/about#open-source">Back to About</a>
+      <h1>Open-source contributions</h1>
+      <p>
+        Bug fixes, features and documentation merged into projects I use and
+        contribute to.
+      </p>
+      <p class="contributions-summary">
+        {mergedPullRequestCount} merged PRs across {contributionProjects.length} repositories
+      </p>
+    </header>
+    <Contributions />
+    <footer class="contributions-footer">
+      <a href={contributionSearchUrl} target="_blank" rel="noopener noreferrer"
+        >View merged PRs on GitHub</a
+      >
+    </footer>
+  </div>
+</Layout>
+
+<style>
+  .contributions-page {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 5rem) 0 2rem;
+  }
+  .contributions-header {
+    margin-bottom: 2.25rem;
+  }
+  .back-link {
+    color: #2f6f6d;
+    font-size: 0.85rem;
+  }
+  h1 {
+    max-width: 17ch;
+    margin: 1.25rem 0 1rem;
+    font-size: clamp(2.3rem, 6vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  .contributions-header > p {
+    max-width: 55ch;
+    color: #6b6b6b;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .contributions-header .contributions-summary {
+    margin-top: 1rem;
+    font-family: "Space Grotesk", sans-serif;
+    color: #1f1f1f;
+    font-size: 0.9rem;
+  }
+  .contributions-footer {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #1f1f1f1a;
+  }
+  .contributions-footer a {
+    color: #2f6f6d;
+    font-size: 0.85rem;
+  }
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  a:focus-visible {
+    outline: 2px solid #2f6f6d;
+    outline-offset: 4px;
+  }
+</style>

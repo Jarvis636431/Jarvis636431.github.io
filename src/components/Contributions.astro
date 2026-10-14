@@ -1,0 +1,681 @@
+---
+import {
+  contributionProjects,
+  contributionYears,
+  formatMergeDate,
+  getMergeYear,
+  mergedPullRequests,
+} from "../data/contributions";
+
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+const limit = compact ? 6 : 20;
+---
+
+<div
+  class:list={["contributions", compact && "contributions--compact"]}
+  data-contributions
+  data-compact={String(compact)}
+  data-limit={limit}
+>
+  <div class="repositories">
+    <h3>Contributed repositories</h3>
+    <ul aria-label="Contributed repositories">
+      {
+        contributionProjects.map((project) => (
+          <li>
+            <a href={project.url} target="_blank" rel="noopener noreferrer">
+              {project.repository}
+              <span aria-label={`${project.count} merged pull requests`}>
+                {project.count}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <form
+    class="filter-controls"
+    data-filters
+    hidden
+    role="search"
+    aria-label="Filter contributions"
+  >
+    <label>
+      <span>Repository</span>
+      <select name="repository">
+        <option value="">All repositories</option>
+        {
+          contributionProjects.map((project) => (
+            <option value={project.repository}>
+              {project.repository} ({project.count})
+            </option>
+          ))
+        }
+      </select>
+    </label>
+    {
+      !compact && (
+        <>
+          <label>
+            <span>Merge year</span>
+            <select name="year">
+              <option value="">All years</option>
+              {contributionYears.map((year) => (
+                <option value={year}>{year}</option>
+              ))}
+            </select>
+          </label>
+          <label class="keyword-filter">
+            <span>Search contributions</span>
+            <input
+              type="search"
+              name="q"
+              placeholder="Title, PR number, label or description"
+              autocomplete="off"
+            />
+          </label>
+          <label>
+            <span>Sort by</span>
+            <select name="sort">
+              <option value="newest">Recently merged</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </label>
+        </>
+      )
+    }
+    <button type="reset" class="reset-filters" data-reset hidden
+      >Clear filters</button
+    >
+  </form>
+
+  <p
+    class="results-count"
+    data-results
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {
+      compact
+        ? `Latest ${Math.min(6, mergedPullRequests.length)} merged PRs`
+        : `${mergedPullRequests.length} merged PRs`
+    }
+  </p>
+
+  <ul
+    class="contribution-list"
+    aria-label={compact ? "Recent contributions" : "Merged pull requests"}
+  >
+    {
+      mergedPullRequests.map((pr, index) => (
+        <li
+          class="contribution-entry"
+          data-entry
+          data-repository={pr.repository}
+          data-year={getMergeYear(pr.mergedAt)}
+          data-search={
+            compact
+              ? undefined
+              : [
+                  pr.title,
+                  pr.repository,
+                  String(pr.number),
+                  ...pr.labels,
+                  pr.body,
+                ]
+                  .join(" ")
+                  .toLowerCase()
+          }
+          hidden={compact && index >= 6}
+        >
+          <article>
+            <div class="entry-meta">
+              <a
+                href={`https://github.com/${pr.repository}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {pr.repository}
+              </a>
+              <span>#{pr.number}</span>
+              <span class="merged-state">Merged</span>
+            </div>
+            <h3>
+              <a href={pr.url} target="_blank" rel="noopener noreferrer">
+                {pr.title}
+              </a>
+            </h3>
+            <p class="entry-dates">
+              <span>
+                Merged{" "}
+                <time datetime={pr.mergedAt}>
+                  {formatMergeDate(pr.mergedAt)}
+                </time>
+              </span>
+              {!compact && (
+                <span>
+                  Opened{" "}
+                  <time datetime={pr.createdAt}>
+                    {formatMergeDate(pr.createdAt)}
+                  </time>
+                </span>
+              )}
+            </p>
+            {!compact && (
+              <>
+                {pr.labels.length > 0 && (
+                  <ul class="entry-labels" aria-label="GitHub labels">
+                    {pr.labels.map((label) => (
+                      <li>{label}</li>
+                    ))}
+                  </ul>
+                )}
+                <dl class="entry-stats">
+                  <div>
+                    <dt>Files</dt>
+                    <dd>{pr.changedFiles}</dd>
+                  </div>
+                  <div>
+                    <dt>Additions</dt>
+                    <dd class="additions">
+                      +{pr.additions.toLocaleString("en-US")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Deletions</dt>
+                    <dd>−{pr.deletions.toLocaleString("en-US")}</dd>
+                  </div>
+                  <div>
+                    <dt>Commits</dt>
+                    <dd>{pr.commits}</dd>
+                  </div>
+                  <div>
+                    <dt>Comments</dt>
+                    <dd>{pr.comments}</dd>
+                  </div>
+                  <div>
+                    <dt>Review comments</dt>
+                    <dd>{pr.reviewComments}</dd>
+                  </div>
+                  {pr.mergedBy && (
+                    <div>
+                      <dt>Merged by</dt>
+                      <dd>
+                        <a
+                          href={`https://github.com/${pr.mergedBy}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {pr.mergedBy}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+                {pr.body.trim() && (
+                  <details class="entry-description">
+                    <summary>PR description</summary>
+                    <div>{pr.body}</div>
+                    <a href={pr.url} target="_blank" rel="noopener noreferrer">
+                      View discussion on GitHub
+                    </a>
+                  </details>
+                )}
+              </>
+            )}
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="empty-state" data-empty hidden>
+    <h3>No matching contributions</h3>
+    <p>Try another repository, year or search term.</p>
+    <button type="button" data-clear>Clear filters</button>
+  </div>
+  {
+    !compact && (
+      <button type="button" class="show-more" data-more hidden>
+        Show more contributions
+      </button>
+    )
+  }
+  {
+    compact && (
+      <a class="all-contributions" href="/contributions" data-all>
+        View all contributions
+      </a>
+    )
+  }
+</div>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>(
+    "[data-contributions]",
+  )) {
+    const form = root.querySelector<HTMLFormElement>("[data-filters]");
+    const list = root.querySelector<HTMLUListElement>(".contribution-list");
+    const status = root.querySelector<HTMLElement>("[data-results]");
+    const empty = root.querySelector<HTMLElement>("[data-empty]");
+    const reset = root.querySelector<HTMLButtonElement>("[data-reset]");
+    if (!form || !list || !status || !empty || !reset) continue;
+
+    const compact = root.dataset.compact === "true";
+    const pageSize = Number(root.dataset.limit);
+    let visibleLimit = pageSize;
+    const entries = Array.from(
+      root.querySelectorAll<HTMLLIElement>("[data-entry]"),
+    );
+    const repository = form.querySelector<HTMLSelectElement>(
+      'select[name="repository"]',
+    )!;
+    const year = form.querySelector<HTMLSelectElement>('select[name="year"]');
+    const search = form.querySelector<HTMLInputElement>('input[name="q"]');
+    const sort = form.querySelector<HTMLSelectElement>('select[name="sort"]');
+    const more = root.querySelector<HTMLButtonElement>("[data-more]");
+    const all = root.querySelector<HTMLAnchorElement>("[data-all]");
+
+    const readUrl = () => {
+      const params = new URL(window.location.href).searchParams;
+      for (const control of [repository, year, search, sort]) {
+        if (!control) continue;
+        control.value =
+          params.get(control.name) ?? (control.name === "sort" ? "newest" : "");
+        if (control instanceof HTMLSelectElement && control.selectedIndex < 0) {
+          control.value = control.name === "sort" ? "newest" : "";
+        }
+      }
+    };
+
+    const update = (writeUrl = true) => {
+      const keyword = search?.value.trim().toLowerCase() ?? "";
+      const terms = keyword.split(/\s+/).filter(Boolean);
+      const matching = entries.filter(
+        (entry) =>
+          (!repository.value ||
+            entry.dataset.repository === repository.value) &&
+          (!year?.value || entry.dataset.year === year.value) &&
+          terms.every((term) => entry.dataset.search?.includes(term)),
+      );
+      if (sort?.value === "oldest") matching.reverse();
+      for (const entry of entries) entry.hidden = true;
+      for (const entry of matching.slice(0, visibleLimit)) {
+        entry.hidden = false;
+        list.append(entry);
+      }
+      const shown = Math.min(visibleLimit, matching.length);
+      status.textContent = compact
+        ? `Latest ${shown} of ${matching.length} merged PRs${repository.value ? ` in ${repository.value}` : ""}`
+        : `Showing ${shown} of ${matching.length} matching PRs`;
+      empty.hidden = matching.length !== 0;
+      list.hidden = matching.length === 0;
+      reset.hidden =
+        !repository.value &&
+        !year?.value &&
+        !keyword &&
+        sort?.value !== "oldest";
+      if (more) {
+        more.hidden = shown >= matching.length;
+        more.textContent = `Show ${Math.min(pageSize, matching.length - shown)} more contributions`;
+      }
+      if (all) {
+        const url = new URL("/contributions", window.location.origin);
+        if (repository.value)
+          url.searchParams.set("repository", repository.value);
+        all.href = url.pathname + url.search;
+      }
+      if (writeUrl) {
+        const url = new URL(window.location.href);
+        for (const control of [repository, year, search, sort]) {
+          if (!control) continue;
+          const value = control.value.trim();
+          if (value && !(control.name === "sort" && value === "newest"))
+            url.searchParams.set(control.name, value);
+          else url.searchParams.delete(control.name);
+        }
+        window.history.replaceState(
+          null,
+          "",
+          url.pathname + url.search + url.hash,
+        );
+      }
+    };
+
+    const filter = () => {
+      visibleLimit = pageSize;
+      update();
+    };
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      filter();
+    });
+    form.addEventListener("input", filter);
+    form.addEventListener("reset", () => {
+      repository.value = "";
+      if (year) year.value = "";
+      if (search) search.value = "";
+      if (sort) sort.value = "newest";
+      filter();
+    });
+    root
+      .querySelector("[data-clear]")
+      ?.addEventListener("click", () => form.reset());
+    more?.addEventListener("click", () => {
+      visibleLimit += pageSize;
+      update(false);
+    });
+    window.addEventListener("popstate", () => {
+      readUrl();
+      visibleLimit = pageSize;
+      update(false);
+    });
+    readUrl();
+    update();
+    form.hidden = false;
+  }
+</script>
+
+<style>
+  .contributions {
+    color: #1f1f1f;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  .repositories {
+    margin-bottom: 2rem;
+  }
+  .repositories h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b6b6b;
+  }
+  .repositories ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .repositories a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #1f1f1f1a;
+    border-radius: 8px;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+  .repositories a:hover {
+    border-color: #2f6f6d;
+    color: #2f6f6d;
+  }
+  .repositories a span {
+    color: #6b6b6b;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+  }
+  .filter-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1.5rem;
+  }
+  .filter-controls label {
+    display: grid;
+    min-width: 0;
+    gap: 0.5rem;
+  }
+  .filter-controls label > span {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.8rem;
+  }
+  .keyword-filter {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+  .filter-controls label:last-of-type {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  input,
+  select {
+    width: 100%;
+    min-width: 0;
+    height: 2.75rem;
+    padding: 0.6rem 0.75rem;
+    background: #fff;
+    color: #1f1f1f;
+    border: 1px solid #1f1f1f26;
+    border-radius: 8px;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.8rem;
+  }
+  .reset-filters {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: start;
+  }
+  button,
+  .all-contributions {
+    color: #2f6f6d;
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 0.85rem;
+    text-underline-offset: 0.25em;
+  }
+  button:hover,
+  .all-contributions:hover {
+    text-decoration: underline;
+  }
+  button {
+    min-height: 2.75rem;
+  }
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #2f6f6d;
+    outline-offset: 4px;
+  }
+  .results-count {
+    margin: 0 0 0.75rem;
+    color: #6b6b6b;
+    font-size: 0.8rem;
+  }
+  .contribution-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contribution-entry {
+    padding: 1.75rem 0;
+    border-top: 1px solid #1f1f1f1a;
+  }
+  .entry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    color: #6b6b6b;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+  }
+  .entry-meta a {
+    color: #2f6f6d;
+    overflow-wrap: anywhere;
+  }
+  .merged-state {
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: #2f6f6d0d;
+    color: #2f6f6d;
+  }
+  .contribution-entry h3 {
+    max-width: 65ch;
+    margin: 0.7rem 0 0.6rem;
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .contribution-entry h3 a:hover {
+    color: #2f6f6d;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .entry-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 0;
+    color: #6b6b6b;
+    font-size: 0.8rem;
+  }
+  .entry-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .entry-labels li {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid #1f1f1f1a;
+    border-radius: 999px;
+    color: #6b6b6b;
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+  }
+  .entry-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin: 1.1rem 0 0;
+  }
+  .entry-stats > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+  .entry-stats dt {
+    color: #6b6b6b;
+    font-size: 0.75rem;
+  }
+  .entry-stats dd {
+    margin: 0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+  }
+  .entry-stats a,
+  .additions {
+    color: #2f6f6d;
+  }
+  .entry-description {
+    margin-top: 1.1rem;
+    font-size: 0.85rem;
+  }
+  .entry-description summary {
+    width: fit-content;
+    cursor: pointer;
+    color: #2f6f6d;
+  }
+  .entry-description > div {
+    max-height: 26rem;
+    overflow: auto;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #1f1f1f1a;
+    border-radius: 8px;
+    background: #f8f7f4;
+    color: #525252;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+  }
+  .entry-description > a {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: #2f6f6d;
+  }
+  .empty-state {
+    padding: 2rem 0;
+    border-top: 1px solid #1f1f1f1a;
+  }
+  .empty-state h3 {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .empty-state p {
+    margin: 0.5rem 0;
+    color: #6b6b6b;
+  }
+  .show-more {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid #1f1f1f1a;
+    border-radius: 8px;
+  }
+  .all-contributions {
+    display: inline-block;
+    margin-top: 1rem;
+  }
+  .contributions--compact .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
+  .contributions--compact .filter-controls label {
+    flex: 1;
+    max-width: 24rem;
+    min-width: min(100%, 15rem);
+  }
+  .contributions--compact .contribution-entry {
+    padding: 1.1rem 0;
+  }
+  .contributions--compact .contribution-entry h3 {
+    font-size: 1rem;
+  }
+  @media (max-width: 640px) {
+    .filter-controls {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .keyword-filter {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+    .filter-controls label:last-of-type {
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .reset-filters {
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .filter-controls label:first-child {
+      grid-column: 1 / -1;
+    }
+    .entry-stats {
+      gap: 0.6rem 1rem;
+    }
+    .contribution-entry h3 {
+      font-size: 1.05rem;
+    }
+  }
+</style>

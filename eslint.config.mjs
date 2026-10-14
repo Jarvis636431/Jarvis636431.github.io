@@ -29,6 +29,7 @@ export default [
     ignores: [
       "**/.astro/**",
       ".vercel/",
+      ".sites-deploy/",
       "dist/",
       "node_modules/",
       "package-lock.json",
@@ -38,6 +39,11 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astro.configs["flat/recommended"],
+  {
+    languageOptions: {
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
+    },
+  },
   {
     files: ["src/**/*.{astro,js,ts}", "*.config.mjs"],
     languageOptions: {

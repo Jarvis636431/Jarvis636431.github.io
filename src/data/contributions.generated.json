@@ -1,59 +1,157 @@
 {
-  "syncedAt": "2026-10-14",
   "pullRequests": [
     {
       "repository": "Tencent/WeKnora",
       "number": 4224,
       "title": "fix(frontend): preserve nonempty lists when pressing Enter",
-      "mergedAt": "2026-10-13T08:40:25Z"
+      "url": "https://github.com/Tencent/WeKnora/pull/4224",
+      "body": "## Description\nPressing Enter just before existing Markdown list text incorrectly treats the item as empty, removes its marker and skips the newline. Check the remaining text on the current line as well as the text before the caret before exiting a list.\n\nAdd regression coverage for bullets, numbered lists, tasks, indentation and surrounding lines, plus controls for splitting within text and genuinely empty items.\n\nFixes #4223\n\n## Testing\n- `npm test -- src/utils/markdownEditing.test.ts`: 33 passed; six new regression cases failed before the fix.\n- `npm run type-check` and `npm run build`: passed (chunk-size warning).\n- `git diff --check`: passed.\n\n## Before / After\nWith the caret after `- ` in `- hello`, press Enter:\n```text\nBefore: \"hello\"\nAfter:  \"- \\n- hello\"\n```\n",
+      "labels": [],
+      "createdAt": "2026-10-13T05:30:58Z",
+      "mergedAt": "2026-10-13T08:40:25Z",
+      "additions": 31,
+      "deletions": 1,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "lyingbug"
     },
     {
       "repository": "Tencent/WeKnora",
       "number": 4226,
       "title": "fix(frontend): preserve inline images in EPUB previews",
-      "mergedAt": "2026-10-13T08:39:37Z"
+      "url": "https://github.com/Tencent/WeKnora/pull/4226",
+      "body": "## Description\nEPUB previews resolve inline image data as ZIP paths and replace it with empty sources. Preserve `data:image/` sources for HTML images and SVG `href` / `xlink:href`, while keeping relative archive image resolution and Blob URL reuse unchanged. The preview continues through its existing HTML sanitizer.\n\nAdd ZIP-fixture regression tests covering inline HTML/SVG images, mixed archive and inline images, Blob contents/reuse, and rejection of non-image data or executable sources.\n\nFixes #4225\n\n## Testing\n- EPUB, document-preview Markdown and security tests: 15 passed; two EPUB regression cases fail against the original renderer.\n- `npm run type-check`, `npm run build` and `git diff --check`: passed (build chunk-size warning).\n- Chrome with the production renderer and `sanitizeHTML`: inline and ZIP raster images load, SVG inline references survive, and event attributes are removed.\n",
+      "labels": [],
+      "createdAt": "2026-10-13T05:37:43Z",
+      "mergedAt": "2026-10-13T08:39:37Z",
+      "additions": 87,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "lyingbug"
     },
     {
       "repository": "Tencent/WeKnora",
       "number": 4180,
       "title": "fix(helm): configure app rollouts and document shared storage",
-      "mergedAt": "2026-10-12T10:10:30Z"
+      "url": "https://github.com/Tencent/WeKnora/pull/4180",
+      "body": "## Description\nThe Helm production example configures three App replicas with a shared ReadWriteOnce PVC, while the App update strategy is fixed to RollingUpdate.\n\n- Add configurable App update strategies and rolling-update settings, preserving the existing defaults. Recreate omits the rollingUpdate block, and unsupported strategy types fail rendering.\n- Update the production example to use one App replica with Recreate and explain the upgrade downtime.\n- Add a multi-replica example using a pre-provisioned RWX claim and document its shared-storage requirements.\n- Add seven template regression tests and run them in Helm CI.\n\n## Related Issue\nFixes #4106\n",
+      "labels": [],
+      "createdAt": "2026-10-12T06:42:42Z",
+      "mergedAt": "2026-10-12T10:10:30Z",
+      "additions": 199,
+      "deletions": 5,
+      "changedFiles": 5,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "lyingbug"
     },
     {
       "repository": "Tencent/WeKnora",
       "number": 4195,
       "title": "fix(frontend): respect Markdown indentation selection boundaries",
-      "mergedAt": "2026-10-12T10:08:10Z"
+      "url": "https://github.com/Tencent/WeKnora/pull/4195",
+      "body": "## Description\nSelecting a Markdown line including its newline and pressing Tab or Shift+Tab also changes the next, unselected line. Treat the textarea selection end as exclusive when it falls at a line start, and preserve the selected trailing newline so repeated indentation continues to affect the same block.\n\nAdd regression coverage for Tab, Shift+Tab, empty final lines, repeated plain-text indentation and selections ending inside the following line. Existing caret and list behavior remains covered.\n\nFixes #4194\n\n## Testing\n- Editor tests: 25 passed; three new regression cases failed before the fix.\n- `npm run type-check` and `npm run build` passed (build reports a chunk-size warning).\n- Chrome keyboard checks passed in an isolated textarea harness using the repository helper: before/after Tab, Shift+Tab and repeated Tab.\n- `git diff --check` passed.\n\n## Before / After\nSelect `- first` and its newline in `- first\\n- second`, then press Tab:\n```text\nBefore: \"  - first\\n  - second\"\nAfter:  \"  - first\\n- second\"\n```\n",
+      "labels": [],
+      "createdAt": "2026-10-12T10:03:54Z",
+      "mergedAt": "2026-10-12T10:08:10Z",
+      "additions": 45,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "lyingbug"
     },
     {
       "repository": "Tencent/WeKnora",
       "number": 4177,
       "title": "docs: explain knowledge upload folder paths",
-      "mergedAt": "2026-10-12T06:30:07Z"
+      "url": "https://github.com/Tencent/WeKnora/pull/4177",
+      "body": "## Description\nThe file-upload API reference describes `fileName` only as a display-name override, leaving API users without instructions for uploading into a knowledge-base folder.\n\nDocument path-qualified `fileName` values with a multipart curl example and the resulting `folder_path` / `file_name`. Explain that document folders are derived from stored document paths, require no prior creation, and cannot persist as empty folders. Point users to folder listing and document re-filing, and distinguish document folders from Wiki folders.\n\nCorrect the folder-list response from an array to the actual object containing root/total document counts and nested `folders`, with a JSON example and count definitions.\n\n## Type of Change\n- [x] 📚 Documentation update\n\n## Related Issue\nFixes #4131\n\n## Testing\n- Cross-checked upload parameters, path splitting, folder aggregation, response types and routes against the existing handlers, services, repository and types.\n- `git diff --check` — passed.\n- `cd website-docs && npm run check:docs` — passed (319 links, 60 Mermaid diagrams).\n- `cd website-docs && npm run build:docs` — passed (chunk-size warning).\n- Parsed the new folder-response JSON and checked all Bash examples in the edited API reference with `bash -n`.\n- No live upload request was performed; this change documents existing application behavior.\n\n## Checklist\n- [x] Self-reviewed the change\n- [x] Updated related API documentation\n- [x] Documentation-only change; no application behavior changes\n",
+      "labels": [],
+      "createdAt": "2026-10-12T06:23:18Z",
+      "mergedAt": "2026-10-12T06:30:07Z",
+      "additions": 44,
+      "deletions": 3,
+      "changedFiles": 1,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "lyingbug"
     },
     {
       "repository": "Tencent/WeKnora",
       "number": 4171,
       "title": "docs: clarify frontend development proxy configuration",
-      "mergedAt": "2026-10-12T05:03:02Z"
+      "url": "https://github.com/Tencent/WeKnora/pull/4171",
+      "body": "## Description\nThe development guide names `DEV_PROXY_TARGET`, an internal Vite constant, without explaining which environment variables configure it. This makes it unclear how to point the frontend at a remote backend.\n\nDocument the actual precedence (`VITE_DEV_PROXY_TARGET`, then `FRONTEND_BACKEND_URL`, then `http://localhost:8080`), include `/mcp/` alongside `/api` and `/files`, and provide examples for the root `.env.local` / `make dev-frontend` workflow and direct npm commands. Explain that `vite preview` uses the same proxy configuration and that changing the target requires restarting the dev server.\n\n## Type of Change\n- [x] 📚 Documentation update\n\n## Related Issue\nNone.\n\n## Testing\n- Manually cross-checked variable precedence and all dev/preview proxy paths against `frontend/vite.config.ts`.\n- Manually cross-checked root environment-file loading and export behavior against `scripts/dev.sh`.\n- `git diff --check` — passed.\n- `node website-docs/scripts/check-links.mjs` — passed (74 documents, 319 internal links, 0 broken).\n\n- `cd website-docs && npm run check:docs` — passed (319 internal links and 60 Mermaid diagrams).\n- `cd website-docs && npm run build:docs` — passed; verified the generated development-guide HTML contains the corrected variables and examples. The build emits a chunk-size warning.\n- No live remote-backend connectivity test was performed; proxy behavior was verified against the existing source configuration.\n\n## Checklist\n- [x] Self-reviewed the change\n- [x] Updated related documentation\n- [x] Documentation-only change; no application code or behavior changes\n",
+      "labels": [],
+      "createdAt": "2026-10-12T03:31:47Z",
+      "mergedAt": "2026-10-12T05:03:02Z",
+      "additions": 18,
+      "deletions": 1,
+      "changedFiles": 1,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "lyingbug"
     },
     {
       "repository": "oldj/SwitchHosts",
       "number": 1051,
       "title": "fix(macOS): show tray window over full-screen apps",
-      "mergedAt": "2026-09-30T13:01:09Z"
+      "url": "https://github.com/oldj/SwitchHosts/pull/1051",
+      "body": "## Summary\r\n\r\n- Convert the macOS tray webview window into a non-activating `NSPanel`.\r\n- Allow the tray panel to appear above another application's full-screen Space.\r\n- Avoid activating SwitchHosts or switching away from the current Space.\r\n- Fix the global mouse monitor mask so mouse movement no longer dismisses the tray panel.\r\n- Preserve the existing lazy window creation and destruction behavior.\r\n- Add regression tests and document the investigation.\r\n\r\n## Implementation\r\n\r\n- Add `CanJoinAllSpaces` and `FullScreenAuxiliary` collection behaviors.\r\n- Use `NonactivatingPanel` with `PopUpMenu` window level.\r\n- Pin `tauri-nspanel` to a fixed Git revision.\r\n- Correct `OtherMouseDown` from event mask bit 5 (`MouseMoved`) to bit 25.\r\n- Keep all NSPanel-specific code behind macOS conditional compilation.\r\n\r\n## Verification\r\n\r\n- `cargo check`\r\n- `cargo test --test window_config` — 27 passed\r\n- `cargo test --lib` — 143 passed\r\n- TypeScript type checking passed\r\n- Vitest — 84 passed\r\n- ESLint passed\r\n\r\n## Manual verification\r\n\r\n- [x] Tray panel appears over another application's full-screen window.\r\n- [x] Moving the pointer inside the panel does not dismiss it.\r\n- [x] Moving the pointer outside without clicking does not dismiss it.\r\n- [x] Clicking outside dismisses the panel.",
+      "labels": [],
+      "createdAt": "2026-09-17T13:09:22Z",
+      "mergedAt": "2026-09-30T13:01:09Z",
+      "additions": 505,
+      "deletions": 23,
+      "changedFiles": 7,
+      "commits": 2,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "oldj"
     },
     {
       "repository": "NervJS/taro",
       "number": 19459,
       "title": "fix(runtime): correct alias after removing event listener",
-      "mergedAt": "2026-07-21T02:19:38Z"
+      "url": "https://github.com/NervJS/taro/pull/19459",
+      "body": "**这个 PR 做了什么？**\r\n\r\n修复小程序端 `Text` 和 `Image` 节点移除最后一个事件监听器时，运行时访问不存在的 `pure-text` / `pure-image` alias 导致崩溃的问题。\r\n\r\n`hydrate()` 初始化无事件节点时遵循以下规则：\r\n\r\n- 无提取属性的 `View` 使用 `pure-view`\r\n- 其他 `View`、`Text`、`Image` 使用对应的 `static-*` alias\r\n\r\n但 `removeEventListener()` 原先会将所有无提取属性的特殊节点切换为 `pure-*`，导致 `Text` 和 `Image` 分别访问不存在的 `pure-text` 和 `pure-image`。\r\n\r\n本次修改使 `removeEventListener()` 的 alias 选择逻辑与 `hydrate()` 保持一致：\r\n\r\n- `View` 且无提取属性：`pure-view`\r\n- 其他特殊节点：`static-${nodeName}`\r\n\r\n同时增加回归测试，覆盖：\r\n\r\n- `Text` 移除最后一个事件监听器后切换到 `static-text`\r\n- `Image` 移除最后一个事件监听器后切换到 `static-image`\r\n- 无提取属性的 `View` 切换到 `pure-view`\r\n- 有提取属性的 `View` 切换到 `static-view`\r\n- 节点仍有其他监听器时不切换模板\r\n\r\nFixes #19453\r\n\r\n**这个 PR 是什么类型？**\r\n\r\n- [x] 错误修复 (Bugfix) issue: fix #19453\r\n- [ ] 新功能 (Feature)\r\n- [ ] 代码重构 (Refactor)\r\n- [ ] TypeScript 类型定义修改 (Types)\r\n- [ ] 文档修改 (Docs)\r\n- [ ] 代码风格更新 (Code style update)\r\n- [ ] 构建优化 (Chore)\r\n- [ ] 其他，请描述 (Other, please describe):\r\n\r\n**这个 PR 涉及以下平台：**\r\n\r\n- [ ] 所有平台\r\n- [ ] Web 端（H5）\r\n- [ ] 移动端（React-Native）\r\n- [ ] 鸿蒙（Harmony）\r\n- [ ] 鸿蒙容器（Harmony Hybrid）\r\n- [ ] ASCF 元服务\r\n- [ ] 快应用（QuickApp）\r\n- [x] 所有小程序\r\n- [x] 微信小程序\r\n- [ ] 企业微信小程序\r\n- [ ] 京东小程序\r\n- [ ] 百度小程序\r\n- [ ] 支付宝小程序\r\n- [ ] 支付宝 IOT 小程序\r\n- [ ] 钉钉小程序\r\n- [ ] QQ 小程序\r\n- [ ] 飞书小程序\r\n- [ ] 快手小程序\r\n- [ ] 头条小程序\r\n\r\n**测试结果**\r\n\r\n- `pnpm --filter @tarojs/runtime exec vitest run tests/event.spec.ts`\r\n  - 33 tests passed\r\n- `pnpm --filter @tarojs/runtime run test:ci`\r\n  - 133 tests passed，1 skipped\r\n- `pnpm --filter @tarojs/runtime run build`\r\n  - passed\r\n- ESLint\r\n  - passed\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n## Summary by CodeRabbit\n\n* **Bug Fixes**\n  * 修复移除节点最后一个事件监听器时的模板别名切换逻辑，确保触发的模板更新符合预期。\n  * 优化 `view` 节点在是否包含“提取属性”时的模板映射：无提取属性切换为纯模板，有提取属性切换为静态模板。\n  * 仅移除部分事件监听器时不再触发不必要的模板更新。\n* **Tests**\n  * 增加事件监听移除与节点模板切换的断言用例，覆盖 `text`/`image`/`view` 及负向场景。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-07-20T09:46:38Z",
+      "mergedAt": "2026-07-21T02:19:38Z",
+      "additions": 70,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
     },
     {
       "repository": "NervJS/taro",
       "number": 19273,
       "title": "feat(cli): support init in current directory",
-      "mergedAt": "2026-07-17T10:31:45Z"
+      "url": "https://github.com/NervJS/taro/pull/19273",
+      "body": "## Summary\n\n- Support `taro init .` / `npx @tarojs/cli init .` by resolving `.` to the current directory name while keeping the target path as the current directory.\n- Add unit coverage for `.` and `./` project names.\n\n## Motivation\n\nCloses #19249. This lets users initialize a Taro project directly in an existing current directory. Existing non-conflicting files are preserved by the existing template copy behavior, while same-name template files can still be overwritten.\n\n## Validation\n\n- `pnpm --filter @tarojs/cli exec jest packages/taro-cli/src/__tests__/project.spec.ts --runInBand`\n- `pnpm --filter @tarojs/cli exec eslint src/create/project.ts src/__tests__/project.spec.ts`\n\nNote: I also tried running `cli.spec.ts`, but this temporary worktree had unbuilt workspace package entries such as `@tarojs/service`, so that broader suite could not start in this local environment.\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n## Summary by CodeRabbit\n\n## Release Notes\n\n* **Tests**\n  * 新增对项目名为 `.` / `./` / `.\\` 等场景的项目目录与项目名解析覆盖，并覆盖当前目录初始化与同名目录询问行为。\n\n* **Bug Fixes**\n  * `taro init` 在当前目录标识下自动规范项目目录与名称推导；当前目录初始化时跳过多余的同名目录校验与询问。\n  * 对根目录初始化并选择 `.` 的异常场景增加校验，避免异常行为。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-05-25T14:16:01Z",
+      "mergedAt": "2026-07-17T10:31:45Z",
+      "additions": 236,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 4,
+      "comments": 2,
+      "reviewComments": 1,
+      "mergedBy": "Single-Dancer"
     }
   ]
 }
