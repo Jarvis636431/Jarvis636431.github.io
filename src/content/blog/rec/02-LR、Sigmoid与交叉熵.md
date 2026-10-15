@@ -1,6 +1,8 @@
 ---
 title: "CTR 预估的起点：LR、Sigmoid 与交叉熵的原理"
 description: "从特征编码、线性打分和对数几率出发，推导 Logistic Regression、Sigmoid、二元交叉熵及完整训练流程。"
+titleEn: "CTR Prediction with Logistic Regression"
+descriptionEn: "From feature encoding and linear scores to sigmoid, binary cross-entropy, and model training."
 commentId: "blog-rec-logistic-regression"
 language: "zh-CN"
 publishDate: "2026-08-14"

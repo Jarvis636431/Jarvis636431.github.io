@@ -1,6 +1,8 @@
 ---
 title: "CTR 模型训练与评估：从反向传播到 AUC、LogLoss 和概率校准"
 description: "串联 CTR 模型的训练、验证和测试流程，解释 AUC、LogLoss 与概率校准分别衡量什么，以及为什么不能只看准确率。"
+titleEn: "Training and Evaluating CTR Models"
+descriptionEn: "From backpropagation to AUC, LogLoss, and probability calibration: what each metric tells us."
 commentId: "blog-rec-ctr-training-and-evaluation"
 language: "zh-CN"
 publishDate: "2026-08-14"

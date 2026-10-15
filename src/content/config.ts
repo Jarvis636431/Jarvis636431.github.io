@@ -9,7 +9,9 @@ const blog = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
+    titleEn: z.string().optional(),
     description: z.string().min(10),
+    descriptionEn: z.string().optional(),
     commentId: z.string().min(1),
     language: z.string().min(2).default("zh-CN"),
     publishDate: z.coerce.date(),
@@ -25,7 +27,9 @@ const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
+    titleEn: z.string().optional(),
     summary: z.string().min(10),
+    summaryEn: z.string().optional(),
     language: z.string().min(2).default("zh-CN"),
     status: z.enum(["in-progress", "launched", "archived"]).default("launched"),
     roles: z.array(z.string()).default([]),

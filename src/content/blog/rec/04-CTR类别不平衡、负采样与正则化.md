@@ -1,6 +1,8 @@
 ---
 title: "CTR 训练的两个关键补丁：类别不平衡、负采样与正则化"
 description: "围绕低点击率数据，解释准确率陷阱、负采样、样本权重、概率校准，以及 L1、L2、Early Stopping 如何控制过拟合。"
+titleEn: "Training CTR Models on Imbalanced Data"
+descriptionEn: "Negative sampling, sample weights, probability calibration, and regularization for low-click-rate data."
 commentId: "blog-rec-ctr-imbalance-and-regularization"
 language: "zh-CN"
 publishDate: "2026-08-17"

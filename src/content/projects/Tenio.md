@@ -1,5 +1,7 @@
 ---
 title: "Tenio"
+titleEn: "Tenio"
+summaryEn: "An AI-assisted architectural design tool connecting conversation, generation, and 3D previews."
 summary: "面向建筑设计场景的 AI 辅助系统，探索多模态交互、方案生成与设计流程提效。"
 status: "in-progress"
 roles: ["前端开发", "交互实现"]

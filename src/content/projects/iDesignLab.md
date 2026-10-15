@@ -1,5 +1,7 @@
 ---
 title: "iDesignLab"
+titleEn: "iDesignLab"
+summaryEn: "A lab reservation platform for Tianjin University, from resource booking to approvals and check-in."
 summary: "天津大学工业设计实验室预约平台"
 status: "launched"
 roles: ["全栈开发"]

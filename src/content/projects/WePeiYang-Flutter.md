@@ -1,5 +1,7 @@
 ---
 title: "微北洋"
+titleEn: "WePeiYang"
+summaryEn: "A cross-platform campus app built by TWT Studio for the Tianjin University community."
 summary: "天津大学校园应用，由天外天工作室开发"
 status: "launched"
 roles: ["跨平台开发"]
