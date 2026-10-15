@@ -37,6 +37,7 @@ interface LayoutProps {
   lang?: string;
   navLinks?: NavLink[];
   viewCounterSlug?: string;
+  decorativeBackground?: boolean;
   seo?: SeoConfig;
 }
 
@@ -53,6 +54,7 @@ const {
     { href: "/about", label: "About Me" },
   ],
   viewCounterSlug,
+  decorativeBackground = true,
   seo,
 } = Astro.props as LayoutProps;
 
@@ -165,10 +167,11 @@ const currentYear = new Date().getFullYear();
   <body
     class="relative min-h-screen overflow-x-hidden bg-background text-primary selection:bg-accent-cyan/20 selection:text-primary"
   >
-    <div
-      class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(47,111,109,0.12),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(197,154,109,0.12),transparent_50%)]"
-    >
-    </div>
+    {
+      decorativeBackground && (
+        <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(47,111,109,0.12),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(197,154,109,0.12),transparent_50%)]" />
+      )
+    }
     <a
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-surface text-primary rounded-md border border-black/10"
       href="#main">Skip to content</a

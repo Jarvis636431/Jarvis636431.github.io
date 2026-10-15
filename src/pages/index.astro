@@ -3,440 +3,416 @@ import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { getPostReadingTime } from "@lib/blog";
 
-// Get latest blog posts
-const postsCollection = await getCollection("blog", ({ data }) => {
-  return import.meta.env.DEV ? true : data.draft !== true;
-});
-
-const sortedPosts = postsCollection
-  .sort(
-    (a, b) =>
-      new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime(),
+const posts = (
+  await getCollection("blog", ({ data }) =>
+    import.meta.env.DEV ? true : data.draft !== true,
   )
-  .slice(0, 3); // Show top 3 posts
+)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3);
 
-const currentYear = new Date().getFullYear();
-const location = {
-  city: "Beijing",
-  country: "CN",
-  coordinates: "39.9042° N · 116.4074° E",
-};
+const projects = (
+  await getCollection(
+    "projects",
+    ({ data }) => data.featured && data.status !== "archived",
+  )
+)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3);
 ---
 
+<Layout
+  title="Jarvis Hub | Software Engineer"
+  description="我是 Jarvis，京东软件工程师。这里记录我的跨端应用、AI 工具、开源实践与技术笔记。"
+  lang="zh-CN"
+  viewCounterSlug="home"
+  decorativeBackground={false}
+>
+  <div class="home">
+    <section class="intro" aria-labelledby="intro-title">
+      <div class="intro-copy">
+        <h1 id="intro-title">Hi, I'm <span>Jarvis</span>.</h1>
+        <p class="intro-description">Tianjin University - Joybuy</p>
+        <nav class="intro-links" aria-label="了解更多">
+          <a href="#selected-projects">项目 ↘</a>
+          <a href="#recent-writing">文章 ↘</a>
+          <a href="/about">关于我 →</a>
+        </nav>
+      </div>
+
+      <div class="contributions" aria-labelledby="contributions-title">
+        <div class="contributions-heading">
+          <h2 id="contributions-title">GitHub Contributions</h2>
+          <a
+            href="https://github.com/Jarvis636431"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="访问 Jarvis 的 GitHub">GitHub ↗</a
+          >
+        </div>
+        <div
+          id="contribution-scroll"
+          class="contribution-scroll"
+          role="region"
+          aria-label="GitHub 贡献热力图，可左右滚动"
+          tabindex="0"
+        >
+          <img
+            src="https://ghchart.rshah.org/2f6f6d/Jarvis636431"
+            alt="Jarvis636431 过去一年的 GitHub 贡献热力图"
+            width="722"
+            height="112"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="selected-projects"
+      class="content-section"
+      aria-labelledby="projects-title"
+      data-reveal
+    >
+      <div class="section-heading">
+        <h2 id="projects-title">精选项目</h2>
+        <a href="/projects">全部项目 →</a>
+      </div>
+      <div class="project-list">
+        {
+          projects.map((project, index) => (
+            <a class="project-row" href={`/projects/${project.slug}`}>
+              <span class="project-number" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div class="project-copy">
+                <h3>{project.data.title}</h3>
+                <p>{project.data.summary}</p>
+                <span class="project-stack">
+                  {project.data.stack.join(" / ")}
+                </span>
+              </div>
+              <span class="entry-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section
+      id="recent-writing"
+      class="content-section"
+      aria-labelledby="writing-title"
+      data-reveal
+    >
+      <div class="section-heading">
+        <h2 id="writing-title">最近文章</h2>
+        <a href="/blogs">全部文章 →</a>
+      </div>
+      <div class="writing-list">
+        {
+          posts.map((post) => (
+            <a class="writing-row" href={`/blogs/${post.slug}`}>
+              <time datetime={post.data.publishDate.toISOString()}>
+                {post.data.publishDate.toLocaleDateString("zh-CN", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  timeZone: "Asia/Shanghai",
+                })}
+              </time>
+              <div class="writing-copy">
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+                <span class="reading-time">
+                  {getPostReadingTime(post)} 分钟阅读
+                </span>
+              </div>
+              <span class="entry-arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          ))
+        }
+        {
+          posts.length === 0 && (
+            <p class="empty-state">文章正在整理中，稍后再来看看。</p>
+          )
+        }
+      </div>
+    </section>
+  </div>
+</Layout>
+
 <style>
-  .spotlight-card {
-    position: relative;
-    overflow: hidden;
+  .home {
+    padding-bottom: 2rem;
   }
-
-  .spotlight-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    background: radial-gradient(
-      600px circle at var(--mouse-x) var(--mouse-y),
-      rgba(47, 111, 109, 0.1),
-      transparent 40%
-    );
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
+  .intro {
+    min-height: calc(100svh - 74px);
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    padding: 5rem 0 7rem;
   }
-
-  .spotlight-card:hover::after {
-    opacity: 1;
+  .intro > * {
+    min-width: 0;
   }
-
-  /* Entrance Animation */
-  @keyframes enter {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .project-number,
+  .project-stack,
+  time,
+  .reading-time {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    color: #6b6b6b;
   }
-
-  .animate-card {
-    opacity: 0; /* Start hidden */
-    animation: enter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  .intro h1 {
+    font-size: clamp(2.75rem, 4.5vw, 4rem);
+    line-height: 1.15;
+    letter-spacing: 0;
   }
-
-  .animate-card:nth-child(1) {
-    animation-delay: 0.1s;
+  .intro h1 span {
+    color: #2f6f6d;
   }
-  .animate-card:nth-child(2) {
-    animation-delay: 0.15s;
+  .intro-description {
+    margin-top: 1.5rem;
+    color: #6b6b6b;
+    font-size: 1.125rem;
+    line-height: 1.9;
   }
-  .animate-card:nth-child(3) {
-    animation-delay: 0.2s;
+  .intro-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    margin-top: 2rem;
+    font-size: 0.875rem;
   }
-  .animate-card:nth-child(4) {
-    animation-delay: 0.25s;
+  a {
+    transition: color 180ms ease;
   }
-  .animate-card:nth-child(5) {
-    animation-delay: 0.3s;
+  a:hover {
+    color: #2f6f6d;
   }
-  .animate-card:nth-child(6) {
-    animation-delay: 0.35s;
+  a:focus-visible,
+  .contribution-scroll:focus-visible {
+    outline: 2px solid #2f6f6d;
+    outline-offset: 6px;
   }
-  .animate-card:nth-child(7) {
-    animation-delay: 0.4s;
+  .contributions-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
-  .animate-card:nth-child(8) {
-    animation-delay: 0.45s;
+  .contributions-heading h2,
+  .contributions-heading a {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: #6b6b6b;
   }
-  .animate-card:nth-child(9) {
-    animation-delay: 0.5s;
+  .contributions-heading a:hover {
+    color: #2f6f6d;
   }
-
-  /* Grid Pattern Background */
-  .bg-grid-pattern {
-    background-size: 40px 40px;
-    background-image:
-      linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-    mask-image: linear-gradient(to bottom right, black 40%, transparent 100%);
-    -webkit-mask-image: linear-gradient(
-      to bottom right,
-      black 40%,
-      transparent 100%
-    );
-  }
-
   .contribution-scroll {
-    scrollbar-width: none;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #1f1f1f26 transparent;
   }
-
-  .contribution-scroll::-webkit-scrollbar {
-    display: none;
+  .contribution-scroll img {
+    display: block;
+    width: 100%;
+    min-width: 440px;
+    height: auto;
+    max-width: none;
   }
-
+  .content-section {
+    padding: 2rem 0 4rem;
+    scroll-margin-top: 6rem;
+  }
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .section-heading h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .section-heading > a {
+    font-size: 0.875rem;
+    color: #6b6b6b;
+    white-space: nowrap;
+  }
+  .project-list,
+  .writing-list {
+    border-top: 1px solid #1f1f1f1a;
+  }
+  .project-row,
+  .writing-row {
+    display: grid;
+    align-items: start;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid #1f1f1f1a;
+  }
+  .project-row {
+    grid-template-columns: 3rem minmax(0, 1fr) 1.5rem;
+  }
+  .writing-row {
+    grid-template-columns: 8rem minmax(0, 1fr) 1.5rem;
+  }
+  .project-number,
+  time {
+    padding-top: 0.35rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0;
+    transition: color 180ms ease;
+  }
+  .project-row:hover h3,
+  .writing-row:hover h3 {
+    color: #2f6f6d;
+  }
+  .project-copy p,
+  .writing-copy p {
+    margin-top: 0.5rem;
+    color: #6b6b6b;
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .project-stack,
+  .reading-time {
+    display: block;
+    margin-top: 1rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .entry-arrow {
+    padding-top: 0.25rem;
+    color: #6b6b6b;
+    transition:
+      transform 250ms ease,
+      color 180ms ease;
+  }
+  a:hover .entry-arrow {
+    transform: translate(2px, -2px);
+    color: #2f6f6d;
+  }
+  .empty-state {
+    padding: 2rem 0;
+    color: #6b6b6b;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal].reveal-pending {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    [data-reveal] {
+      transition:
+        opacity 600ms ease,
+        transform 600ms ease;
+    }
+  }
   @media (max-width: 767px) {
-    .animate-card {
-      animation-delay: 0s !important;
+    .intro {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: center;
+      gap: 3.5rem;
+      min-height: calc(100svh - 74px);
+      padding: 3.5rem 0;
     }
-
-    .spotlight-card::after {
-      display: none;
+    .intro-description {
+      font-size: 1rem;
+    }
+    .contributions {
+      padding-bottom: 1rem;
+    }
+    .contributions-heading {
+      margin-bottom: 1rem;
+    }
+    .content-section {
+      padding-bottom: 2.5rem;
+    }
+    .project-row {
+      grid-template-columns: 1.5rem minmax(0, 1fr) 1rem;
+      gap: 1rem;
+    }
+    .writing-row {
+      grid-template-columns: minmax(0, 1fr) 1rem;
+      gap: 0.5rem 1rem;
+    }
+    .writing-row time {
+      grid-column: 1;
+      padding: 0;
+    }
+    .writing-copy {
+      grid-column: 1;
+    }
+    .writing-row .entry-arrow {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    h3 {
+      font-size: 1.125rem;
     }
   }
-
   @media (prefers-reduced-motion: reduce) {
-    .animate-card {
-      animation: none;
-    }
-
-    .animate-card {
-      opacity: 1;
-      transform: none;
-    }
-
-    .spotlight-card::after {
+    a,
+    h3,
+    .entry-arrow {
       transition: none;
+    }
+    a:hover .entry-arrow {
+      transform: none;
     }
   }
 </style>
 
-<Layout title="Jarvis Hub | Command Center" lang="en" viewCounterSlug="home">
-  <div class="py-8 md:py-20 max-w-7xl mx-auto">
-    <!-- Bento Grid Container -->
-    <div
-      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 md:auto-rows-[minmax(180px,auto)]"
-    >
-      <!-- 1. Intro Card (Large, 2x2) -->
-      <div
-        class="animate-card spotlight-card order-1 col-span-2 md:col-span-2 lg:col-span-2 md:row-span-2 bg-transparent md:bg-surface border-0 md:border md:border-black/10 rounded-none md:rounded-3xl px-0 py-6 md:p-8 flex flex-col justify-between relative group overflow-hidden"
-      >
-        <!-- Grid Background -->
-        <div
-          class="absolute inset-0 hidden md:block bg-grid-pattern opacity-100 pointer-events-none"
-        >
-        </div>
-
-        <div class="space-y-8 relative z-10">
-          <div class="space-y-4">
-            <h1
-              class="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-primary leading-[1.1]"
-            >
-              Hi, I'm <span class="text-accent-cyan">Jarvis</span>.
-            </h1>
-            <p
-              class="text-base md:text-lg text-secondary/80 max-w-md leading-relaxed"
-            >
-              Software Engineer at JD.com. <br />
-              Building AI-native & cross-platform software.
-            </p>
-            <p
-              class="font-mono text-xs uppercase tracking-wider text-secondary/60"
-            >
-              Beijing · Web · Mobile · AI
-            </p>
-          </div>
-        </div>
-
-        <div class="pt-8 flex flex-wrap items-center gap-5 relative z-10">
-          <a
-            href="/projects"
-            class="px-6 py-3 bg-primary text-background rounded-full font-medium hover:bg-accent-cyan transition-colors"
-          >
-            View my work
-          </a>
-          <a
-            href="/resume"
-            class="font-medium text-secondary hover:text-primary transition-colors"
-          >
-            Resume →
-          </a>
-        </div>
-      </div>
-
-      <!-- 2. Location/Map Card (1x1) -->
-      <div
-        class="animate-card order-2 col-span-1 row-span-1 min-h-32 lg:aspect-square bg-[#242424] rounded-2xl md:rounded-3xl relative group flex flex-col justify-between overflow-hidden p-4 md:p-6 text-white"
-      >
-        <svg
-          class="absolute inset-0 hidden md:block h-full w-full opacity-35 transition-opacity duration-500 group-hover:opacity-55"
-          viewBox="0 0 400 400"
-          preserveAspectRatio="xMidYMid slice"
-          aria-hidden="true"
-        >
-          <defs>
-            <pattern
-              id="city-grid"
-              width="44"
-              height="44"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 44 0 L 0 0 0 44"
-                fill="none"
-                stroke="white"
-                stroke-opacity="0.16"
-                stroke-width="1"></path>
-            </pattern>
-            <radialGradient id="location-glow">
-              <stop offset="0" stop-color="#5eead4" stop-opacity="0.55"></stop>
-              <stop offset="1" stop-color="#5eead4" stop-opacity="0"></stop>
-            </radialGradient>
-          </defs>
-          <rect width="400" height="400" fill="url(#city-grid)"></rect>
-          <g fill="none" stroke="white" stroke-opacity="0.3" stroke-width="3">
-            <path d="M-20 105 C80 75 125 155 220 126 S335 65 430 104"></path>
-            <path d="M-10 292 C92 260 115 202 213 226 S318 325 420 276"></path>
-            <path d="M92-20 C120 72 84 152 132 222 S175 326 152 430"></path>
-            <path d="M300-20 C263 85 330 145 277 226 S245 329 292 430"></path>
-          </g>
-          <circle cx="215" cy="196" r="72" fill="url(#location-glow)"></circle>
-          <circle cx="215" cy="196" r="8" fill="#5eead4"></circle>
-          <circle
-            cx="215"
-            cy="196"
-            r="15"
-            fill="none"
-            stroke="#5eead4"
-            stroke-opacity="0.7"
-            stroke-width="2"></circle>
-        </svg>
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"
-        >
-        </div>
-        <div class="relative z-10">
-          <p class="text-xs font-mono uppercase tracking-widest text-white/60">
-            Based in
-          </p>
-        </div>
-        <div class="relative z-10">
-          <h3 class="text-base md:text-2xl font-display font-bold !text-white">
-            {location.city}, {location.country}
-          </h3>
-          <p class="hidden md:block text-[10px] font-mono text-white/40">
-            {location.coordinates}
-          </p>
-          <p
-            id="local-time"
-            class="text-xs md:text-sm font-mono text-white/60 mt-1"
-          >
-            --:-- --
-          </p>
-        </div>
-      </div>
-
-      <!-- 3. Music/Vibe Card (1x1) -->
-      <div
-        class="animate-card order-3 col-span-1 row-span-1 min-h-32 lg:aspect-square bg-[#1DB954]/10 border border-[#1DB954]/20 rounded-2xl md:rounded-3xl p-4 md:p-6 flex flex-col justify-between group hover:border-[#1DB954]/40 transition-colors relative overflow-hidden"
-      >
-        <div class="flex justify-between items-start z-10">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6 md:w-8 md:h-8 text-[#1DB954]"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.188.309-.586.411-.894.223-2.449-1.496-5.534-1.833-9.168-1.004-.339.077-.678-.142-.755-.481-.077-.339.142-.678.481-.755 4.032-.919 7.494-.523 10.314 1.2.308.188.411.586.223.894zm1.28-2.849c-.237.385-.738.511-1.123.274-2.812-1.728-7.1-2.231-10.426-1.221-.434.132-.893-.119-1.025-.553-.132-.434.119-.893.553-1.025 3.844-1.166 8.653-.598 11.903 1.402.385.237.511.738.274 1.123zm.116-3.037c-3.37-2.001-8.928-2.185-12.146-1.209-.508.154-1.045-.135-1.199-.643-.154-.508.135-1.045.643-1.199 3.733-1.132 9.873-.919 13.785 1.404.463.275.614.877.34 1.34-.275.463-.877.614-1.34.34z"
-            ></path>
-          </svg>
-          <div class="flex gap-1 items-end h-6">
-            <span class="w-1 h-2 bg-[#1DB954] block rounded-full"></span>
-            <span class="w-1 h-5 bg-[#1DB954] block rounded-full"></span>
-            <span class="w-1 h-3 bg-[#1DB954] block rounded-full"></span>
-          </div>
-        </div>
-        <div class="z-10">
-          <p class="font-mono text-xs text-[#1DB954]/80 mb-1">On Repeat</p>
-          <p class="font-display font-bold text-[#1DB954] leading-tight">
-            Coding Vibes
-          </p>
-        </div>
-      </div>
-
-      <!-- 4. Recent Writing -->
-      <section
-        class="animate-card order-5 col-span-2 min-w-0 md:col-span-3 lg:col-span-4 py-8 md:py-8"
-        aria-labelledby="recent-writing-title"
-      >
-        <div class="mb-6 flex items-end justify-between gap-6">
-          <div>
-            <p
-              class="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-secondary/60"
-            >
-              Notes & learnings
-            </p>
-            <h2
-              id="recent-writing-title"
-              class="font-display text-2xl md:text-3xl font-bold"
-            >
-              Recent Writing
-            </h2>
-          </div>
-          <a
-            href="/blogs"
-            class="shrink-0 text-sm font-medium text-accent-cyan hover:text-primary transition-colors"
-          >
-            View all →
-          </a>
-        </div>
-
-        <div
-          class="grid divide-y divide-black/10 border-y border-black/10 lg:grid-cols-3 lg:divide-x lg:divide-y-0"
-        >
-          {
-            sortedPosts.map((post) => (
-              <a
-                href={`/blogs/${post.slug}`}
-                class="group flex min-h-0 md:min-h-48 flex-col py-5 md:py-6 lg:px-6 lg:first:pl-0 lg:last:pr-0"
-              >
-                <div class="mb-2 md:mb-5 flex items-center justify-between gap-3 text-[11px] font-mono text-secondary/60">
-                  <time datetime={post.data.publishDate.toISOString()}>
-                    {new Date(post.data.publishDate).toLocaleDateString(
-                      post.data.language,
-                      {
-                        month: "short",
-                        day: "numeric",
-                      },
-                    )}
-                  </time>
-                  <span>{getPostReadingTime(post)} min</span>
-                </div>
-                <h3 class="font-display text-lg font-semibold text-primary group-hover:text-accent-cyan transition-colors leading-snug line-clamp-2">
-                  {post.data.title}
-                </h3>
-                <p class="mt-2 md:mt-3 text-sm leading-relaxed text-secondary line-clamp-1 md:line-clamp-3">
-                  {post.data.description}
-                </p>
-                <div class="mt-auto flex items-end justify-between gap-3 pt-3 md:pt-5">
-                  <span class="truncate font-mono text-[11px] text-secondary/60">
-                    {post.data.tags[0] ?? "Note"}
-                  </span>
-                  <span class="text-accent-cyan transition-transform group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </div>
-              </a>
-            ))
-          }
-        </div>
-      </section>
-
-      <!-- 5. Contribution Heatmap -->
-      <section
-        aria-labelledby="contributions-title"
-        class="animate-card order-4 col-span-2 min-w-0 md:col-span-3 lg:col-span-2 bg-surface border border-black/10 rounded-2xl md:rounded-3xl p-4 md:p-5 flex flex-col relative group overflow-hidden hover:border-black/20 transition-colors"
-      >
-        <div class="mb-2 flex items-center justify-between gap-5">
-          <h3
-            id="contributions-title"
-            class="font-display text-sm font-semibold"
-          >
-            Contributions
-          </h3>
-          <div
-            class="flex items-center gap-3 text-[11px] font-mono text-secondary/60"
-          >
-            <span>{currentYear}</span>
-            <a
-              href="https://github.com/Jarvis636431"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="View Jarvis636431 on GitHub"
-              class="rounded-sm p-1 text-secondary transition-all hover:text-accent-cyan group-hover:translate-x-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
-            >
-              ↗
-            </a>
-          </div>
-        </div>
-
-        <div
-          id="contribution-scroll"
-          role="region"
-          aria-label="GitHub contribution heatmap; scroll horizontally to explore"
-          tabindex="0"
-          class="contribution-scroll flex min-h-0 flex-1 items-center overflow-x-auto touch-pan-x"
-        >
-          <img
-            src="https://ghchart.rshah.org/2f6f6d/Jarvis636431"
-            alt="Jarvis636431's Github Chart"
-            class="h-auto w-[640px] max-w-none opacity-80 transition-opacity group-hover:opacity-100 md:w-full md:scale-[1.03]"
-          />
-        </div>
-      </section>
-    </div>
-  </div>
-</Layout>
-
 <script>
-  // Update local time for Beijing (UTC+8)
-  function updateTime() {
-    const timeDisplay = document.getElementById("local-time");
-    if (timeDisplay) {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: "Asia/Shanghai",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      };
-      const timeString = now.toLocaleTimeString("en-US", options);
-      timeDisplay.textContent = timeString + " UTC+8";
-    }
-  }
-
-  setInterval(updateTime, 60_000);
-  updateTime();
-
-  // On narrow screens, show the most recent contribution weeks first.
   const contributionScroll = document.getElementById("contribution-scroll");
-  if (contributionScroll) {
-    requestAnimationFrame(() => {
+  const chart = contributionScroll?.querySelector("img");
+  const showRecentWeeks = () => {
+    if (contributionScroll)
       contributionScroll.scrollLeft =
         contributionScroll.scrollWidth - contributionScroll.clientWidth;
-    });
+  };
+  if (chart?.complete) showRecentWeeks();
+  else chart?.addEventListener("load", showRecentWeeks, { once: true });
+
+  if (
+    "IntersectionObserver" in window &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.remove("reveal-pending");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08 },
+    );
+    document
+      .querySelectorAll<HTMLElement>("[data-reveal]")
+      .forEach((section) => {
+        if (section.getBoundingClientRect().top >= window.innerHeight) {
+          section.classList.add("reveal-pending");
+          observer.observe(section);
+        }
+      });
   }
 
   // View Counter Logic
