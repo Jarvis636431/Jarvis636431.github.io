@@ -1,6 +1,23 @@
 {
   "pullRequests": [
     {
+      "repository": "web-infra-dev/rspress",
+      "number": 3751,
+      "title": "docs(contributing): update development and testing instructions",
+      "url": "https://github.com/web-infra-dev/rspress/pull/3751",
+      "body": "## Motivation\n\nContributor instructions still reference a missing root `reset` script, pnpm global linking removed in v11, and the old `rspress` package name for linking and package-level tests. Following these examples no longer works with the current workspace.\n\nCloses #3750.\n\n## Changes\n\n- Link the built `packages/core` directory directly from the consumer project and clarify the separate package watcher.\n- Remove the nonexistent root reset command; use root-level Rstest path filters and document snapshot updates.\n- Align AGENTS.md with the actual package layout, CLI commands and public exports; point version guidance at `.nvmrc` and `package.json#packageManager`.\n\n## Validation\n\n- `pnpm build`\n- `pnpm check`\n- `pnpm format AGENTS.md CONTRIBUTING.md`\n- `pnpm exec cspell AGENTS.md CONTRIBUTING.md`\n- `pnpm test:unit packages/core` — 409 passed, 1 skipped.\n- Checked pnpm 11 local linking syntax against the official documentation and verified the installed Rstest CLI supports path filters and `--update`.",
+      "labels": [],
+      "createdAt": "2026-10-15T06:16:13Z",
+      "mergedAt": "2026-10-15T07:15:31Z",
+      "additions": 16,
+      "deletions": 22,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "SoonIter"
+    },
+    {
       "repository": "web-infra-dev/rspack",
       "number": 16087,
       "title": "docs: update renamed crates in project architecture",
