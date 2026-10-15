@@ -19,64 +19,69 @@ export interface ResumeProject {
 
 export const resumeProfile = {
   name: "Jarvis",
-  title: "Software Engineer at JD.com",
-  location: "北京，中国",
+  title: "Software Engineer at Joybuy",
+  organization: "Joybuy",
+  location: "Beijing, China",
   email: "mengda636431@gmail.com",
   website: "https://jarvis636431.github.io/",
   github: "https://github.com/Jarvis636431",
   summary:
-    "现任京东软件工程师，拥有天津大学学习与校园技术团队实践经历。关注 AI 原生软件、跨端系统和开发者工具，擅长从产品交互出发完成前端、跨平台及全栈工程落地。",
-  focus: ["AI Agent 与 LLM 应用", "跨端应用工程", "开发者体验与开源工具"],
-  updatedAt: "2026-08",
+    "Software engineer at Joybuy with a background at Tianjin University and campus technology teams. Focused on AI applications, cross-platform systems, and developer tools, bringing product interactions to life through frontend and full-stack engineering.",
+  focus: [
+    "AI agents & LLM applications",
+    "Cross-platform engineering",
+    "Developer experience & open source",
+  ],
+  updatedAt: "2026-10",
 };
 
 export const resumeExperiences: ResumeExperience[] = [
   {
-    period: "2026 — 至今",
+    period: "2026 — Present",
     role: "Software Engineer",
-    organization: "JD.com",
-    location: "北京",
+    organization: "Joybuy",
+    location: "Beijing",
     summary:
-      "围绕 AI Agent、LLM 应用、跨端工程与开发者体验持续实践，关注软件从原型到可维护产品的完整交付过程。",
+      "Focused on AI agents, LLM applications, cross-platform engineering, and developer experience, from prototypes to maintainable software.",
     highlights: [
-      "关注模块化、可观测和可演进的 Agent 应用架构。",
-      "持续参与跨端框架与开源工具生态，重视工程效率和使用体验。",
+      "Explore modular, observable, and extensible architectures for agent applications.",
+      "Participate in cross-platform and open-source ecosystems, with an emphasis on engineering efficiency and usability.",
     ],
     stack: ["TypeScript", "React", "AI Agents", "Cross-platform"],
   },
   {
     period: "2025",
     role: "Frontend Developer",
-    organization: "Tenio · 天津大学",
+    organization: "Tenio · Tianjin University",
     summary:
-      "参与面向建筑设计场景的 AI 辅助系统，连接对话式交互、生成结果和三维空间预览。",
+      "Contributed to an AI-assisted architectural design system connecting conversational interfaces, generated designs, and 3D previews.",
     highlights: [
-      "构建核心前端界面和复杂状态流转，维护一致的交互与视觉语言。",
-      "使用 Three.js 承载三维方案预览，并配合后端及模型服务调试数据结构。",
+      "Built core frontend interfaces and complex state flows while maintaining consistent interactions and visual design.",
+      "Implemented 3D design previews with Three.js and collaborated on data integration with backend and model services.",
     ],
     stack: ["React", "TypeScript", "Three.js", "Tailwind CSS"],
   },
   {
     period: "2023 — 2024",
     role: "Full-stack Developer",
-    organization: "iDesignLab · 天津大学",
+    organization: "iDesignLab · Tianjin University",
     summary:
-      "设计并实现工业设计实验室预约平台，将资源、权限、审批、签到和审计流程整合到统一系统。",
+      "Designed and built an industrial design lab reservation platform unifying resources, permissions, approvals, check-in, and audit trails.",
     highlights: [
-      "实现 Vue 管理端、微信入口与 Go 服务端的完整业务链路。",
-      "围绕预约冲突、角色权限、操作留痕和容器化部署设计系统能力。",
+      "Delivered an end-to-end workflow across a Vue admin interface, WeChat entry point, and Go backend.",
+      "Implemented booking conflict handling, role-based access, activity records, and containerized deployment.",
     ],
     stack: ["Vue 3", "Go", "Gin", "MariaDB", "Docker", "Nginx"],
   },
   {
     period: "2022",
     role: "Cross-platform Developer",
-    organization: "天外天工作室 · 天津大学",
+    organization: "TWT Studio · Tianjin University",
     summary:
-      "参与微北洋校园应用的 Flutter 跨平台开发，为天津大学师生提供统一的校园服务入口。",
+      "Contributed to the Flutter-based WePeiYang campus app, providing a unified service entry point for Tianjin University students and staff.",
     highlights: [
-      "参与课程、学业、消息及校园服务等模块的移动端工程实践。",
-      "通过公共基础模块统一网络、缓存、主题和多端交付能力。",
+      "Worked on mobile modules for schedules, academic information, messaging, and campus services.",
+      "Used shared infrastructure for networking, caching, themes, and delivery across platforms.",
     ],
     stack: ["Flutter", "Dart", "Android", "iOS"],
   },
@@ -85,26 +90,26 @@ export const resumeExperiences: ResumeExperience[] = [
 export const resumeProjects: ResumeProject[] = [
   {
     name: "iDesignLab",
-    role: "全栈开发",
+    role: "Full-stack development",
     description:
-      "实验室资源预约与运营平台，覆盖配置化时段、权限审批、签到完结、通知和数据报表。",
+      "A lab reservation and operations platform covering configurable time slots, approvals, check-in, notifications, and reporting.",
     href: "/projects/idesignlab",
     stack: ["Vue 3", "Go", "MariaDB", "Docker"],
   },
   {
-    name: "微北洋",
-    role: "跨平台开发",
+    name: "WePeiYang",
+    role: "Cross-platform development",
     description:
-      "由天外天工作室维护的天津大学校园应用，聚合课表、自习室、GPA、消息和校园社区能力。",
+      "A campus app maintained by TWT Studio, bringing together schedules, study rooms, GPA, messaging, and community features.",
     href: "https://github.com/twtstudio/WePeiYang-Flutter",
     stack: ["Flutter", "Dart", "Mobile"],
     external: true,
   },
   {
     name: "Tenio",
-    role: "前端开发与交互实现",
+    role: "Frontend & interaction development",
     description:
-      "面向建筑设计的 AI 辅助系统，探索对话式需求输入、生成方案和三维预览的协作流程。",
+      "An AI-assisted design system exploring a collaborative workflow for conversational input, generated proposals, and 3D previews.",
     href: "/projects/tenio",
     stack: ["React", "TypeScript", "Three.js"],
   },
@@ -117,7 +122,7 @@ export const resumeSkills = [
   },
   {
     label: "Cross-platform",
-    items: ["Taro", "Flutter", "Dart", "小程序", "H5"],
+    items: ["Taro", "Flutter", "Dart", "Mini Programs", "H5"],
   },
   {
     label: "Backend & Delivery",
@@ -134,11 +139,12 @@ export const openSourceFocus = [
     name: "Taro",
     href: "https://github.com/NervJS/taro",
     description:
-      "支持 React、Vue、小程序、H5 与 React Native 等平台的开放式跨端框架。",
+      "支持 React、Vue、Mini Programs、H5 与 React Native 等平台的开放式跨端框架。",
   },
   {
     name: "OxyGent",
     href: "https://github.com/jd-opensource/OxyGent",
-    description: "强调模块化、可观测性与可演进性的开源多 Agent 框架。",
+    description:
+      "An open-source multi-agent framework focused on modularity, observability, and extensibility.",
   },
 ];
