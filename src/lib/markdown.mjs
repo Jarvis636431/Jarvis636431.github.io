@@ -3,6 +3,7 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeGithubAlert from "rehype-github-alert";
 import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -14,7 +15,7 @@ const processor = unified()
   .use(remarkMath)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeRaw)
-  // Sanitize author HTML before generating KaTeX's trusted markup.
+  // Sanitize author HTML before plugins generate trusted icons and math markup.
   .use(rehypeSanitize, {
     ...defaultSchema,
     attributes: {
@@ -22,6 +23,7 @@ const processor = unified()
       code: [["className", /^language-./, "math-inline", "math-display"]],
     },
   })
+  .use(rehypeGithubAlert)
   .use(rehypeKatex)
   .use(rehypeStringify);
 

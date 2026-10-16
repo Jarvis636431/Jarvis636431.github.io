@@ -60,6 +60,28 @@ Development includes draft articles in routes, lists, RSS, and search, and archi
 
 As of 2026-10-16, all 65 articles are drafts. Production therefore has no article detail pages or RSS items, and search contains only public projects. Draft filtering does not hide source files in a public repository. Review sensitive information before changing `draft` to `false`.
 
+### Callouts
+
+Use GitHub-style alerts as top-level blockquotes in Markdown or MDX:
+
+```markdown
+> [!NOTE]
+> A short definition or supporting explanation.
+
+> [!TIP]
+> A useful approach or practical suggestion.
+
+> [!WARNING]
+> Negative sampling changes the training distribution.
+> Keep the evaluation set close to the real distribution.
+```
+
+`IMPORTANT` and `CAUTION` are also supported. Keep the marker on its own line;
+use a blank quoted line (`>`) to start another paragraph. Lists, code blocks, and
+formulas can appear in the body. Regular blockquotes keep their existing style.
+Alerts render at build time through `rehype-github-alert` with local CSS and no
+client JavaScript. The sanitized Markdown component supports the same syntax.
+
 ### Mermaid diagrams
 
 Use a fenced `mermaid` block in Markdown or MDX:
