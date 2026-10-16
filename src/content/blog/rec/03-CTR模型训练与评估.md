@@ -30,9 +30,9 @@ draft: true
 
 CTR 模型预测的是：
 
-```text
-pCTR = P(点击=1 | 用户、候选、上下文、曝光)
-```
+$$
+\mathrm{pCTR} = P(\text{点击}=1 \mid \text{用户、候选、上下文、曝光})
+$$
 
 一条有效曝光样本的标签是：
 
@@ -45,12 +45,14 @@ pCTR = P(点击=1 | 用户、候选、上下文、曝光)
 
 以 LR 为例：
 
-```text
-z = wᵀx + b
-p = sigmoid(z)
-```
+$$
+\begin{aligned}
+z &= \mathbf{w}^{\mathsf T}\mathbf{x} + b \\
+p &= \sigma(z)
+\end{aligned}
+$$
 
-其中 `z` 是 logit，`p` 是预测点击概率。
+其中 $z$ 是 logit，$p$ 是预测点击概率。
 
 ## 2. 训练集、验证集和测试集
 
@@ -134,9 +136,9 @@ logits → Sigmoid → 概率 → 二元交叉熵
 
 二元交叉熵为：
 
-```text
-BCE(y,p) = -[y log(p) + (1-y)log(1-p)]
-```
+$$
+\operatorname{BCE}(y,p) = -\left[y\log p + (1-y)\log(1-p)\right]
+$$
 
 但训练代码通常写成：
 
@@ -172,9 +174,9 @@ CTR 数据通常高度不平衡。假设有一万次曝光：
 
 如果模型对所有样本都预测“不点击”：
 
-```text
-Accuracy = 9900 / 10000 = 99%
-```
+$$
+\mathrm{Accuracy} = \frac{9900}{10000} = 99\%
+$$
 
 准确率高达 99%，但这个模型不能找出任何更可能点击的候选，也没有实际排序价值。
 
@@ -242,30 +244,29 @@ AUC 可以直观理解为：
 
 在二分类 CTR 场景中，LogLoss 通常就是二元交叉熵：
 
-```text
-LogLoss(y,p) = -[y log(p) + (1-y)log(1-p)]
-```
+$$
+\operatorname{LogLoss}(y,p) = -\left[y\log p + (1-y)\log(1-p)\right]
+$$
 
-对于 `N` 条样本，取平均：
+对于 $N$ 条样本，取平均：
 
-```text
-LogLoss
-= -1/N × Σ[yᵢlog(pᵢ) + (1-yᵢ)log(1-pᵢ)]
-```
+$$
+\mathrm{LogLoss} = -\frac{1}{N}\sum_{i=1}^{N}\left[y_i\log p_i + (1-y_i)\log(1-p_i)\right]
+$$
 
 其中：
 
-- `yᵢ` 是真实的 `0/1` 标签；
-- `pᵢ` 是模型预测点击的概率；
+- $y_i$ 是真实的 `0/1` 标签；
+- $p_i$ 是模型预测点击的概率；
 - LogLoss 越小越好。
 
 ### 7.1 正样本
 
-当 `y=1` 时：
+当 $y=1$ 时：
 
-```text
-LogLoss = -log(p)
-```
+$$
+\mathrm{LogLoss} = -\log p
+$$
 
 ```text
 p=0.99 → 损失很小
@@ -275,11 +276,11 @@ p=0.01 → 损失非常大
 
 ### 7.2 负样本
 
-当 `y=0` 时：
+当 $y=0$ 时：
 
-```text
-LogLoss = -log(1-p)
-```
+$$
+\mathrm{LogLoss} = -\log(1-p)
+$$
 
 ```text
 p=0.01 → 损失很小
@@ -343,9 +344,9 @@ LogLoss：你说的概率可信吗？
 
 如果整体 CTR 是 3%，模型对所有样本都预测：
 
-```text
-pCTR = 0.03
-```
+$$
+\mathrm{pCTR} = 0.03
+$$
 
 它至少接近总体平均概率，LogLoss 未必极差，但所有样本分数相同，AUC 约为 0.5，没有个性化排序能力。
 
@@ -353,9 +354,9 @@ pCTR = 0.03
 
 校准关心的是：
 
-```text
-预测概率 ≈ 实际发生频率
-```
+$$
+\text{预测概率} \approx \text{实际发生频率}
+$$
 
 例如取出一千条预测概率约为 10% 的曝光：
 
@@ -367,9 +368,9 @@ pCTR = 0.03
 
 校准对广告系统非常重要。假设系统使用：
 
-```text
-预期点击价值 = pCTR × 单次点击价值
-```
+$$
+\text{预期点击价值} = \mathrm{pCTR} \times \text{单次点击价值}
+$$
 
 即使候选排序正确，只要 `pCTR` 整体偏高或偏低，也会影响广告价值计算、预算分配和计费。
 

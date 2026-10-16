@@ -64,10 +64,14 @@ x → Embedding → 多层特征交互 → Linear → Sigmoid
 
 年龄、价格和历史点击次数等数值可以进行标准化、归一化、取对数或分桶，避免数值尺度相差过大。
 
-```text
-标准化：x' = (x - 均值) / 标准差
-长尾数值：x' = log(1 + x)
-```
+$$
+\begin{aligned}
+\text{标准化：}\quad x' &= \frac{x-\mu}{\sigma} \\
+\text{长尾数值：}\quad x' &= \log(1+x)
+\end{aligned}
+$$
+
+其中 $\mu$ 和 $\sigma$ 分别是均值和标准差。
 
 ### 2.2 类别特征
 
@@ -85,32 +89,32 @@ x → Embedding → 多层特征交互 → Linear → Sigmoid
 
 LR 为每个输入特征学习一个权重：
 
-```text
-z = w₁x₁ + w₂x₂ + ... + wₙxₙ + b
-```
+$$
+z = w_1x_1 + w_2x_2 + \cdots + w_nx_n + b
+$$
 
 简写为：
 
-```text
-z = wᵀx + b
-```
+$$
+z = \mathbf{w}^{\mathsf T}\mathbf{x} + b
+$$
 
 其中：
 
-- `x` 是样本特征；
-- `w` 是需要学习的权重向量；
-- `b` 是偏置；
-- `z` 是没有限定范围的线性分数，也叫 logit。
+- $\mathbf{x}$ 是样本特征；
+- $\mathbf{w}$ 是需要学习的权重向量；
+- $b$ 是偏置；
+- $z$ 是没有限定范围的线性分数，也叫 logit。
 
-在其他特征不变的情况下，权重为正值的特征会提高 `z`，权重为负值的特征会降低 `z`。但权重表示数据中的统计相关，不能直接解释为因果关系。
+在其他特征不变的情况下，权重为正值的特征会提高 $z$，权重为负值的特征会降低 $z$。但权重表示数据中的统计相关，不能直接解释为因果关系。
 
 ## 4. Sigmoid 为什么会出现
 
-线性分数 `z` 可以从负无穷到正无穷，而概率必须位于 `0～1`。Sigmoid 提供了这个映射：
+线性分数 $z$ 可以从负无穷到正无穷，而概率必须位于 `0～1`。Sigmoid 提供了这个映射：
 
-```text
-p = σ(z) = 1 / (1 + e⁻ᶻ)
-```
+$$
+p = \sigma(z) = \frac{1}{1+e^{-z}}
+$$
 
 | z | p = sigmoid(z) |
 | ---: | ---: |
@@ -124,33 +128,35 @@ Sigmoid 不只是因为它的输出像概率，它还能从对数几率的建模
 
 ### 4.1 概率、几率与对数几率
 
-事件发生的概率是 `p`，不发生的概率是 `1-p`。几率定义为：
+事件发生的概率是 $p$，不发生的概率是 $1-p$。几率定义为：
 
-```text
-odds = p / (1-p)
-```
+$$
+\mathrm{odds} = \frac{p}{1-p}
+$$
 
 对几率取对数：
 
-```text
-logit(p) = log[p/(1-p)]
-```
+$$
+\operatorname{logit}(p) = \log\frac{p}{1-p}
+$$
 
 概率的范围是 `0～1`，对数几率的范围则是整个实数轴。LR 的核心假设是：
 
 > 事件发生的对数几率，是输入特征的线性函数。
 
-```text
-log[p/(1-p)] = wᵀx + b = z
-```
+$$
+\log\frac{p}{1-p} = \mathbf{w}^{\mathsf T}\mathbf{x} + b = z
+$$
 
 对上式整理：
 
-```text
-p/(1-p) = eᶻ
-p = eᶻ/(1+eᶻ)
-p = 1/(1+e⁻ᶻ)
-```
+$$
+\begin{aligned}
+\frac{p}{1-p} &= e^z \\
+p &= \frac{e^z}{1+e^z} \\
+p &= \frac{1}{1+e^{-z}}
+\end{aligned}
+$$
 
 这就是 Sigmoid。因此它来自明确的概率建模假设，不是随意选出的曲线。
 
@@ -158,61 +164,60 @@ p = 1/(1+e⁻ᶻ)
 
 点击标签只有两个值：
 
-```text
-y = 1：点击
-y = 0：未点击
-```
+$$
+y = \begin{cases}1, & \text{点击} \\ 0, & \text{未点击}\end{cases}
+$$
 
 可以把每次曝光是否点击看作伯努利随机变量：
 
-```text
-P(y=1) = p
-P(y=0) = 1-p
-```
+$$
+\begin{aligned}
+P(y=1) &= p \\
+P(y=0) &= 1-p
+\end{aligned}
+$$
 
 将两种情况合并：
 
-```text
-P(y | x) = pʸ(1-p)¹⁻ʸ
-```
+$$
+P(y \mid \mathbf{x}) = p^y(1-p)^{1-y}
+$$
 
-当 `y=1` 时，结果是 `p`；当 `y=0` 时，结果是 `1-p`。
+当 $y=1$ 时，结果是 $p$；当 $y=0$ 时，结果是 $1-p$。
 
-训练希望模型尽可能高概率地解释已经观察到的数据，即最大化所有样本的似然：
+训练希望模型尽可能高概率地解释已经观察到的数据。设共有 $N$ 条样本，训练目标是最大化所有样本的似然：
 
-```text
-Likelihood = ∏ pᵢʸⁱ(1-pᵢ)¹⁻ʸⁱ
-```
+$$
+\mathrm{Likelihood} = \prod_{i=1}^{N} p_i^{y_i}(1-p_i)^{1-y_i}
+$$
 
 取对数后，连乘变成连加：
 
-```text
-Log Likelihood
-= Σ [yᵢlog(pᵢ) + (1-yᵢ)log(1-pᵢ)]
-```
+$$
+\log\mathrm{Likelihood} = \sum_{i=1}^{N}\left[y_i\log p_i + (1-y_i)\log(1-p_i)\right]
+$$
 
 最大化对数似然，等价于最小化它的负数：
 
-```text
-Loss
-= -Σ [yᵢlog(pᵢ) + (1-yᵢ)log(1-pᵢ)]
-```
+$$
+\mathrm{Loss} = -\sum_{i=1}^{N}\left[y_i\log p_i + (1-y_i)\log(1-p_i)\right]
+$$
 
 这就是 Binary Cross Entropy（二元交叉熵，BCE），也是伯努利模型的负对数似然。
 
 ## 6. 交叉熵如何惩罚错误
 
-对于正样本 `y=1`：
+对于正样本 $y=1$：
 
-```text
-Loss = -log(p)
-```
+$$
+\mathrm{Loss} = -\log p
+$$
 
-对于负样本 `y=0`：
+对于负样本 $y=0$：
 
-```text
-Loss = -log(1-p)
-```
+$$
+\mathrm{Loss} = -\log(1-p)
+$$
 
 | 真实标签 | 预测概率 | 结果 |
 | ---: | ---: | --- |
@@ -227,23 +232,23 @@ Loss = -log(1-p)
 
 均方误差是：
 
-```text
-MSE = (p-y)²
-```
+$$
+\mathrm{MSE} = (p-y)^2
+$$
 
 它不是完全不能用，但它更自然地对应连续值和高斯噪声假设。点击是 `0/1` 伯努利事件，BCE 与数据生成模型更匹配。
 
-另外，Sigmoid 和 BCE 组合后，对 logit `z` 的梯度非常简洁：
+另外，Sigmoid 和 BCE 组合后，对 logit $z$ 的梯度非常简洁：
 
-```text
-∂Loss/∂z = p-y
-```
+$$
+\frac{\partial\mathrm{Loss}}{\partial z} = p-y
+$$
 
-当正样本被错误预测为 `p=0.01` 时：
+当正样本被错误预测为 $p=0.01$ 时：
 
-```text
+$$
 p-y = 0.01-1 = -0.99
-```
+$$
 
 模型会得到很明显的修正信号；当预测已经很准确时，梯度自然变小。
 
@@ -251,35 +256,41 @@ p-y = 0.01-1 = -0.99
 
 对一条样本：
 
-```text
-z = wᵀx + b
-p = sigmoid(z)
-Loss = BCE(p, y)
-```
+$$
+\begin{aligned}
+z &= \mathbf{w}^{\mathsf T}\mathbf{x} + b \\
+p &= \sigma(z) \\
+\mathrm{Loss} &= \operatorname{BCE}(p,y)
+\end{aligned}
+$$
 
 通过链式法则可得：
 
-```text
-∂Loss/∂z = p-y
-∂Loss/∂w = (p-y)x
-∂Loss/∂b = p-y
-```
+$$
+\begin{aligned}
+\frac{\partial\mathrm{Loss}}{\partial z} &= p-y \\
+\nabla_{\mathbf{w}}\mathrm{Loss} &= (p-y)\mathbf{x} \\
+\frac{\partial\mathrm{Loss}}{\partial b} &= p-y
+\end{aligned}
+$$
 
-假设正样本的真实标签是 `y=1`，模型只预测 `p=0.2`：
+假设正样本的真实标签是 $y=1$，模型只预测 $p=0.2$：
 
-```text
+$$
 p-y = -0.8
-```
+$$
 
 相关特征的梯度是负值。使用梯度下降更新：
 
-```text
-w_new = w_old - 学习率 × 梯度
-```
+$$
+\mathbf{w}_{\mathrm{new}} = \mathbf{w}_{\mathrm{old}} - \eta\nabla_{\mathbf{w}}\mathrm{Loss}
+$$
 
-减去负数会使相关权重增大，下次遇到类似特征时，`z` 和点击概率都会上升。
+其中 $\eta$ 是学习率，$\nabla_{\mathbf{w}}\mathrm{Loss}$ 是损失对权重的梯度。
 
-如果负样本 `y=0` 却被预测为 `p=0.8`，梯度为正，相关权重会降低。
+减去负数会使相关权重增大，下次遇到类似特征时，$z$ 和点击概率都会上升。
+
+如果负样本 $y=0$ 却被预测为 $p=0.8$，梯度为正，相关权重会降低。
 
 ## 9. 反向传播与梯度下降的区别
 
@@ -328,22 +339,24 @@ b = 0
 
 一次取出一小批样本：
 
-```text
-z = Xw + b
-p = sigmoid(z)
-```
+$$
+\begin{aligned}
+\mathbf{z} &= X\mathbf{w} + b \\
+\mathbf{p} &= \sigma(\mathbf{z})
+\end{aligned}
+$$
 
 ### 10.5 计算平均损失
 
-```text
-Batch Loss = 每条样本 BCE 的平均值
-```
+$$
+\mathrm{Batch\ Loss} = \frac{1}{N}\sum_{i=1}^{N}\operatorname{BCE}(p_i,y_i)
+$$
 
 可以加入正则化，约束权重不要无限增大：
 
-```text
-总损失 = BCE + λ‖w‖²
-```
+$$
+\mathrm{Loss}_{\mathrm{total}} = \mathrm{BCE} + \lambda\lVert\mathbf{w}\rVert_2^2
+$$
 
 ### 10.6 反向传播并更新
 
@@ -387,7 +400,7 @@ for epoch in range(num_epochs):
 
 | 代码 | 数学意义 |
 | --- | --- |
-| `model(features)` | `z = wᵀx+b` |
+| `model(features)` | $z = \mathbf{w}^{\mathsf T}\mathbf{x}+b$ |
 | `binary_cross_entropy_with_logits` | 数值稳定的 Sigmoid + BCE |
 | `zero_grad()` | 清空上一个 Batch 的梯度 |
 | `backward()` | 通过反向传播计算梯度 |
@@ -407,9 +420,9 @@ LR 的优点是：
 
 它的核心局限是只能直接学习一阶线性作用：
 
-```text
-w₁x₁ + w₂x₂
-```
+$$
+w_1x_1 + w_2x_2
+$$
 
 它不会自动学习：
 
@@ -447,49 +460,46 @@ w₁x₁ + w₂x₂
 
 假设：
 
-```text
-x = [1, 0, 1]
-w = [0.5, -0.4, 0.8]
-b = -1
-y = 1
-```
+$$
+\begin{aligned}
+\mathbf{x} &= [1,0,1] \\
+\mathbf{w} &= [0.5,-0.4,0.8] \\
+b &= -1 \\
+y &= 1
+\end{aligned}
+$$
 
 前向传播：
 
-```text
-z = 1×0.5 + 0×(-0.4) + 1×0.8 - 1
-  = 0.3
-
-p = sigmoid(0.3)
-  ≈ 0.574
-```
+$$
+\begin{aligned}
+z &= 1\times 0.5 + 0\times(-0.4) + 1\times 0.8 - 1 = 0.3 \\
+p &= \sigma(0.3) \approx 0.574
+\end{aligned}
+$$
 
 模型预测点击概率约为 `57.4%`。真实标签为 `1`，因此：
 
-```text
-∂Loss/∂z = p-y
-          = 0.574-1
-          = -0.426
-```
+$$
+\frac{\partial\mathrm{Loss}}{\partial z} = p-y = 0.574-1 = -0.426
+$$
 
 权重梯度：
 
-```text
-∂Loss/∂w = (p-y)x
-          = -0.426 × [1, 0, 1]
-          = [-0.426, 0, -0.426]
-```
+$$
+\nabla_{\mathbf{w}}\mathrm{Loss} = (p-y)\mathbf{x} = -0.426\times[1,0,1] = [-0.426,0,-0.426]
+$$
 
 如果学习率为 `0.1`，两个活跃特征对应的权重都会增加 `0.0426`。下次遇到类似样本时，模型会给出更高的点击概率。
 
 ## 15. 总结
 
 1. LR 是“线性打分 + Sigmoid”的线性二分类模型，不是深度模型。
-2. `z = wᵀx+b` 产生 logit，`p = sigmoid(z)` 产生概率。
-3. LR 假设对数几率 `log[p/(1-p)]` 是特征的线性函数。
+2. $z = \mathbf{w}^{\mathsf T}\mathbf{x}+b$ 产生 logit，$p = \sigma(z)$ 产生概率。
+3. LR 假设对数几率 $\log\frac{p}{1-p}$ 是特征的线性函数。
 4. 点击标签可以用伯努利分布建模。
 5. 二元交叉熵是伯努利模型的负对数似然。
-6. Sigmoid 与 BCE 组合后，有 `∂Loss/∂z = p-y`。
+6. Sigmoid 与 BCE 组合后，有 $\frac{\partial\mathrm{Loss}}{\partial z}=p-y$。
 7. 反向传播计算梯度，优化器使用梯度更新参数。
 8. 训练需要标签、损失和反向传播；线上推理通常只需要前向传播。
 9. LR 快、稳定、适合稀疏特征，但不会自动学习复杂特征交互。

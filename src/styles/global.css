@@ -71,3 +71,26 @@
     image-rendering: pixelated;
   }
 }
+
+/* Formulas share the renderer's fonts; long display equations scroll locally. */
+.prose .katex,
+.markdown-body .katex {
+  font-size: 1.05em;
+}
+
+.prose .katex-display,
+.markdown-body .katex-display {
+  max-width: 100%;
+  margin: 1.25rem 0;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #2f6f6d55 transparent;
+}
+
+/* Keep each equation intact inside its own horizontal viewport. */
+.prose .katex .base,
+.markdown-body .katex .base {
+  white-space: nowrap;
+}

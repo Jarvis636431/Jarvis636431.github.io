@@ -60,6 +60,24 @@ Development includes draft articles in routes, lists, RSS, and search, and archi
 
 As of 2026-10-16, all 65 articles are drafts. Production therefore has no article detail pages or RSS items, and search contains only public projects. Draft filtering does not hide source files in a public repository. Review sensitive information before changing `draft` to `false`.
 
+### Math formulas
+
+Markdown and MDX articles support `$...$` for inline math and `$$...$$` on separate
+lines for display equations. Use LaTeX notation, for example:
+
+```markdown
+The predicted probability is $p = \sigma(z)$.
+
+$$
+p = \frac{1}{1 + e^{-z}}
+$$
+```
+
+Formulas render at build time with KaTeX; styles and fonts are served locally.
+Long display equations scroll horizontally on narrow screens. Keep executable code,
+text diagrams, and experiment output in fenced code blocks. Escape literal dollar
+signs as `\$` in prose. The sanitized Markdown component supports the same syntax.
+
 ### Images and code blocks
 
 Regular Markdown images receive lazy loading, captions from alt text, and click-to-zoom behavior. For responsive output with intrinsic dimensions, import a local image through `ArticleImage` in MDX:

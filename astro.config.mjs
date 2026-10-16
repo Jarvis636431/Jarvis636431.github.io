@@ -5,6 +5,8 @@ import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import robotsTxt from "astro-robots-txt";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import remarkCodeMeta from "./src/lib/remark-code-meta.mjs";
 
 const SITE_URL = "https://jarvis636431.github.io";
@@ -38,8 +40,8 @@ export default defineConfig({
   },
   markdown: {
     syntaxHighlight: "shiki",
-    remarkPlugins: [remarkGfm, remarkCodeMeta],
-    rehypePlugins: [],
+    remarkPlugins: [remarkGfm, remarkMath, remarkCodeMeta],
+    rehypePlugins: [rehypeKatex],
     shikiConfig: {
       wrap: true,
       theme: "github-dark",
