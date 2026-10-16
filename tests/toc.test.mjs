@@ -11,7 +11,7 @@ const component = readFileSync(
 );
 const script = component.match(/<script is:inline>([\s\S]*?)<\/script>/)[1];
 
-function renderToc(ids) {
+function renderToc(ids, { height = 200, scrollHeight = ids.length * 30 } = {}) {
   const headings = ids.map((entry, index) => {
     const heading = {
       id: typeof entry === "string" ? entry : entry.id,
@@ -44,8 +44,22 @@ function renderToc(ids) {
     return heading;
   });
   const links = [];
+  const scrollRequests = [];
+  let linkIndex = 0;
   const toggle = { addEventListener() {} };
   const toc = {
+    clientHeight: height,
+    clientTop: 0,
+    scrollHeight,
+    scrollTop: 0,
+    getBoundingClientRect: () => ({ top: 100 }),
+    scrollTo(options) {
+      scrollRequests.push(options);
+      this.scrollTop = Math.max(
+        0,
+        Math.min(options.top, this.scrollHeight - this.clientHeight),
+      );
+    },
     replaceChildren(fragment) {
       links.push(...fragment.children);
     },
@@ -84,10 +98,18 @@ function renderToc(ids) {
       },
     }),
     createElement: () => {
+      const index = linkIndex++;
       const classes = new Set();
       const attributes = new Map();
       return {
         dataset: {},
+        getBoundingClientRect() {
+          const top = 100 + index * 30 - toc.scrollTop;
+          return { top, bottom: top + 30 };
+        },
+        scrollIntoView() {
+          throw new Error("TOC tracking must not scroll the outer page");
+        },
         classList: {
           add: (name) => classes.add(name),
           remove: (name) => classes.delete(name),
@@ -112,6 +134,8 @@ function renderToc(ids) {
   return {
     headings,
     links,
+    scrollRequests,
+    container: toc,
     enter(index) {
       onIntersection([{ target: headings[index], isIntersecting: true }]);
     },
@@ -191,4 +215,38 @@ test("TOC labels exclude permalink controls without stripping literal hash chara
   assert.equal(toc.links[0].href, "#csharp");
   toc.enter(0);
   assert.equal(toc.links[0].getAttribute("aria-current"), "true");
+});
+
+test("a long TOC follows off-screen selections in both directions without moving the page", () => {
+  const toc = renderToc(
+    Array.from({ length: 10 }, (_, index) => `section-${index}`),
+    { height: 90 },
+  );
+  toc.enter(0);
+  assert.equal(toc.scrollRequests.length, 0);
+  toc.enter(6);
+  assert.equal(toc.scrollRequests.length, 1);
+  assert.ok(toc.container.scrollTop > 0);
+  const bounds = toc.links[6].getBoundingClientRect();
+  assert.ok(bounds.top >= 100 && bounds.bottom <= 190);
+  assert.equal(toc.links[6].getAttribute("aria-current"), "true");
+  toc.enter(6);
+  assert.equal(
+    toc.scrollRequests.length,
+    1,
+    "visible selections should not cause extra scrolling",
+  );
+  toc.enter(0);
+  assert.equal(toc.scrollRequests.length, 2);
+  assert.equal(toc.container.scrollTop, 0);
+  assert.equal(toc.links[0].getAttribute("aria-current"), "true");
+});
+
+test("collapsed and non-overflowing TOCs do not scroll", () => {
+  for (const height of [0, 300]) {
+    const toc = renderToc(["intro", "middle", "end"], { height });
+    toc.enter(2);
+    assert.equal(toc.links[2].getAttribute("aria-current"), "true");
+    assert.equal(toc.scrollRequests.length, 0);
+  }
 });

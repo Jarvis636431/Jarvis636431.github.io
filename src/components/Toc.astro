@@ -105,6 +105,25 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         if (icon) icon.textContent = expanded ? "＋" : "−";
       });
       const links = Array.from(linksById.values());
+      const keepLinkVisible = (link) => {
+        // Scroll only the TOC itself; scrollIntoView can also move the article.
+        if (toc.clientHeight === 0 || toc.scrollHeight <= toc.clientHeight)
+          return;
+        const viewportTop = toc.getBoundingClientRect().top + toc.clientTop;
+        const viewportBottom = viewportTop + toc.clientHeight;
+        const bounds = link.getBoundingClientRect();
+        let delta = 0;
+        if (bounds.top < viewportTop) {
+          delta = bounds.top - viewportTop - 8;
+        } else if (bounds.bottom > viewportBottom) {
+          delta = Math.min(
+            bounds.bottom - viewportBottom + 8,
+            bounds.top - viewportTop,
+          );
+        }
+        if (delta)
+          toc.scrollTo({ top: toc.scrollTop + delta, behavior: "auto" });
+      };
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -117,6 +136,7 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
               });
               link.classList.add("active");
               link.setAttribute("aria-current", "true");
+              keepLinkVisible(link);
             }
           });
         },
