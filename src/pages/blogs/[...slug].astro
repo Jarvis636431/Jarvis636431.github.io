@@ -120,16 +120,20 @@ const relatedPosts = getRelatedPosts(post, allPosts);
 
   <article class="article-page">
     <header class="article-hero">
-      <a href="/blogs" class="article-back"
-        ><span aria-hidden="true">←</span> 返回博客</a
-      >
-
-      <div class="article-kicker">
-        <span>Writing</span>
-        {post.data.tags[0] && <span>{post.data.tags[0]}</span>}
+      <div class="article-topline">
+        <a href="/blogs" class="article-back"
+          ><span aria-hidden="true">←</span> 返回博客</a
+        >
+        <div class="article-kicker">
+          <span>Writing</span>
+          {post.data.tags[0] && <span>{post.data.tags[0]}</span>}
+        </div>
       </div>
 
-      <h1 class={`article-title article-title--${titleSize}`}>
+      <h1
+        class={`article-title article-title--${titleSize}`}
+        title={post.data.title}
+      >
         {post.data.title}
       </h1>
       <p class="article-deck">{post.data.description}</p>
@@ -158,27 +162,29 @@ const relatedPosts = getRelatedPosts(post, allPosts);
         }
       </div>
 
-      {
-        post.data.tags.length > 0 && (
-          <div class="article-tags" aria-label="文章标签">
-            {post.data.tags.map((tag) => (
-              <span>{tag}</span>
-            ))}
-          </div>
-        )
-      }
+      <div class="article-footer">
+        {
+          post.data.tags.length > 0 && (
+            <div class="article-tags" aria-label="文章标签">
+              {post.data.tags.map((tag) => (
+                <span>{tag}</span>
+              ))}
+            </div>
+          )
+        }
 
-      <div class="article-actions" aria-label="文章操作">
-        <button type="button" data-share-article>
-          <span aria-hidden="true">↗</span><span>分享文章</span>
-        </button>
-        <button type="button" data-copy-link>
-          <span aria-hidden="true">⧉</span><span>复制链接</span>
-        </button>
-        <span
-          class="article-action-status"
-          data-action-status
-          aria-live="polite"></span>
+        <div class="article-actions" aria-label="文章操作">
+          <button type="button" data-share-article>
+            <span aria-hidden="true">↗</span><span>分享文章</span>
+          </button>
+          <button type="button" data-copy-link>
+            <span aria-hidden="true">⧉</span><span>复制链接</span>
+          </button>
+          <span
+            class="article-action-status"
+            data-action-status
+            aria-live="polite"></span>
+        </div>
       </div>
     </header>
 
@@ -322,17 +328,24 @@ const relatedPosts = getRelatedPosts(post, allPosts);
 
 <style>
   .article-page {
-    padding: 4rem 0 2rem;
+    padding: 2.5rem 0 2rem;
   }
   .article-hero {
     max-width: 56rem;
     margin: 0 auto;
   }
+  .article-topline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
   .article-back {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 3.5rem;
     color: rgba(31, 31, 31, 0.55);
     font:
       500 0.75rem/1 "IBM Plex Mono",
@@ -347,7 +360,6 @@ const relatedPosts = getRelatedPosts(post, allPosts);
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    margin-bottom: 1.25rem;
     color: #2f6f6d;
     font:
       500 0.68rem/1.4 "IBM Plex Mono",
@@ -361,28 +373,37 @@ const relatedPosts = getRelatedPosts(post, allPosts);
     color: rgba(31, 31, 31, 0.24);
   }
   .article-hero h1 {
+    --title-min: 1.75rem;
+    --title-fluid: 4.5vw;
+    --title-max: 4rem;
+    display: -webkit-box;
     max-width: 52rem;
     margin: 0;
-    font-size: clamp(2.9rem, 7vw, 5.7rem);
-    line-height: 0.98;
-    letter-spacing: -0.06em;
+    font-size: clamp(var(--title-min), var(--title-fluid), var(--title-max));
+    line-height: 1.2;
+    letter-spacing: 0;
     text-wrap: balance;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
-  .article-title--medium {
-    font-size: clamp(2.65rem, 6vw, 4.8rem);
-    line-height: 1.02;
+  .article-hero .article-title--medium {
+    --title-min: 1.625rem;
+    --title-fluid: 3.75vw;
+    --title-max: 3.25rem;
   }
-  .article-title--long {
-    max-width: 56rem;
-    font-size: clamp(2.25rem, 5vw, 3.9rem);
-    line-height: 1.08;
-    letter-spacing: -0.045em;
+  .article-hero .article-title--long {
+    --title-min: 1.5rem;
+    --title-fluid: 3vw;
+    --title-max: 2.75rem;
   }
   .article-deck {
-    max-width: 44rem;
-    margin: 1.8rem 0 0;
+    max-width: 48rem;
+    margin: 1rem 0 0;
     color: rgba(31, 31, 31, 0.62);
-    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
     line-height: 1.7;
   }
   .article-meta {
@@ -390,7 +411,7 @@ const relatedPosts = getRelatedPosts(post, allPosts);
     flex-wrap: wrap;
     align-items: center;
     gap: 0.6rem;
-    margin-top: 2rem;
+    margin-top: 1rem;
     color: rgba(31, 31, 31, 0.48);
     font:
       0.7rem/1.5 "IBM Plex Mono",
@@ -400,11 +421,18 @@ const relatedPosts = getRelatedPosts(post, allPosts);
     color: #2f6f6d;
     text-decoration: none;
   }
+  .article-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 1rem;
+  }
   .article-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem 1.1rem;
-    margin-top: 1.25rem;
     color: rgba(31, 31, 31, 0.56);
     font:
       0.72rem/1.5 "IBM Plex Mono",
@@ -417,10 +445,10 @@ const relatedPosts = getRelatedPosts(post, allPosts);
   }
   .article-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 1rem;
     min-height: 2rem;
-    margin-top: 1.5rem;
   }
   .article-actions button {
     display: inline-flex;
@@ -445,10 +473,13 @@ const relatedPosts = getRelatedPosts(post, allPosts);
       0.68rem/1.5 "IBM Plex Mono",
       monospace;
   }
+  .article-action-status:empty {
+    display: none;
+  }
   .article-rule {
     max-width: 64rem;
     height: 1px;
-    margin: 4rem auto;
+    margin: 2rem auto;
     background: rgba(31, 31, 31, 0.13);
   }
   .article-layout {
@@ -906,27 +937,17 @@ const relatedPosts = getRelatedPosts(post, allPosts);
 
   @media (max-width: 640px) {
     .article-page {
-      padding-top: 2.5rem;
+      padding-top: 1.75rem;
     }
-    .article-back {
-      margin-bottom: 2.5rem;
-    }
-    .article-hero h1 {
-      font-size: clamp(2.55rem, 13vw, 4rem);
-    }
-    .article-title--medium {
-      font-size: clamp(2.3rem, 11vw, 3.35rem);
-    }
-    .article-title--long {
-      font-size: clamp(2rem, 9.5vw, 2.85rem);
-      line-height: 1.12;
+    .article-topline {
+      margin-bottom: 1rem;
     }
     .article-deck {
-      margin-top: 1.35rem;
+      margin-top: 0.75rem;
       font-size: 1rem;
     }
     .article-rule {
-      margin: 2.75rem 0;
+      margin: 1.5rem 0;
     }
     .related-list > a {
       grid-template-columns: minmax(0, 1fr) 1.25rem;

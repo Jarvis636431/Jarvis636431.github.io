@@ -62,7 +62,11 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         headings.map((heading) => heading.id).filter(Boolean),
       );
       headings.forEach((h) => {
-        const text = h.textContent || "";
+        const label = h.cloneNode(true);
+        label
+          .querySelectorAll(".heading-anchor")
+          .forEach((anchor) => anchor.remove());
+        const text = label.textContent?.trim() || "";
         const baseId = h.id || slugify(text) || "section";
         let id = baseId;
         let suffix = 2;

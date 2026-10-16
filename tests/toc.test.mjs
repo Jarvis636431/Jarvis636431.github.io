@@ -12,12 +12,37 @@ const component = readFileSync(
 const script = component.match(/<script is:inline>([\s\S]*?)<\/script>/)[1];
 
 function renderToc(ids) {
-  const headings = ids.map((entry, index) => ({
-    id: typeof entry === "string" ? entry : entry.id,
-    textContent: `Section ${index + 1}`,
-    tagName: index === 0 ? "H2" : "H3",
-    ...(typeof entry === "string" ? {} : entry),
-  }));
+  const headings = ids.map((entry, index) => {
+    const heading = {
+      id: typeof entry === "string" ? entry : entry.id,
+      textContent: `Section ${index + 1}`,
+      tagName: index === 0 ? "H2" : "H3",
+      ...(typeof entry === "string" ? {} : entry),
+    };
+    if (heading.parts)
+      heading.textContent = heading.parts.map((part) => part.text).join("");
+    heading.cloneNode = () => {
+      const children = (heading.parts ?? [{ text: heading.textContent }]).map(
+        (part) => ({ ...part }),
+      );
+      return {
+        get textContent() {
+          return children.map((part) => part.text).join("");
+        },
+        querySelectorAll(selector) {
+          if (selector !== ".heading-anchor") return [];
+          return children
+            .filter((part) => part.anchor)
+            .map((part) => ({
+              remove() {
+                children.splice(children.indexOf(part), 1);
+              },
+            }));
+        },
+      };
+    };
+    return heading;
+  });
   const links = [];
   const toggle = { addEventListener() {} };
   const toc = {
@@ -150,4 +175,20 @@ test("h2-based articles start at the first visual TOC level", () => {
   ]);
   assert.match(toc.links[0].className, /toc-depth-1/);
   assert.match(toc.links[1].className, /toc-depth-2/);
+});
+
+test("TOC labels exclude permalink controls without stripping literal hash characters", () => {
+  const toc = renderToc([
+    {
+      id: "csharp",
+      parts: [{ text: "C# 基础" }, { text: " #", anchor: true }],
+    },
+    { id: "literal", textContent: "标题里保留 #" },
+  ]);
+  assert.equal(toc.links[0].textContent, "C# 基础");
+  assert.equal(toc.links[1].textContent, "标题里保留 #");
+  assert.equal(toc.headings[0].textContent, "C# 基础 #");
+  assert.equal(toc.links[0].href, "#csharp");
+  toc.enter(0);
+  assert.equal(toc.links[0].getAttribute("aria-current"), "true");
 });
