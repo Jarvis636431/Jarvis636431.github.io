@@ -201,3 +201,21 @@ as written, with no category mapping to maintain. Root-level posts appear under
 change them. Tags remain available for search and related-article scoring;
 sharing a folder adds a relevance bonus, while root-level posts receive no
 shared-category bonus.
+
+Current blog folders:
+
+| Folder       | Content                                                           |
+| ------------ | ----------------------------------------------------------------- |
+| `frontend`   | Web fundamentals, frameworks, browser APIs, and engineering notes |
+| `interviews` | Interview preparation and interview records                       |
+| `projects`   | Project documentation and implementation notes                    |
+| `updates`    | Weekly updates and work logs                                      |
+| `algorithms` | Coding exercises and reinforcement learning notes                 |
+| `databases`  | SQL and database notes                                            |
+| `life`       | Personal notes                                                    |
+| `rec`        | Search, advertising, and recommendation systems                   |
+
+Articles moved from the blog root retain their original URLs through an explicit
+`slug` in frontmatter. Leave that slug unchanged when reorganizing an existing
+article. New articles without a custom slug use their folder path in the URL.
+Comment IDs, publication dates, and draft status are independent of folders.

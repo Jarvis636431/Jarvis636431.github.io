@@ -4,7 +4,6 @@ import { getBlogCategory, getPostReadingTime } from "@lib/blog";
 import { getPosts } from "@lib/content";
 
 const posts = await getPosts();
-const hasDrafts = posts.some((post) => post.data.draft);
 const description =
   "Notes on frontend engineering, AI applications, and building software.";
 const siteOrigin =
@@ -58,25 +57,13 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
 >
   <div class="blogs-page">
     <header class="blogs-header">
-      <div>
-        <h1>Blogs</h1>
-        <p>{description}</p>
-      </div>
+      <h1>Blogs</h1>
       <div class="blogs-utility">
         <span>{posts.length} {posts.length === 1 ? "article" : "articles"}</span
         >
         <a href="/rss.xml">RSS <span aria-hidden="true">↗</span></a>
       </div>
     </header>
-
-    {
-      hasDrafts && (
-        <p class="preview-note">
-          Development preview · Drafts are included here and hidden in
-          production.
-        </p>
-      )
-    }
 
     {
       posts.length > 0 ? (
@@ -200,14 +187,6 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
     line-height: 1.15;
     letter-spacing: 0;
   }
-  .blogs-header p {
-    max-width: 34rem;
-    margin-top: 1rem;
-    color: var(--blog-muted);
-    font-size: 1rem;
-    line-height: 1.75;
-    text-wrap: pretty;
-  }
   .blogs-utility {
     display: flex;
     align-items: baseline;
@@ -221,12 +200,6 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
   }
   .blogs-utility a {
     color: var(--blog-accent);
-  }
-  .preview-note {
-    margin: -1rem 0 2rem;
-    color: var(--blog-muted);
-    font-size: 0.75rem;
-    line-height: 1.7;
   }
   .archive-toolbar {
     padding-bottom: 1rem;
@@ -380,9 +353,6 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
     .blogs-utility {
       justify-content: space-between;
       padding: 0;
-    }
-    .preview-note {
-      margin-top: 0;
     }
     .blog-filters {
       gap: 0.5rem 1.25rem;

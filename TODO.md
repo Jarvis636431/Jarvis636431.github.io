@@ -24,9 +24,9 @@
 ### 1. 清理泄露凭据
 
 - [ ] 核实并轮换疑似凭据，检查范围包括以下文档（此处不重复记录明文）：
-  - `src/content/blog/iDesignLab-iDesign-Lab-技术文档.md`
-  - `src/content/blog/iDesignLab-idesign-配置文件.md`
-  - `src/content/blog/iDesignLab-iDesign-Lab-后端部署文档.md`
+  - `src/content/blog/projects/iDesignLab-iDesign-Lab-技术文档.md`
+  - `src/content/blog/projects/iDesignLab-idesign-配置文件.md`
+  - `src/content/blog/projects/iDesignLab-iDesign-Lab-后端部署文档.md`
 - [ ] 将文章中的真实密码替换成明确的占位符。
 - [ ] 检查代码、文章、提交历史和构建产物中的其他敏感信息。
 - [ ] 使用历史重写工具从 Git 历史中清理已经提交的凭据。
