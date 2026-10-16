@@ -61,7 +61,8 @@ export function initArticle() {
     article.querySelectorAll("pre").forEach((pre) => {
       if (pre.querySelector(".code-copy-button")) return;
       const code = pre.querySelector("code");
-      if (!code?.textContent) return;
+      if (!code?.textContent || code.classList.contains("language-mermaid"))
+        return;
 
       const meta = code.dataset.codeMeta ?? pre.dataset.codeMeta ?? "";
       const filename = meta.match(/(?:title|filename)=["']([^"']+)["']/)?.[1];

@@ -39,7 +39,7 @@ export default defineConfig({
     inlineStylesheets: "auto",
   },
   markdown: {
-    syntaxHighlight: "shiki",
+    syntaxHighlight: { type: "shiki", excludeLangs: ["mermaid"] },
     remarkPlugins: [remarkGfm, remarkMath, remarkCodeMeta],
     rehypePlugins: [rehypeKatex],
     shikiConfig: {

@@ -94,3 +94,38 @@
 .markdown-body .katex .base {
   white-space: nowrap;
 }
+
+/* Reuse the Markdown pre element as the diagram's scroll viewport. */
+.prose pre.mermaid-diagram,
+.markdown-body pre.mermaid-diagram {
+  max-width: 100%;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid #1f1f1f1a;
+  border-radius: 0.5rem;
+  background: #ffffff80;
+  color: #1f1f1f;
+  white-space: normal;
+  scrollbar-width: thin;
+  scrollbar-color: #2f6f6d55 transparent;
+}
+
+.mermaid-diagram svg {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+}
+
+.mermaid-diagram:focus-visible {
+  outline: 2px solid #2f6f6d;
+  outline-offset: 3px;
+}
+
+.mermaid-status {
+  display: block;
+  margin-bottom: 0.75rem;
+  font:
+    0.8125rem/1.5 system-ui,
+    sans-serif;
+  white-space: normal;
+}

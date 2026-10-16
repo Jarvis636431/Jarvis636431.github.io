@@ -60,6 +60,25 @@ Development includes draft articles in routes, lists, RSS, and search, and archi
 
 As of 2026-10-16, all 65 articles are drafts. Production therefore has no article detail pages or RSS items, and search contains only public projects. Draft filtering does not hide source files in a public repository. Review sensitive information before changing `draft` to `false`.
 
+### Mermaid diagrams
+
+Use a fenced `mermaid` block in Markdown or MDX:
+
+````markdown
+```mermaid
+flowchart LR
+  accTitle: Recommendation pipeline
+  accDescr: Candidate items pass through retrieval, ranking, and re-ranking.
+  A[Candidate pool] --> B[Retrieval] --> C[Ranking] --> D[Re-ranking]
+```
+````
+
+Diagrams render in the browser using a locally bundled Mermaid dependency, loaded
+only on pages containing diagrams. Add `accTitle` and `accDescr` for accessible
+labels. Wide diagrams scroll horizontally. With JavaScript disabled or a rendering
+failure, the original source remains readable. The sanitized Markdown component
+supports the same fenced syntax. HTML labels and interactive links are disabled.
+
 ### Math formulas
 
 Markdown and MDX articles support `$...$` for inline math and `$$...$$` on separate
