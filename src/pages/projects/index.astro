@@ -1,6 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getProjects } from "../../lib/content";
+import { getProjects } from "@lib/content";
 
 const projects = await getProjects({ includeArchived: false });
 

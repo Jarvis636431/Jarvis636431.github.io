@@ -1,9 +1,9 @@
-import { getFeaturedProjects } from "./content";
+import { getFeaturedProjects } from "@lib/content";
 import {
   contributionProjects,
   mergedPullRequests,
   mergedPullRequestCount,
-} from "../data/contributions";
+} from "@data/contributions";
 
 /** Build resume sections from the same public sources used by the site.
  * Personal and employment details remain explicitly maintained in data/resume.ts.

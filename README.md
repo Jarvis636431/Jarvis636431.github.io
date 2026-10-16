@@ -86,6 +86,17 @@ const highlighted = true;
 ```
 ````
 
+## Import aliases
+
+Astro reads aliases directly from `tsconfig.json`; do not duplicate these mappings in Vite configuration. Source files use `@components/*`, `@layouts/*`, `@lib/*`, `@data/*`, `@scripts/*`, `@styles/*`, `@content/*`, `@assets/*`, and `@pages/*` for internal imports, including dynamic imports and browser scripts.
+
+```ts
+import { getPosts } from "@lib/content";
+import { resumeProfile } from "@data/resume";
+```
+
+Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases.
+
 ## Shared content queries
 
 `src/lib/content.ts` owns draft and archive visibility, newest-first sorting, recent articles, and featured projects. The homepage, blog and project lists/details, RSS, search, and resume call this layer instead of querying collections independently.

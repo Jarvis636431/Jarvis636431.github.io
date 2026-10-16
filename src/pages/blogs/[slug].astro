@@ -9,7 +9,7 @@ import {
   getRelatedPosts,
 } from "@lib/blog";
 import type { CollectionEntry } from "astro:content";
-import { getPosts } from "../../lib/content";
+import { getPosts } from "@lib/content";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -980,7 +980,7 @@ const relatedPosts = getRelatedPosts(post, allPosts);
 </style>
 
 <script>
-  import { initArticle } from "../../scripts/article";
+  import { initArticle } from "@scripts/article";
 
   initArticle();
 </script>

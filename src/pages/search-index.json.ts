@@ -1,4 +1,4 @@
-import { getPosts, getProjects } from "../lib/content";
+import { getPosts, getProjects } from "@lib/content";
 
 export async function GET() {
   const [posts, projects] = await Promise.all([getPosts(), getProjects()]);

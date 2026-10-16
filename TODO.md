@@ -176,9 +176,9 @@
 
 ### 11. 统一路径别名
 
-- [ ] 对齐 `tsconfig.json` 与 Astro/Vite 的路径别名。
-- [ ] 确认 `@lib`、`@components`、`@layouts` 等别名均被类型系统识别。
-- [ ] 避免同一目录同时使用别名和多层相对路径。
+- [x] 仅在 `tsconfig.json` 维护路径别名，移除重复的 Vite 配置。
+- [x] 配置 `@lib`、`@components`、`@layouts`、`@data`、`@scripts` 等别名。
+- [x] 源码内部导入统一使用别名；Node 直接运行的配置、脚本与测试保留相对路径。
 
 验收标准：
 

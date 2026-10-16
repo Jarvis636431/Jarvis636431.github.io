@@ -1,4 +1,4 @@
-import snapshot from "./contributions.generated.json";
+import snapshot from "@data/contributions.generated.json";
 
 export interface MergedPullRequest {
   repository: string;

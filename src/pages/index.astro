@@ -1,6 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getRecentPosts, getFeaturedProjects } from "../lib/content";
+import { getRecentPosts, getFeaturedProjects } from "@lib/content";
 import { getPostReadingTime } from "@lib/blog";
 
 const [posts, projects] = await Promise.all([
@@ -435,7 +435,7 @@ const [posts, projects] = await Promise.all([
     const pageSlug = container?.dataset.viewCounterSlug;
     if (!pageSlug) return;
 
-    const { supabase } = await import("../lib/supabase");
+    const { supabase } = await import("@lib/supabase");
     if (!supabase) return;
 
     const viewCountEl = document.getElementById("view-count-value");

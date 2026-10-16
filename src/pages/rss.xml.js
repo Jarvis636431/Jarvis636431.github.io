@@ -1,4 +1,4 @@
-import { getPosts } from "../lib/content";
+import { getPosts } from "@lib/content";
 
 const escapeXml = (value) =>
   String(value)

@@ -61,16 +61,4 @@ export default defineConfig({
     host: true,
     port: 4321,
   },
-  vite: {
-    resolve: {
-      alias: {
-        "@components": "/src/components",
-        "@layouts": "/src/layouts",
-        "@pages": "/src/pages",
-        "@assets": "/src/assets",
-        "@content": "/src/content",
-        "@styles": "/src/styles",
-      },
-    },
-  },
 });

@@ -1,10 +1,10 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import Contributions from "../components/Contributions.astro";
+import Contributions from "@components/Contributions.astro";
 import {
   contributionProjects,
   mergedPullRequestCount,
-} from "../data/contributions";
+} from "@data/contributions";
 const description =
   "Merged open-source pull requests by Jarvis. Explore merged bug fixes, features and documentation across open-source repositories.";
 const pageUrl = new URL(
