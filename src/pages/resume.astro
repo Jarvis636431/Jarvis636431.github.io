@@ -1,12 +1,25 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import {
-  openSourceFocus,
+  resumeOpenSource,
   resumeExperiences,
   resumeProfile,
   resumeProjects,
   resumeSkills,
 } from "../data/resume";
+
+import {
+  contributionProjects,
+  mergedPullRequestCount,
+} from "../data/contributions";
+
+const openSourceProjects = resumeOpenSource.map((project) => ({
+  ...project,
+  mergedCount:
+    contributionProjects.find(
+      (entry) => entry.repository === project.repository,
+    )?.count ?? 0,
+}));
 
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
@@ -25,7 +38,7 @@ const structuredData = {
   mainEntity: {
     "@type": "Person",
     name: resumeProfile.name,
-    jobTitle: "Software Engineer",
+    jobTitle: resumeExperiences[0].role,
     email: `mailto:${resumeProfile.email}`,
     url: resumeProfile.website,
     address: {
@@ -41,6 +54,7 @@ const structuredData = {
       "@type": "CollegeOrUniversity",
       name: "Tianjin University",
     },
+    knowsAbout: resumeSkills.flatMap((group) => group.items),
     sameAs: [resumeProfile.github],
   },
 };
@@ -49,7 +63,7 @@ const structuredData = {
 <Layout
   title="Resume - Jarvis"
   lang="en"
-  description="Jarvis’s resume: software engineering, AI applications, cross-platform systems, and full-stack product development."
+  description={resumeProfile.summary}
   decorativeBackground={false}
   seo={{
     canonical: canonicalUrl,
@@ -190,9 +204,15 @@ const structuredData = {
     <section class="resume-section" aria-labelledby="opensource-heading">
       <h2 id="opensource-heading">Open Source</h2>
       <div class="section-content">
+        <p class="entry-description">
+          {mergedPullRequestCount} merged pull requests across {
+            contributionProjects.length
+          } repositories, spanning cross-platform runtimes, AI knowledge tools, and
+          developer tooling.
+        </p>
         <div class="opensource-list">
           {
-            openSourceFocus.map((project) => (
+            openSourceProjects.map((project) => (
               <div class="resume-entry">
                 <h3>
                   <a
@@ -206,6 +226,10 @@ const structuredData = {
                     </span>
                   </a>
                 </h3>
+                <p class="entry-role">
+                  {project.mergedCount} merged{" "}
+                  {project.mergedCount === 1 ? "PR" : "PRs"}
+                </p>
                 <p class="entry-description">{project.description}</p>
               </div>
             ))
@@ -430,6 +454,7 @@ const structuredData = {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2rem;
+    margin-top: 1.5rem;
   }
   .contributions-link {
     display: inline-block;

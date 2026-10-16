@@ -1,101 +1,68 @@
 # Jarvis Hub
 
-A modern, high-performance personal portfolio and digital garden built with [Astro](https://astro.build). Designed for speed, clarity, and ease of content management, featuring a responsive **Bento Grid** layout and rich interactive elements.
+A personal portfolio and technical writing archive built with Astro 5, TypeScript, and Tailwind CSS. The interface uses restrained typography, structured lists, and responsive layouts; see [DESIGN.md](DESIGN.md) for the visual guidelines.
 
-## ✨ Features
+## Features
 
-- **Framework**: Built on Astro v5 for lightning-fast performance (Islands Architecture).
-- **Styling**: Tailwind CSS for a utility-first, responsive design system.
-- **Design System**:
-  - **Bento Grid Layout**: Responsive, grid-based card layout.
-  - **Spotlight Effect**: Mouse-tracking radial gradient spotlight.
-  - **Staggered Animations**: Smooth entrance animations for cards.
-  - **Infinite Marquee**: Seamless scrolling tech stack display.
-- **Dynamic Content**:
-  - **GitHub Heatmap**: Real-time contribution graph with dynamic year tracking.
-  - **Music/Vibe Card**: Spotify-style animated music visualizer.
-  - **Supabase Integration**: Real-time page view counting.
-- **Content**: Type-safe content management using Astro Content Collections (MDX & Markdown).
-- **Search**: Integrated client-side fuzzy search with Fuse.js (CMD+K support).
-- **Automation**: Custom CLI scripts for generating new content templates.
-- **Deployment**: Published to GitHub Pages with GitHub Actions.
+- Home page with selected projects, recent published writing, and an externally hosted GitHub contribution heatmap.
+- Blog categories, related articles, series navigation, reading time, table of contents, and reading progress.
+- Article enhancements: code copying, line numbers, highlighted lines, collapsible code, image captions and zoom, and horizontally scrollable tables.
+- Project archive and detail pages; archived projects are excluded from production.
+- Data-driven resume with print / Save PDF support, plus About and contribution archive pages.
+- Client-side fuzzy search over titles, summaries, and tags with Fuse.js and Cmd/Ctrl+K navigation. Article bodies are not indexed.
+- Optional Supabase home-page view counter and Giscus comments through GitHub Discussions.
+- Static RSS, sitemap, robots.txt, and page-specific SEO metadata.
+- GitHub Actions verification, Pages deployment, and daily contribution snapshot synchronization.
 
-## 🚀 Getting Started
+## Development
 
-This project uses [pnpm](https://pnpm.io/) as the package manager.
-
-### Installation
+CI uses Node.js 22 and pnpm 10.14.0. Use the same versions locally for consistent results.
 
 ```bash
-git clone https://github.com/Jarvis636431/Jarvis636431.github.io.git
-cd Jarvis636431.github.io
-pnpm install
-```
-
-### Environment Variables
-
-Create a `.env` file in the root directory and add your Supabase credentials (required for the view counter):
-
-```ini
-PUBLIC_SUPABASE_URL=your_supabase_project_url
-PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-PUBLIC_GISCUS_REPO=Jarvis636431/Jarvis636431.github.io
-PUBLIC_GISCUS_REPO_ID=your_giscus_repo_id
-PUBLIC_GISCUS_CATEGORY=Announcements
-PUBLIC_GISCUS_CATEGORY_ID=your_giscus_category_id
-PUBLIC_GISCUS_THEME=light
-```
-
-Giscus comments use GitHub Discussions. Get the `PUBLIC_GISCUS_REPO_ID` and
-`PUBLIC_GISCUS_CATEGORY_ID` values from [giscus.app](https://giscus.app) after
-enabling Discussions and installing the Giscus GitHub App for the repository.
-
-### Development
-
-Start the local development server:
-
-```bash
+pnpm install --frozen-lockfile
+cp .env.example .env
 pnpm dev
 ```
 
-The site will be available at `http://localhost:4321`.
+Open `http://localhost:4321`. Environment values are optional for local development:
 
-## 📝 Content Management
+| Variable                                              | Purpose                                                          |
+| :---------------------------------------------------- | :--------------------------------------------------------------- |
+| `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`     | Enable the home-page counter using the `increment_page_view` RPC |
+| `PUBLIC_GISCUS_REPO`, `PUBLIC_GISCUS_REPO_ID`         | Identify the GitHub repository for comments                      |
+| `PUBLIC_GISCUS_CATEGORY`, `PUBLIC_GISCUS_CATEGORY_ID` | Identify the Discussions category                                |
+| `PUBLIC_GISCUS_THEME`                                 | Comment theme; defaults to `light`                               |
 
-### Creating New Posts
+Get Giscus IDs from [giscus.app](https://giscus.app) after enabling Discussions and installing its GitHub App. Production values are configured in GitHub Actions repository variables; see `.github/workflows/deploy.yml`.
 
-The project includes a helper script to quickly scaffold new blog posts with the correct frontmatter.
+`PUBLIC_*` values can be exposed to browsers: use only the Supabase anonymous key, never a service-role key. The repository does not provision the Supabase database or RPC; those must be configured separately with appropriate permissions. Without service configuration, the counter stays hidden and production comments are omitted. Development shows a comment configuration hint.
+
+## Content management
 
 ```bash
-# Interactive mode
-pnpm new:post
-
-# Command line arguments mode
-pnpm new:post -- --title "My New Post" --template mdx
+pnpm new:post --title "My New Post" --template mdx
+pnpm new:post --title "Series Part One" --series "My Series" --series-order 1
+pnpm new:project --title "My Project"
 ```
 
-This will create a new file in `src/content/blog/` with the current date and default fields.
+Omit arguments for interactive prompts. New posts default to drafts; new projects default to `in-progress` and are eligible for production. Review content before publishing.
 
-### Content Collections
+Schemas live in `src/content/config.ts`:
 
-#### Blog (`src/content/blog`)
+| Collection | Fields                                                                                                                                                                  |
+| :--------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blog       | `title`, `description` (at least 10 characters), `commentId`, `language`, `publishDate`, optional `updatedDate`, `tags`, `series`, `seriesOrder`, and `draft`           |
+| Projects   | `title`, `summary` (at least 10 characters), `language`, `status`, `roles`, `stack`, `featured`, `publishDate`, optional `updatedDate`, `externalUrl`, and `coverImage` |
 
-Schema fields defined in `src/content/config.ts`:
+Both collections support optional English title and summary fields (`titleEn` with `descriptionEn` / `summaryEn`). The homepage uses these where available; this is not a full translation system. Reading time is calculated from the body rather than stored in frontmatter.
 
-- `title` (string): Post title
-- `description` (string): Short summary (min 10 chars)
-- `commentId` (string): Stable identifier used by Giscus
-- `language` (string): BCP 47 content language (defaults to `zh-CN`)
-- `publishDate` (date): Publication date
-- `tags` (array): List of tags
-- `series` (string, optional): Shared title for a sequence of posts
-- `seriesOrder` (positive integer, optional): Reading order inside the series
-- `draft` (boolean): If true, hidden in production
-- Reading time is calculated automatically from the Markdown/MDX body.
+Development includes draft articles in routes, lists, RSS, and search, and archived projects in detail routes and search. The homepage and project list always exclude archived projects. Production excludes drafts and archived projects from their routes and indexes. A scheduled publication date is not enforced.
 
-Article images written with regular Markdown receive lazy loading, captions from
-their alt text, and click-to-zoom behavior. For responsive AVIF/WebP output with
-intrinsic dimensions, use `ArticleImage` in an MDX post:
+As of 2026-10-16, all 65 articles are drafts. Production therefore has no article detail pages or RSS items, and search contains only public projects. Draft filtering does not hide source files in a public repository. Review sensitive information before changing `draft` to `false`.
+
+### Images and code blocks
+
+Regular Markdown images receive lazy loading, captions from alt text, and click-to-zoom behavior. For responsive output with intrinsic dimensions, import a local image through `ArticleImage` in MDX:
 
 ```mdx
 import ArticleImage from "@components/ArticleImage.astro";
@@ -108,8 +75,9 @@ import screenshot from "../../assets/blog/screenshot.png";
 />
 ```
 
-Fenced code blocks accept a filename, line numbers, highlighted lines, and an
-explicit collapse flag. Blocks longer than 24 lines collapse automatically:
+The image path is illustrative: create the asset and adjust the relative import for the article location.
+
+Fenced code supports filename metadata, line numbers, highlighted lines, and explicit collapse. Blocks longer than 24 lines collapse automatically:
 
 ````md
 ```ts title="src/example.ts" lineNumbers {2,4-6} collapse
@@ -118,20 +86,11 @@ const highlighted = true;
 ```
 ````
 
-#### Projects (`src/content/projects`)
+## Profile and resume
 
-Schema fields defined in `src/content/config.ts`:
+Maintain profile, experience, selected projects, skills, and open-source highlights in `src/data/resume.ts`. The resume page reads that data and derives merged-PR totals from `src/data/contributions.ts`. Update `resumeProfile.updatedAt` when editing resume content. Keep homepage and About copy consistent when changing personal information.
 
-- `title` (string): Project name
-- `summary` (string): Brief overview
-- `language` (string): BCP 47 content language (defaults to `zh-CN`)
-- `status` (enum): 'in-progress' | 'launched' | 'archived'
-- `stack` (array): Technologies used
-- `featured` (boolean): Whether to show on the homepage
-- `externalUrl` (url): Link to the live project
-- `coverImage` (string): Path to project cover image
-
-## 📂 Project Structure
+## Contribution synchronization
 
 The About page displays GitHub metadata directly from
 `src/data/contributions.generated.json`: repository, PR number, original title,
@@ -163,28 +122,35 @@ of inactivity in a public repository.
 Run `pnpm sync:contributions` locally (optional `GH_TOKEN` for higher API limits).
 Unchanged metadata does not produce a commit.
 
+## Project structure
+
 ```text
-/
-├── public/            # Static assets (images, favicon)
-├── scripts/           # Automation scripts (new-post.js)
-├── src/
-│   ├── components/    # Reusable UI components (BlogCard, ProjectCard, Search, etc.)
-│   ├── content/       # MDX/Markdown content sources
-│   ├── layouts/       # Page layouts
-│   ├── lib/           # Utility libraries (supabase.ts)
-│   ├── pages/         # Astro routes and pages
-│   └── styles/        # Global styles
-├── astro.config.mjs   # Astro configuration
-└── tailwind.config.mjs # Tailwind configuration
+.github/workflows/    # Verification, Pages deployment, contribution sync
+public/              # Static images and favicon
+scripts/             # Content scaffolding, sync, legacy MDX migration helpers
+src/
+  components/        # Search, TOC, comments, images, contributions, Markdown
+  content/           # Blog and project Markdown / MDX
+  data/              # Resume and generated contribution snapshot
+  layouts/           # Shared page shell and metadata
+  lib/               # Reading helpers, Markdown pipeline, Supabase client
+  pages/             # Static routes, RSS, search index
+  styles/            # Global CSS
 ```
 
-## 🧞 Commands
+## Commands and validation
 
-All commands are run from the root of the project:
+| Command                              | Purpose                                   |
+| :----------------------------------- | :---------------------------------------- |
+| `pnpm dev`                           | Start local development                   |
+| `pnpm check`                         | Astro and TypeScript diagnostics          |
+| `pnpm lint`                          | ESLint                                    |
+| `pnpm format:check`                  | Check formatting without writing          |
+| `pnpm format`                        | Format files in place                     |
+| `pnpm build`                         | Build production files into `dist/`       |
+| `pnpm verify`                        | Run check, lint, format check, then build |
+| `pnpm preview`                       | Preview the production build              |
+| `pnpm new:post` / `pnpm new:project` | Scaffold content                          |
+| `pnpm sync:contributions`            | Refresh the merged-PR snapshot            |
 
-| Command         | Action                                      |
-| :-------------- | :------------------------------------------ |
-| `pnpm dev`      | Starts local dev server at `localhost:4321` |
-| `pnpm build`    | Build your production site to `./dist/`     |
-| `pnpm preview`  | Preview your build locally                  |
-| `pnpm new:post` | Create a new blog post from template        |
+Both verification and deployment workflows use `pnpm verify`. As of the 2026-10-16 local audit, Astro check, formatting, and build passed, but ESLint reported errors in Astro TypeScript parsing and the homepage script; the full verification gate is not yet passing. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.

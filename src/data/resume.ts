@@ -134,17 +134,33 @@ export const resumeSkills = [
   },
 ];
 
-export const openSourceFocus = [
+export const resumeOpenSource = [
   {
     name: "Taro",
+    repository: "NervJS/taro",
     href: "https://github.com/NervJS/taro",
     description:
-      "支持 React、Vue、Mini Programs、H5 与 React Native 等平台的开放式跨端框架。",
+      "Improved CLI initialization in the current directory, corrected runtime node aliases after event removal, and fixed H5 canvas pixel conversion and audio listener cleanup.",
   },
   {
-    name: "OxyGent",
-    href: "https://github.com/jd-opensource/OxyGent",
+    name: "WeKnora",
+    repository: "Tencent/WeKnora",
+    href: "https://github.com/Tencent/WeKnora",
     description:
-      "An open-source multi-agent framework focused on modularity, observability, and extensibility.",
+      "Fixed Markdown list editing and selection boundaries, preserved inline images in EPUB previews, and improved Helm rollout configuration and contributor documentation.",
+  },
+  {
+    name: "Rsbuild",
+    repository: "web-infra-dev/rsbuild",
+    href: "https://github.com/web-infra-dev/rsbuild",
+    description:
+      "Fixed charset recognition in custom HTML templates; also contributed development and architecture documentation to Rspress and Rspack.",
+  },
+  {
+    name: "SwitchHosts",
+    repository: "oldj/SwitchHosts",
+    href: "https://github.com/oldj/SwitchHosts",
+    description:
+      "Fixed the macOS tray window so it can appear over full-screen applications.",
   },
 ];

@@ -1,36 +1,15 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Contributions from "../components/Contributions.astro";
-import { resumeProfile } from "../data/resume";
+import { resumeExperiences, resumeProfile } from "../data/resume";
 import {
   contributionProjects,
   mergedPullRequestCount,
 } from "../data/contributions";
 
 const description =
-  "Software engineer at JD.com, focused on AI applications, cross-platform engineering, and developer tools.";
-const experiences = [
-  {
-    period: "2026 — Present",
-    organization: "JD.com",
-    role: "Software Engineer",
-  },
-  {
-    period: "2025",
-    organization: "Tenio · Tianjin University",
-    role: "Frontend Developer",
-  },
-  {
-    period: "2023 — 2024",
-    organization: "iDesignLab · Tianjin University",
-    role: "Full-stack Developer",
-  },
-  {
-    period: "2022",
-    organization: "TWT Studio · Tianjin University",
-    role: "Cross-platform Developer",
-  },
-];
+  "Software engineer at Joybuy, focused on AI applications, cross-platform engineering, and developer tools.";
+const experiences = resumeExperiences;
 
 const pageUrl = new URL(
   "/about",
@@ -47,7 +26,7 @@ const structuredData = {
     description,
     jobTitle: "Software Engineer",
     email: `mailto:${resumeProfile.email}`,
-    worksFor: { "@type": "Organization", name: "JD.com" },
+    worksFor: { "@type": "Organization", name: resumeProfile.organization },
     alumniOf: { "@type": "CollegeOrUniversity", name: "Tianjin University" },
     sameAs: [resumeProfile.github],
   },
@@ -63,7 +42,7 @@ const structuredData = {
   <article class="about-page">
     <header class="about-intro">
       <h1>I'm Jarvis.</h1>
-      <p class="about-lead">Software engineer at JD.com, based in Beijing.</p>
+      <p class="about-lead">Software engineer at Joybuy, based in Beijing.</p>
       <p>
         I studied at Tianjin University and built campus apps and full-stack
         products. Today, I focus on AI applications, cross-platform engineering,
