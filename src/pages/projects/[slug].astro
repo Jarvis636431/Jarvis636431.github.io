@@ -1,12 +1,10 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
+import { getProjects } from "../../lib/content";
 
 export async function getStaticPaths() {
-  const projects = await getCollection("projects", ({ data }) =>
-    import.meta.env.DEV ? true : data.status !== "archived",
-  );
+  const projects = await getProjects();
   return projects.map((project) => ({
     params: { slug: project.slug },
     props: { project },
@@ -60,17 +58,7 @@ if (project.data.externalUrl) {
   projectStructuredData.sameAs = [project.data.externalUrl];
 }
 // Compute previous/next projects (sorted by publishDate desc)
-const allProjects = (
-  await getCollection("projects", ({ data }) =>
-    import.meta.env.DEV ? true : data.status !== "archived",
-  )
-)
-  .slice()
-  .sort(
-    (a, b) =>
-      new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime(),
-  );
+const allProjects = await getProjects();
 const currentIndex = allProjects.findIndex((p) => p.slug === project.slug);
 const prevProject =
   currentIndex > 0 ? allProjects[currentIndex - 1] : undefined;

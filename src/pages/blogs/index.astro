@@ -1,19 +1,9 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getBlogCategory, getPostReadingTime } from "@lib/blog";
-import { getCollection } from "astro:content";
+import { getPosts } from "../../lib/content";
 
-const posts = (
-  await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true,
-  )
-)
-  .slice()
-  .sort(
-    (a, b) =>
-      new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime(),
-  );
+const posts = await getPosts();
 
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";

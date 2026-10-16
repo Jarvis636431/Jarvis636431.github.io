@@ -1,24 +1,12 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getRecentPosts, getFeaturedProjects } from "../lib/content";
 import { getPostReadingTime } from "@lib/blog";
 
-const posts = (
-  await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true,
-  )
-)
-  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
-  .slice(0, 3);
-
-const projects = (
-  await getCollection(
-    "projects",
-    ({ data }) => data.featured && data.status !== "archived",
-  )
-)
-  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
-  .slice(0, 3);
+const [posts, projects] = await Promise.all([
+  getRecentPosts(3),
+  getFeaturedProjects(3),
+]);
 ---
 
 <Layout

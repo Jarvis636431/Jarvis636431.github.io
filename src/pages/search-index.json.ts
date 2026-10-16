@@ -1,13 +1,7 @@
-import { getCollection } from "astro:content";
+import { getPosts, getProjects } from "../lib/content";
 
 export async function GET() {
-  const posts = await getCollection("blog", ({ data }) => {
-    return import.meta.env.DEV ? true : data.draft !== true;
-  });
-
-  const projects = await getCollection("projects", ({ data }) => {
-    return import.meta.env.DEV ? true : data.status !== "archived";
-  });
+  const [posts, projects] = await Promise.all([getPosts(), getProjects()]);
 
   const searchIndex = [
     ...posts.map((post) => ({

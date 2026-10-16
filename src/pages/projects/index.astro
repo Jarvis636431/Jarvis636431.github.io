@@ -1,18 +1,8 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getProjects } from "../../lib/content";
 
-const projects = (
-  await getCollection("projects", ({ data }) =>
-    import.meta.env.DEV ? true : data.status !== "archived",
-  )
-)
-  .filter(({ data }) => data.status !== "archived")
-  .sort(
-    (a, b) =>
-      new Date(b.data.publishDate).getTime() -
-      new Date(a.data.publishDate).getTime(),
-  );
+const projects = await getProjects({ includeArchived: false });
 
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";

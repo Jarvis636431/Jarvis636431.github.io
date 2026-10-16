@@ -86,6 +86,17 @@ const highlighted = true;
 ```
 ````
 
+## Shared content queries
+
+`src/lib/content.ts` owns draft and archive visibility, newest-first sorting, recent articles, and featured projects. The homepage, blog and project lists/details, RSS, search, and resume call this layer instead of querying collections independently.
+
+- `getPosts()` includes drafts only during development; pass `includeDrafts` to override explicitly.
+- `getProjects()` includes archived projects only during development; the project list passes `includeArchived: false` to preserve its public-only behavior.
+- `getRecentPosts(limit)` uses the same article visibility rules.
+- `getFeaturedProjects(limit?)` always excludes archives, including in development, and supplies both the homepage and resume.
+- `src/lib/blog.ts` owns related-post ranking, reading time, and series navigation.
+- `src/scripts/article.ts` initializes article reading progress, code tools, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
+
 ## Profile and resume
 
 The resume uses a compact, single-column layout inspired by [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm). The print / Save PDF action is at the bottom of the document and is hidden when printing. This is an Astro implementation, not a YAMLResume CLI integration.
@@ -134,6 +145,7 @@ Unchanged metadata does not produce a commit.
 .github/workflows/    # Verification, Pages deployment, contribution sync
 public/              # Static images and favicon
 scripts/             # Content scaffolding, sync, legacy MDX migration helpers
+tests/               # Content visibility, recommendations, and navigation regression tests
 src/
   components/        # Search, TOC, comments, images, contributions, Markdown
   content/           # Blog and project Markdown / MDX
@@ -141,22 +153,24 @@ src/
   layouts/           # Shared page shell and metadata
   lib/               # Reading helpers, Markdown pipeline, Supabase client
   pages/             # Static routes, RSS, search index
+  scripts/           # Browser-side article interactions
   styles/            # Global CSS
 ```
 
 ## Commands and validation
 
-| Command                              | Purpose                                   |
-| :----------------------------------- | :---------------------------------------- |
-| `pnpm dev`                           | Start local development                   |
-| `pnpm check`                         | Astro and TypeScript diagnostics          |
-| `pnpm lint`                          | ESLint                                    |
-| `pnpm format:check`                  | Check formatting without writing          |
-| `pnpm format`                        | Format files in place                     |
-| `pnpm build`                         | Build production files into `dist/`       |
-| `pnpm verify`                        | Run check, lint, format check, then build |
-| `pnpm preview`                       | Preview the production build              |
-| `pnpm new:post` / `pnpm new:project` | Scaffold content                          |
-| `pnpm sync:contributions`            | Refresh the merged-PR snapshot            |
+| Command                              | Purpose                                          |
+| :----------------------------------- | :----------------------------------------------- |
+| `pnpm dev`                           | Start local development                          |
+| `pnpm test`                          | Run content regression tests with Node.js 22.6+  |
+| `pnpm check`                         | Astro and TypeScript diagnostics                 |
+| `pnpm lint`                          | ESLint                                           |
+| `pnpm format:check`                  | Check formatting without writing                 |
+| `pnpm format`                        | Format files in place                            |
+| `pnpm build`                         | Build production files into `dist/`              |
+| `pnpm verify`                        | Run tests, check, lint, format check, then build |
+| `pnpm preview`                       | Preview the production build                     |
+| `pnpm new:post` / `pnpm new:project` | Scaffold content                                 |
+| `pnpm sync:contributions`            | Refresh the merged-PR snapshot                   |
 
-Both verification and deployment workflows use `pnpm verify`. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+Both verification and deployment workflows use `pnpm verify`. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including content regression tests, Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.

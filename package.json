@@ -10,12 +10,13 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "pnpm run check && pnpm run lint && pnpm run format:check && pnpm run build",
+    "verify": "pnpm run test && pnpm run check && pnpm run lint && pnpm run format:check && pnpm run build",
     "preview": "astro preview",
     "astro": "astro",
     "new:post": "node scripts/new-post.js",
     "new:project": "node scripts/new-project.js",
-    "sync:contributions": "node scripts/sync-contributions.mjs"
+    "sync:contributions": "node scripts/sync-contributions.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.8",

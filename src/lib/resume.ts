@@ -1,4 +1,4 @@
-import { getCollection } from "astro:content";
+import { getFeaturedProjects } from "./content";
 import {
   contributionProjects,
   mergedPullRequests,
@@ -10,22 +10,13 @@ import {
  * No network access or generated prose is required during a build.
  */
 export async function getResumeContent() {
-  const entries = await getCollection(
-    "projects",
-    ({ data }) => data.featured && data.status !== "archived",
-  );
-  const projects = entries
-    .sort(
-      (a, b) =>
-        b.data.publishDate.getTime() - a.data.publishDate.getTime() ||
-        a.slug.localeCompare(b.slug),
-    )
-    .map(({ data, slug }) => ({
-      name: data.titleEn ?? data.title,
-      description: data.summaryEn ?? data.summary,
-      href: `/projects/${slug}`,
-      stack: data.stack,
-    }));
+  const entries = await getFeaturedProjects();
+  const projects = entries.map(({ data, slug }) => ({
+    name: data.titleEn ?? data.title,
+    description: data.summaryEn ?? data.summary,
+    href: `/projects/${slug}`,
+    stack: data.stack,
+  }));
 
   const openSource = contributionProjects.map((project) => ({
     name: project.repository.split("/")[1],

@@ -1,4 +1,4 @@
-import { getCollection } from "astro:content";
+import { getPosts } from "../lib/content";
 
 const escapeXml = (value) =>
   String(value)
@@ -9,21 +9,11 @@ const escapeXml = (value) =>
     .replaceAll("'", "&apos;");
 
 export async function GET(context) {
-  const posts = await getCollection("blog", ({ data }) =>
-    import.meta.env.DEV ? true : data.draft !== true,
-  );
-
-  const sortedPosts = posts
-    .slice()
-    .sort(
-      (a, b) =>
-        new Date(b.data.publishDate).getTime() -
-        new Date(a.data.publishDate).getTime(),
-    );
+  const posts = await getPosts();
 
   const site = context.site?.toString() ?? "https://jarvis636431.github.io";
   const siteUrl = site.endsWith("/") ? site.slice(0, -1) : site;
-  const items = sortedPosts
+  const items = posts
     .map((post) => {
       const link = `${siteUrl}/blogs/${post.slug}`;
       const categories = post.data.tags

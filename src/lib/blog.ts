@@ -135,3 +135,22 @@ export function scoreRelatedPost(current: BlogPost, candidate: BlogPost) {
 
   return score;
 }
+
+/** Rank related posts using the existing category, tag, and recency score. */
+export function getRelatedPosts(
+  current: BlogPost,
+  posts: BlogPost[],
+  limit = 3,
+) {
+  return posts
+    .filter((candidate) => candidate.slug !== current.slug)
+    .map((post) => ({ post, score: scoreRelatedPost(current, post) }))
+    .filter(({ score }) => score > 0)
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        b.post.data.publishDate.getTime() - a.post.data.publishDate.getTime(),
+    )
+    .slice(0, limit)
+    .map(({ post }) => post);
+}

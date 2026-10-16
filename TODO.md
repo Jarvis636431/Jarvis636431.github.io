@@ -86,11 +86,13 @@
 
 ### 5. 建立统一内容查询层
 
-- [ ] 在 `src/lib` 中集中实现公开内容过滤和日期排序。
-- [ ] 提供 `getPublishedPosts()`。
-- [ ] 提供 `getPublishedProjects()`。
-- [ ] 提供 `getRecentPosts()` 和 `getRelatedPosts()`。
-- [ ] 移除首页、RSS、搜索和详情页中的重复查询逻辑。
+- [x] 在 `src/lib/content.ts` 中集中实现内容可见性与日期排序。
+- [x] 提供 `getPosts()`，统一草稿过滤并保留开发预览。
+- [x] 提供 `getProjects()`、`getFeaturedProjects()`，统一归档与精选规则。
+- [x] 提供 `getRecentPosts()` 和 `getRelatedPosts()`。
+- [x] 移除首页、列表、详情、RSS、搜索与简历中的重复查询逻辑。
+- [x] 将文章交互脚本从详情页拆到 `src/scripts/article.ts`。
+- [x] 为内容可见性、推荐排序和系列导航添加回归测试，接入 `pnpm verify`。
 
 验收标准：
 
@@ -255,6 +257,6 @@
 5. 优化 Logo、字体和页面元数据。
 6. 中文化搜索并统一全站语言。
 7. 清理未使用代码和一次性脚本。
-8. 抽取统一内容查询层。
+8. 统一内容查询层（已完成）。
 9. 增加关键交互测试。
 10. 完成首页与真实内容的闭环。
