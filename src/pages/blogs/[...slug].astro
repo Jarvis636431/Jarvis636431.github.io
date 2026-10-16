@@ -672,19 +672,28 @@ const relatedPosts = getRelatedPosts(post, allPosts);
 
   :global(.prose pre) {
     position: relative;
+    max-width: 100%;
     max-height: none;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.5rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    scrollbar-width: thin;
+    scrollbar-color: #64717c transparent;
   }
   :global(.code-toolbar) {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     margin: -1rem -1rem 1rem;
     padding: 0 0.75rem 0 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.035);
+    white-space: normal;
   }
   :global(.code-identity) {
     display: flex;
@@ -702,17 +711,18 @@ const relatedPosts = getRelatedPosts(post, allPosts);
     white-space: nowrap;
   }
   :global(.code-language) {
-    color: rgba(255, 255, 255, 0.42);
+    flex: none;
+    color: #b1bdc8;
     font:
-      0.62rem/1 "IBM Plex Mono",
+      0.6875rem/1.4 "IBM Plex Mono",
       monospace;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
 
   :global(.prose pre code) {
     background: transparent;
     padding: 0;
+    font: inherit;
   }
 
   :global(.code-copy-button) {
@@ -796,6 +806,22 @@ const relatedPosts = getRelatedPosts(post, allPosts);
     border-color: rgba(255, 255, 255, 0.34);
     background: rgba(255, 255, 255, 0.14);
     color: #ffffff;
+  }
+
+  :global(.prose pre::-webkit-scrollbar) {
+    height: 6px;
+  }
+  :global(.prose pre::-webkit-scrollbar-thumb) {
+    border-radius: 6px;
+    background: #64717c;
+  }
+  :global(.code-copy-button[data-state="success"]) {
+    color: #9cdbbf;
+  }
+  :global(.code-copy-button:focus-visible),
+  :global(.code-fold-button:focus-visible) {
+    outline: 2px solid #80c8c2;
+    outline-offset: 2px;
   }
 
   :global(.prose a[data-external-link]::after) {

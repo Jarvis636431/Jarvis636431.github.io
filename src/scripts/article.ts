@@ -69,9 +69,7 @@ export function initArticle() {
       const showLineNumbers =
         /(?:^|\s)(?:lineNumbers|showLineNumbers)(?:\s|$)/i.test(meta);
       const forceCollapse = /(?:^|\s)collapse(?:\s|$)/i.test(meta);
-      const languageClass = Array.from(code.classList).find((className) =>
-        className.startsWith("language-"),
-      );
+      const rawLanguage = pre.dataset.language ?? "text";
 
       const toolbar = document.createElement("div");
       toolbar.className = "code-toolbar";
@@ -83,19 +81,17 @@ export function initArticle() {
         filenameLabel.textContent = filename;
         identity.append(filenameLabel);
       }
-      if (languageClass) {
-        const language = document.createElement("span");
-        language.className = "code-language";
-        language.textContent = languageClass.replace("language-", "");
-        identity.append(language);
-      }
+      const language = document.createElement("span");
+      language.className = "code-language";
+      language.textContent = rawLanguage;
+      identity.append(language);
       toolbar.append(identity);
 
       const button = document.createElement("button");
       button.type = "button";
       button.className = "code-copy-button";
       button.textContent = "Copy";
-      button.setAttribute("aria-label", "复制代码");
+      button.setAttribute("aria-label", "Copy code");
       button.addEventListener("click", async () => {
         try {
           await copyText(code.textContent ?? "");
@@ -103,7 +99,7 @@ export function initArticle() {
           button.textContent = "Copied";
         } catch {
           button.dataset.state = "error";
-          button.textContent = "复制失败";
+          button.textContent = "Copy failed";
         }
         setTimeout(() => {
           button.textContent = "Copy";
@@ -127,14 +123,14 @@ export function initArticle() {
         const foldButton = document.createElement("button");
         foldButton.type = "button";
         foldButton.className = "code-fold-button";
-        foldButton.textContent = `展开 ${lines.length} 行代码`;
+        foldButton.textContent = `Show all ${lines.length} lines`;
         foldButton.setAttribute("aria-expanded", "false");
         foldButton.addEventListener("click", () => {
           const expanded = pre.classList.toggle("is-expanded");
           foldButton.setAttribute("aria-expanded", String(expanded));
           foldButton.textContent = expanded
-            ? "收起代码"
-            : `展开 ${lines.length} 行代码`;
+            ? "Collapse code"
+            : `Show all ${lines.length} lines`;
         });
         pre.append(foldButton);
       }
