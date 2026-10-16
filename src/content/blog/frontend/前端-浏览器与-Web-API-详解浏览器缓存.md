@@ -1,7 +1,7 @@
 ---
 slug: "前端-浏览器与-web-api-详解浏览器缓存"
 title: "详解浏览器缓存"
-description: "一、什么是浏览器缓存"
+description: "梳理强缓存与协商缓存的工作流程，解释 Cache-Control、ETag 等机制及常见缓存配置。"
 commentId: "blog-前端-浏览器与-web-api-详解浏览器缓存"
 publishDate: "2025-06-01"
 tags: [

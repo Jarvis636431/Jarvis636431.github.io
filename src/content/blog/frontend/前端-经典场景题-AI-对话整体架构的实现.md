@@ -1,7 +1,7 @@
 ---
 slug: "前端-经典场景题-ai-对话整体架构的实现"
 title: "AI 对话整体架构的实现"
-description: "SSE 相比于 WebSocket 是更好的选择，因为 AI 问答都是一问一答的形式，不需要随时随地实施联通"
+description: "围绕 AI 对话的流式响应需求，整理 SSE 技术选型与前后端交互的整体实现流程。"
 commentId: "blog-前端-经典场景题-ai-对话整体架构的实现"
 publishDate: "2025-06-01"
 tags: [

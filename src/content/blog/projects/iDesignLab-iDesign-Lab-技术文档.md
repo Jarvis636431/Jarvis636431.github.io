@@ -1,7 +1,7 @@
 ---
 slug: "idesignlab-idesign-lab-技术文档"
 title: "iDesign Lab 技术文档"
-description: "受天津大学工业设计实验(以下简称工设)老师委托，开发了天津大学工业设计实验室预约平台的微信小程序，选用的技术栈为前后端分离：微信小程序原生开发+Go 后端+MariaDB 数据库"
+description: "记录 iDesignLab 预约平台的技术方案，涵盖微信小程序、Go 后端、数据库与网络部署配置。"
 commentId: "blog-idesignlab-idesign-lab-技术文档"
 publishDate: "2025-06-01"
 tags: [

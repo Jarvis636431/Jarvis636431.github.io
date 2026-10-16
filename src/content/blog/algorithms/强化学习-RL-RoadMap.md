@@ -1,7 +1,7 @@
 ---
 slug: "强化学习-rl-roadmap"
 title: "RoadMap"
-description: "绝大部分的语音信息，都是通过麦克风一类的传感器采集到的一串音频，可能是.mp3,.wav 格式的文件，本质上是，一个随时间变化的信号。声音的本质是振动。"
+description: "介绍音频采样与频谱分析，梳理 FFT、STFT、Log-Mel 和 MFCC 的处理思路与特征表示。"
 commentId: "blog-强化学习-rl-roadmap"
 publishDate: "2025-06-01"
 tags: [

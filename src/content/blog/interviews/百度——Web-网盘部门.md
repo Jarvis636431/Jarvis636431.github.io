@@ -1,7 +1,7 @@
 ---
 slug: "百度web-网盘部门"
 title: "百度——Web 网盘部门"
-description: "1.有做过 electron 么"
+description: "记录百度网盘 Web 岗位的多轮面试，整理 Electron、JavaScript 代码题和项目交流等内容。"
 commentId: "blog-百度-web-网盘部门"
 publishDate: "2025-06-01"
 tags: [

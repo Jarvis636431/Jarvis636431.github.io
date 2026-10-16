@@ -1,7 +1,7 @@
 ---
 slug: "前端-htmlcss-与-js-javascript-es6"
 title: "JavaScript （ES6）"
-description: "1. var、let、const 的区别"
+description: "梳理 JavaScript 与 ES6 的核心概念，涵盖作用域、原型链、闭包、异步编程和常见语法。"
 commentId: "blog-前端-htmlcss-与-js-javascript-es6"
 publishDate: "2025-06-01"
 tags: [

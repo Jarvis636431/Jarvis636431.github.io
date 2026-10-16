@@ -1,7 +1,7 @@
 ---
 slug: "前端-经典场景题-jwt-单点登录sso的简单实现"
 title: "JWT 单点登录(SSO)的简单实现"
-description: "1. JWT 是什么"
+description: "介绍 JWT 与单点登录的基本原理，对比常见架构，并梳理令牌存储、刷新与跨域安全问题。"
 commentId: "blog-前端-经典场景题-jwt-单点登录sso的简单实现"
 publishDate: "2025-06-01"
 tags: [

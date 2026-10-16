@@ -1,7 +1,7 @@
 ---
 slug: "虾皮shopee-pay-支付部门"
 title: "虾皮——Shopee Pay 支付部门"
-description: "1.箭头函数的 this"
+description: "整理 Shopee Pay 岗位面试中的 JavaScript 代码题、异步编程、错误处理与技术追问。"
 commentId: "blog-虾皮-shopee-pay-支付部门"
 publishDate: "2025-06-01"
 tags: [

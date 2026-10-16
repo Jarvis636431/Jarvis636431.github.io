@@ -1,7 +1,7 @@
 ---
 slug: "前端-浏览器与-web-api-详解事件循环event-loop"
 title: "详解事件循环(Event Loop)"
-description: "事件循环（Event Loop）是浏览器或 Node.js 为 JavaScript 提供的一种任务调度机制，负责决定异步代码何时执行。"
+description: "结合运行环境、宏任务与微任务，解释 JavaScript 事件循环的执行顺序及常见异步代码行为。"
 commentId: "blog-前端-浏览器与-web-api-详解事件循环event-loop"
 publishDate: "2025-06-01"
 tags: [

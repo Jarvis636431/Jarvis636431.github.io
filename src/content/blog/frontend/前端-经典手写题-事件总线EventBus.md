@@ -1,7 +1,7 @@
 ---
 slug: "前端-经典手写题-事件总线eventbus"
 title: "事件总线(EventBus)"
-description: "// 模拟的原生模块"
+description: "通过文件读取示例，演示原生模块调用与回调 API 的 Promise 封装。"
 commentId: "blog-前端-经典手写题-事件总线eventbus"
 publishDate: "2025-06-01"
 tags: [

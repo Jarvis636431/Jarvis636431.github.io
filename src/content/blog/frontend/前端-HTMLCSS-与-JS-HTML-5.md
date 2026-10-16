@@ -1,7 +1,7 @@
 ---
 slug: "前端-htmlcss-与-js-html-5"
 title: "HTML 5"
-description: "1. 什么是 HTML5？相比 HTML4 有哪些改进？"
+description: "整理 HTML5 语义化标签、媒体、表单、存储与绘图能力，以及脚本加载和移动端适配要点。"
 commentId: "blog-前端-htmlcss-与-js-html-5"
 publishDate: "2025-06-01"
 tags: [

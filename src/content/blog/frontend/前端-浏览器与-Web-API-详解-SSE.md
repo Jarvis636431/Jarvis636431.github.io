@@ -1,7 +1,7 @@
 ---
 slug: "前端-浏览器与-web-api-详解-sse"
 title: "详解 SSE"
-description: "SSE 是用浏览器原生 EventSource 建立的单向持久 HTTP 连接，服务端以 text/event-stream 的文本流持续推送事件给客户端（服务端 → 客户端），支持自动重连、事件 id、简单事件类型。"
+description: "介绍 SSE 的事件格式、客户端与服务端实现，以及代理配置、认证和流式 AI 对话中的实践要点。"
 commentId: "blog-前端-浏览器与-web-api-详解-sse"
 publishDate: "2025-06-01"
 tags: [

@@ -1,7 +1,7 @@
 ---
 slug: "前端-经典手写题-promise"
 title: "Promise"
-description: "1.  Promise 并发控制（面试超高频）"
+description: "整理 Promise 并发控制、重试与组合方法的手写实现，分析异步任务调度和结果处理思路。"
 commentId: "blog-前端-经典手写题-promise"
 publishDate: "2025-06-01"
 tags: [

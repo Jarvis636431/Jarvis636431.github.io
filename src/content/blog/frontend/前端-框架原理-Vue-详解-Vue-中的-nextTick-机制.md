@@ -1,7 +1,7 @@
 ---
 slug: "前端-框架原理-vue-详解-vue-中的-nexttick-机制"
 title: "详解 Vue 中的 nextTick 机制"
-description: "一、什么是 nextTick"
+description: "结合异步更新队列与事件循环，解释 Vue nextTick 的实现思路、执行顺序和使用场景。"
 commentId: "blog-前端-框架原理-vue-详解-vue-中的-nexttick-机制"
 publishDate: "2025-06-01"
 tags: [

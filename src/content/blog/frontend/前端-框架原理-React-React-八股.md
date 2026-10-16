@@ -1,7 +1,7 @@
 ---
 slug: "前端-框架原理-react-react-八股"
 title: "React 八股"
-description: "1. React 的核心思想是什么？"
+description: "梳理 React 组件更新、状态管理、Hooks 与性能优化，整理核心原理和常见面试问题。"
 commentId: "blog-前端-框架原理-react-react-八股"
 publishDate: "2025-06-01"
 tags: [

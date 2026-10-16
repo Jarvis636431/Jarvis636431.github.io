@@ -1,7 +1,7 @@
 ---
 slug: "前端-浏览器与-web-api-浏览器与-web-api"
 title: "浏览器与 Web API"
-description: "1. localStorage / sessionStorage 有什么区别？有什么使用场景？"
+description: "对比浏览器存储与网络请求 API，整理 Service Worker、SSE 和剪贴板等 Web 能力。"
 commentId: "blog-前端-浏览器与-web-api-浏览器与-web-api"
 publishDate: "2025-06-01"
 tags: [

@@ -1,7 +1,7 @@
 ---
 slug: "前端-经典手写题-lru-缓存"
 title: "LRU 缓存"
-description: "1. 什么是 LRU 缓存"
+description: "介绍 LRU 缓存淘汰策略，对比基于 Map 与哈希表配合双向链表的实现方式。"
 commentId: "blog-前端-经典手写题-lru-缓存"
 publishDate: "2025-06-01"
 tags: [

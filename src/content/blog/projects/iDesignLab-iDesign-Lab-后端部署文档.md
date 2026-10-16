@@ -1,7 +1,7 @@
 ---
 slug: "idesignlab-idesign-lab-后端部署文档"
 title: "iDesign Lab 后端部署文档"
-description: "一、Nginx 配置 HTTPS"
+description: "整理 iDesignLab 后端部署步骤，涵盖 Nginx、HTTPS、服务管理、MariaDB 与全链路验证。"
 commentId: "blog-idesignlab-idesign-lab-后端部署文档"
 publishDate: "2025-06-01"
 tags: [

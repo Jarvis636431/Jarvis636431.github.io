@@ -1,7 +1,7 @@
 ---
 slug: "sql-常用命令速查表"
 title: "SQL 常用命令速查表"
-description: "✍️ 数据操作（增删改查）"
+description: "汇总数据库与表结构管理、增删改查、用户权限和日志排查等常用 SQL 命令。"
 commentId: "blog-sql-常用命令速查表"
 publishDate: "2025-06-01"
 tags: [

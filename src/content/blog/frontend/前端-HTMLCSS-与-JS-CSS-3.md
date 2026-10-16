@@ -1,7 +1,7 @@
 ---
 slug: "前端-htmlcss-与-js-css-3"
 title: "CSS 3"
-description: "1. CSS 选择器的优先级（权重）是如何计算的？"
+description: "梳理 CSS 选择器、盒模型、布局与样式机制，结合常见问题整理核心概念和使用场景。"
 commentId: "blog-前端-htmlcss-与-js-css-3"
 publishDate: "2025-06-01"
 tags: [

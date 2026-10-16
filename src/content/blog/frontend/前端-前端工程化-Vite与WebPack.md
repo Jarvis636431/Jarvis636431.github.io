@@ -1,7 +1,7 @@
 ---
 slug: "前端-前端工程化-vite与webpack"
 title: "Vite与WebPack"
-description: "1.为什么需要打包工具？"
+description: "梳理 Vite 与 Webpack 的构建原理、核心流程及性能优化方法。"
 commentId: "blog-前端-前端工程化-vite与webpack"
 publishDate: "2025-06-01"
 tags: [

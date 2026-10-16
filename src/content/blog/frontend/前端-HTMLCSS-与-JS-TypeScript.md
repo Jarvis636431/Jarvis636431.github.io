@@ -1,7 +1,7 @@
 ---
 slug: "前端-htmlcss-与-js-typescript"
 title: "TypeScript"
-description: "1. TS 和 JS 的区别是什么？为什么公司喜欢用 TS？"
+description: "整理 TypeScript 类型系统、泛型、类型收窄与工程实践中的常见问题及示例。"
 commentId: "blog-前端-htmlcss-与-js-typescript"
 publishDate: "2025-06-01"
 tags: [

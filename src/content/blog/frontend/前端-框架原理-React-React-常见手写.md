@@ -1,7 +1,7 @@
 ---
 slug: "前端-框架原理-react-react-常见手写"
 title: "React 常见手写"
-description: "1. 手写useState"
+description: "通过简化实现理解 React Hooks、虚拟 DOM 与组件复用机制，整理常见手写题的核心思路。"
 commentId: "blog-前端-框架原理-react-react-常见手写"
 publishDate: "2025-06-01"
 tags: [

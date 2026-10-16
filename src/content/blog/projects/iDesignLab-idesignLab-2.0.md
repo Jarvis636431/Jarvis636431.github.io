@@ -1,7 +1,7 @@
 ---
 slug: "idesignlab-idesignlab-20"
 title: "idesignLab 2.0"
-description: "主要需要实现的功能有两个"
+description: "整理 iDesignLab 2.0 的功能需求，讨论设备预约、连续预约与站内信等流程设计。"
 commentId: "blog-idesignlab-idesignlab-2-0"
 publishDate: "2025-06-01"
 tags: [

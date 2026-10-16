@@ -1,7 +1,7 @@
 ---
 slug: "idesignlab-idesign接口文档"
 title: "idesign接口文档"
-description: "http://idesign.tju.edu.cn/portal/api_v1/get_design_detail?category_id={$cate_id}&id={$id}"
+description: "记录 iDesignLab 设计详情接口的请求参数与调用方式，作为前后端联调时的接口备忘。"
 commentId: "blog-idesignlab-idesign接口文档"
 publishDate: "2025-06-01"
 tags: [

@@ -1,7 +1,7 @@
 ---
 slug: "前端-框架原理-vue-vue-八股"
 title: "Vue 八股"
-description: "1. Vue 的响应式原理是什么？Vue2 和 Vue3 有什么区别？"
+description: "整理 Vue 响应式、组件通信、生命周期、虚拟 DOM 与路由等核心机制及常见问题。"
 commentId: "blog-前端-框架原理-vue-vue-八股"
 publishDate: "2025-06-01"
 tags: [

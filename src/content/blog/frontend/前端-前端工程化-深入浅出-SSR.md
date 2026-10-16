@@ -1,7 +1,7 @@
 ---
 slug: "前端-前端工程化-深入浅出-ssr"
 title: "深入浅出 SSR"
-description: "下面我也按照“体系化 + 面试直击 + 可直接背”的方式给你讲 SSR（Server-Side Rendering），风格与你刚才的“微前端讲解”完全一致，适合秋招回答。"
+description: "介绍服务端渲染的请求流程、同构、Hydration 与数据预取，并讨论 SSR 的优势和工程取舍。"
 commentId: "blog-前端-前端工程化-深入浅出-ssr"
 publishDate: "2025-06-01"
 tags: [
