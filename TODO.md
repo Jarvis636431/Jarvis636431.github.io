@@ -9,13 +9,14 @@
 - 博客具备分类筛选、相关文章、目录、正文增强和 Giscus 集成能力。
 - 截至 2026-10-16，65 篇博客全部为草稿，生产环境不会生成博客详情页。
 - 当前内容目录仍有疑似凭据；完整 Git 历史尚待检查，凭据有效性尚未验证。草稿状态不保护仓库源码。
-- 2026-10-16 本地验证：Astro Check、格式检查与生产构建通过；ESLint 未通过，发布验证仍受阻。
+- 2026-10-16 本地完整 `pnpm verify` 通过：Astro Check、ESLint、格式检查和生产构建均通过（Node.js 26.8.1、pnpm 10.14.0）；CI 的 Node.js 22 环境仍需由工作流确认。
 
 ## P0：发布阻断项
 
 ### 0. 修复验证链路
 
-- [ ] 配置 Astro ESLint 的 TypeScript 解析器，修复现有 Lint 错误。
+- [x] 配置 Astro frontmatter 与客户端脚本的 TypeScript 解析器，修复现有 Lint 错误。
+- [x] 本地完整运行 `pnpm verify` 并全部通过。
 - [ ] 使用与 CI 一致的 Node.js 22、pnpm 10.14.0 完整运行 `pnpm verify`。
 
 验收标准：类型检查、Lint、格式检查和生产构建全部通过。

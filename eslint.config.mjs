@@ -40,6 +40,22 @@ export default [
   ...tseslint.configs.recommended,
   ...astro.configs["flat/recommended"],
   {
+    // Use the parser exported by typescript-eslint for frontmatter and scripts.
+    files: ["**/*.astro"],
+    processor: "astro/client-side-ts",
+    languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+      },
+    },
+  },
+  {
+    files: ["**/*.astro/*.ts"],
+    languageOptions: {
+      parser: tseslint.parser,
+    },
+  },
+  {
     languageOptions: {
       parserOptions: { tsconfigRootDir: import.meta.dirname },
     },

@@ -8,15 +8,6 @@ export interface ResumeExperience {
   stack: string[];
 }
 
-export interface ResumeProject {
-  name: string;
-  role: string;
-  description: string;
-  href: string;
-  stack: string[];
-  external?: boolean;
-}
-
 export const resumeProfile = {
   name: "Jarvis",
   title: "Software Engineer at Joybuy",
@@ -32,7 +23,6 @@ export const resumeProfile = {
     "Cross-platform engineering",
     "Developer experience & open source",
   ],
-  updatedAt: "2026-10",
 };
 
 export const resumeExperiences: ResumeExperience[] = [
@@ -87,34 +77,6 @@ export const resumeExperiences: ResumeExperience[] = [
   },
 ];
 
-export const resumeProjects: ResumeProject[] = [
-  {
-    name: "iDesignLab",
-    role: "Full-stack development",
-    description:
-      "A lab reservation and operations platform covering configurable time slots, approvals, check-in, notifications, and reporting.",
-    href: "/projects/idesignlab",
-    stack: ["Vue 3", "Go", "MariaDB", "Docker"],
-  },
-  {
-    name: "WePeiYang",
-    role: "Cross-platform development",
-    description:
-      "A campus app maintained by TWT Studio, bringing together schedules, study rooms, GPA, messaging, and community features.",
-    href: "https://github.com/twtstudio/WePeiYang-Flutter",
-    stack: ["Flutter", "Dart", "Mobile"],
-    external: true,
-  },
-  {
-    name: "Tenio",
-    role: "Frontend & interaction development",
-    description:
-      "An AI-assisted design system exploring a collaborative workflow for conversational input, generated proposals, and 3D previews.",
-    href: "/projects/tenio",
-    stack: ["React", "TypeScript", "Three.js"],
-  },
-];
-
 export const resumeSkills = [
   {
     label: "Frontend",
@@ -134,33 +96,8 @@ export const resumeSkills = [
   },
 ];
 
-export const resumeOpenSource = [
-  {
-    name: "Taro",
-    repository: "NervJS/taro",
-    href: "https://github.com/NervJS/taro",
-    description:
-      "Improved CLI initialization in the current directory, corrected runtime node aliases after event removal, and fixed H5 canvas pixel conversion and audio listener cleanup.",
-  },
-  {
-    name: "WeKnora",
-    repository: "Tencent/WeKnora",
-    href: "https://github.com/Tencent/WeKnora",
-    description:
-      "Fixed Markdown list editing and selection boundaries, preserved inline images in EPUB previews, and improved Helm rollout configuration and contributor documentation.",
-  },
-  {
-    name: "Rsbuild",
-    repository: "web-infra-dev/rsbuild",
-    href: "https://github.com/web-infra-dev/rsbuild",
-    description:
-      "Fixed charset recognition in custom HTML templates; also contributed development and architecture documentation to Rspress and Rspack.",
-  },
-  {
-    name: "SwitchHosts",
-    repository: "oldj/SwitchHosts",
-    href: "https://github.com/oldj/SwitchHosts",
-    description:
-      "Fixed the macOS tray window so it can appear over full-screen applications.",
-  },
-];
+export const resumeEducation = {
+  institution: "Tianjin University",
+  description:
+    "Academic experience and hands-on work with campus technology teams.",
+};

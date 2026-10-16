@@ -88,7 +88,13 @@ const highlighted = true;
 
 ## Profile and resume
 
-Maintain profile, experience, selected projects, skills, and open-source highlights in `src/data/resume.ts`. The resume page reads that data and derives merged-PR totals from `src/data/contributions.ts`. Update `resumeProfile.updatedAt` when editing resume content. Keep homepage and About copy consistent when changing personal information.
+The resume uses a compact, single-column layout inspired by [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm). The print / Save PDF action is at the bottom of the document and is hidden when printing. This is an Astro implementation, not a YAMLResume CLI integration.
+
+- Maintain personal profile, employment history, education, and skills in `src/data/resume.ts`. These facts are explicitly authored, not inferred from GitHub activity.
+- `src/lib/resume.ts` builds selected projects from featured, non-archived project content. Names and descriptions prefer English metadata, with the original text as fallback; technologies and links come from the same entries used by project pages.
+- Open-source sections are generated from the contribution snapshot: all repositories, merged-PR counts, and each repository's most recent merged PR title and link. There is no separate manually maintained contribution summary.
+- The existing daily contribution sync updates the snapshot and rebuilds the site when metadata changes, so the resume follows the same update cycle. Builds require no GitHub API access. Deployment remains conditional on the full verification gate.
+- Keep homepage and About copy consistent when changing personal information. About already reuses the resume's experience data.
 
 ## Contribution synchronization
 
@@ -153,4 +159,4 @@ src/
 | `pnpm new:post` / `pnpm new:project` | Scaffold content                          |
 | `pnpm sync:contributions`            | Refresh the merged-PR snapshot            |
 
-Both verification and deployment workflows use `pnpm verify`. As of the 2026-10-16 local audit, Astro check, formatting, and build passed, but ESLint reported errors in Astro TypeScript parsing and the homepage script; the full verification gate is not yet passing. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+Both verification and deployment workflows use `pnpm verify`. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
