@@ -185,3 +185,10 @@ src/
 | `pnpm sync:contributions`            | Refresh the merged-PR snapshot                   |
 
 Both verification and deployment workflows use `pnpm verify`. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including content regression tests, Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+
+## Nested blog folders
+
+Blog posts can live in subfolders such as `src/content/blog/rec/example.md`.
+Their URLs retain the folder path (`/blogs/rec/example`). The `[...slug].astro`
+detail route handles both root-level and nested posts. Drafts are visible in
+development and excluded from production builds.
