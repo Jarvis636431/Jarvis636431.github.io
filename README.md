@@ -192,3 +192,12 @@ Blog posts can live in subfolders such as `src/content/blog/rec/example.md`.
 Their URLs retain the folder path (`/blogs/rec/example`). The `[...slug].astro`
 detail route handles both root-level and nested posts. Drafts are visible in
 development and excluded from production builds.
+
+Blog categories are derived automatically from the first folder below
+`src/content/blog/`: `rec/example.md` belongs to `rec`, and
+`frontend/react/example.mdx` belongs to `frontend`. Folder names are displayed
+as written, with no category mapping to maintain. Root-level posts appear under
+`Uncategorized`. Categories use the source file ID, so custom URL slugs do not
+change them. Tags remain available for search and related-article scoring;
+sharing a folder adds a relevance bonus, while root-level posts receive no
+shared-category bonus.

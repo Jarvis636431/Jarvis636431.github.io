@@ -24,23 +24,24 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   day: "2-digit",
   timeZone: "Asia/Shanghai",
 });
-const categoryLabels: Record<string, string> = {
-  前端: "Frontend",
-  "AI 与算法": "AI & Algorithms",
-  面经: "Interviews",
-  项目记录: "Projects",
-  周报: "Updates",
-  数据库: "Databases",
-  其他: "Other",
-};
+// Prefix folder keys so names such as "all" cannot collide with filter controls.
+const categoryKey = (category: string | null) =>
+  category === null ? "root" : `folder:${category}`;
 const categoryCounts = posts.reduce((counts, post) => {
-  const category = getBlogCategory(post.data.tags);
+  const category = getBlogCategory(post);
   counts.set(category, (counts.get(category) ?? 0) + 1);
   return counts;
-}, new Map<string, number>());
-const categories = Object.keys(categoryLabels).filter((category) =>
-  categoryCounts.has(category),
-);
+}, new Map<string | null, number>());
+const categories = Array.from(categoryCounts, ([name, count]) => ({
+  key: categoryKey(name),
+  name,
+  label: name ?? "Uncategorized",
+  count,
+})).sort((a, b) => {
+  if (a.name === null) return 1;
+  if (b.name === null) return -1;
+  return a.name.localeCompare(b.name, "en");
+});
 ---
 
 <Layout
@@ -100,12 +101,12 @@ const categories = Object.keys(categoryLabels).filter((category) =>
               {categories.map((category) => (
                 <button
                   type="button"
-                  data-category={category}
+                  data-category={category.key}
                   aria-pressed="false"
                   aria-controls="post-list"
                 >
-                  <span>{categoryLabels[category]}</span>
-                  <small>{categoryCounts.get(category)}</small>
+                  <span>{category.label}</span>
+                  <small>{category.count}</small>
                 </button>
               ))}
             </div>
@@ -123,7 +124,7 @@ const categories = Object.keys(categoryLabels).filter((category) =>
             {posts.map((post) => (
               <li
                 class="post-item"
-                data-post-category={getBlogCategory(post.data.tags)}
+                data-post-category={categoryKey(getBlogCategory(post))}
               >
                 <a class="post-link" href={`/blogs/${post.slug}`}>
                   <time datetime={post.data.publishDate.toISOString()}>
@@ -134,9 +135,7 @@ const categories = Object.keys(categoryLabels).filter((category) =>
                     <p lang={post.data.language}>{post.data.description}</p>
                     <div class="post-meta">
                       <span>{getPostReadingTime(post)} min read</span>
-                      <span>
-                        {categoryLabels[getBlogCategory(post.data.tags)]}
-                      </span>
+                      <span>{getBlogCategory(post) ?? "Uncategorized"}</span>
                       {import.meta.env.DEV && post.data.draft && (
                         <span class="draft-label">Draft</span>
                       )}
