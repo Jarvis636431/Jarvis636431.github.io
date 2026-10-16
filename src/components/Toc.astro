@@ -21,6 +21,7 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         type="button"
         data-toc-toggle
         aria-expanded="false"
+        aria-controls={tocId}
       >
         <>
           <span>{title}</span>
@@ -53,13 +54,20 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
           .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
           .replace(/^-+|-+$/g, "");
       const items = [];
-      const usedIds = new Map();
+      const usedIds = new Set();
+      const existingIds = new Set(
+        headings.map((heading) => heading.id).filter(Boolean),
+      );
       headings.forEach((h) => {
         const text = h.textContent || "";
         const baseId = h.id || slugify(text) || "section";
-        const occurrence = usedIds.get(baseId) || 0;
-        const id = occurrence === 0 ? baseId : `${baseId}-${occurrence + 1}`;
-        usedIds.set(baseId, occurrence + 1);
+        let id = baseId;
+        let suffix = 2;
+        while (usedIds.has(id)) {
+          id = `${baseId}-${suffix++}`;
+          while (existingIds.has(id)) id = `${baseId}-${suffix++}`;
+        }
+        usedIds.add(id);
         h.id = id;
         const depth = h.tagName === "H2" ? 2 : 3;
         items.push({ id, depth, text });
@@ -69,12 +77,15 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         return;
       }
       const fragment = document.createDocumentFragment();
+      // Keep element references: itemClass contains multiple CSS classes, not a selector.
+      const linksById = new Map();
       items.forEach((item) => {
         const link = document.createElement("a");
         link.href = `#${item.id}`;
         link.className = `${itemClass} toc-depth-${item.depth}`;
         link.dataset.id = item.id;
         link.textContent = item.text;
+        linksById.set(item.id, link);
         fragment.append(link);
       });
       toc.replaceChildren(fragment);
@@ -86,12 +97,12 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         const icon = toggle.lastElementChild;
         if (icon) icon.textContent = expanded ? "＋" : "−";
       });
-      const links = Array.from(toc.querySelectorAll(`.${itemClass}`));
+      const links = Array.from(linksById.values());
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             const id = entry.target.id;
-            const link = toc.querySelector(`.${itemClass}[data-id="${id}"]`);
+            const link = linksById.get(id);
             if (link && entry.isIntersecting) {
               links.forEach((l) => {
                 l.classList.remove("active");
@@ -169,7 +180,7 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
     content: none;
   }
 
-  :global(.detail__toc-item.active) {
+  :global(.detail__toc .detail__toc-item.active) {
     border-left-color: #2f6f6d;
     color: #2f6f6d;
     background: transparent;

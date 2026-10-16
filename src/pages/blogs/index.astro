@@ -4,118 +4,144 @@ import { getBlogCategory, getPostReadingTime } from "@lib/blog";
 import { getPosts } from "@lib/content";
 
 const posts = await getPosts();
-
+const hasDrafts = posts.some((post) => post.data.draft);
+const description =
+  "Notes on frontend engineering, AI applications, and building software.";
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
 const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
-
 const blogStructuredData = {
   "@context": "https://schema.org",
   "@type": "Blog",
   name: "Jarvis Hub Blogs",
   url: pageUrl,
-  description: "关于前端工程、产品系统、AI 工具与持续学习的笔记。",
-  inLanguage: "zh-CN",
+  description,
+  inLanguage: "en",
 };
-
-function formatDate(date: Date, locale = "zh-CN") {
-  return new Date(date).toLocaleDateString(locale, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-}
-
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+  timeZone: "Asia/Shanghai",
+});
+const categoryLabels: Record<string, string> = {
+  前端: "Frontend",
+  "AI 与算法": "AI & Algorithms",
+  面经: "Interviews",
+  项目记录: "Projects",
+  周报: "Updates",
+  数据库: "Databases",
+  其他: "Other",
+};
 const categoryCounts = posts.reduce((counts, post) => {
   const category = getBlogCategory(post.data.tags);
   counts.set(category, (counts.get(category) ?? 0) + 1);
   return counts;
 }, new Map<string, number>());
-const categoryOrder = [
-  "前端",
-  "AI 与算法",
-  "面经",
-  "项目记录",
-  "周报",
-  "数据库",
-  "其他",
-];
-const categories = categoryOrder.filter((category) =>
+const categories = Object.keys(categoryLabels).filter((category) =>
   categoryCounts.has(category),
 );
 ---
 
 <Layout
-  title="博客与笔记 - Jarvis Hub"
-  lang="zh-CN"
-  description="关于前端工程、产品系统、AI 工具与持续学习的笔记。"
+  title="Blogs - Jarvis Hub"
+  lang="en"
+  description={description}
+  decorativeBackground={false}
   seo={{
     canonical: pageUrl,
     type: "website",
-    image: {
-      src: "/logo.png",
-      alt: "Jarvis Hub logomark",
-    },
+    image: { src: "/logo.png", alt: "Jarvis Hub logomark" },
     structuredData: blogStructuredData,
   }}
 >
   <div class="blogs-page">
     <header class="blogs-header">
-      <p class="blogs-kicker">Writing</p>
-      <div class="blogs-heading">
-        <div>
-          <h1>博客与笔记</h1>
-          <p>记录前端工程、产品系统、AI 工具，以及持续学习的过程。</p>
-        </div>
-        <div class="blogs-utility">
-          <span>{posts.length} 篇公开文章</span>
-          <a href="/rss.xml">RSS ↗</a>
-        </div>
+      <div>
+        <h1>Blogs</h1>
+        <p>{description}</p>
+      </div>
+      <div class="blogs-utility">
+        <span>{posts.length} {posts.length === 1 ? "article" : "articles"}</span
+        >
+        <a href="/rss.xml">RSS <span aria-hidden="true">↗</span></a>
       </div>
     </header>
 
-    <main>
-      <div class="blog-filters" aria-label="文章分类">
-        <button type="button" data-category="全部" aria-pressed="true">
-          <span>全部</span><small>{posts.length}</small>
-        </button>
-        {
-          categories.map((category) => (
-            <button type="button" data-category={category} aria-pressed="false">
-              <>
-                <span>{category}</span>
-                <small>{categoryCounts.get(category)}</small>
-              </>
-            </button>
-          ))
-        }
-      </div>
-      {
-        posts.length > 0 ? (
-          <ol class="post-list" aria-label="全部文章">
+    {
+      hasDrafts && (
+        <p class="preview-note">
+          Development preview · Drafts are included here and hidden in
+          production.
+        </p>
+      )
+    }
+
+    {
+      posts.length > 0 ? (
+        <section aria-label="Article archive" data-blog-archive>
+          <div class="archive-toolbar">
+            <div
+              class="blog-filters"
+              role="group"
+              aria-label="Filter articles by topic"
+            >
+              <button
+                type="button"
+                data-category="all"
+                aria-pressed="true"
+                aria-controls="post-list"
+              >
+                <>
+                  <span>All</span>
+                  <small>{posts.length}</small>
+                </>
+              </button>
+              {categories.map((category) => (
+                <button
+                  type="button"
+                  data-category={category}
+                  aria-pressed="false"
+                  aria-controls="post-list"
+                >
+                  <span>{categoryLabels[category]}</span>
+                  <small>{categoryCounts.get(category)}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+          <p
+            class="sr-only"
+            data-filter-status
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            Showing {posts.length} articles.
+          </p>
+          <ol id="post-list" class="post-list">
             {posts.map((post) => (
               <li
                 class="post-item"
-                lang={post.data.language}
                 data-post-category={getBlogCategory(post.data.tags)}
               >
                 <a class="post-link" href={`/blogs/${post.slug}`}>
                   <time datetime={post.data.publishDate.toISOString()}>
-                    {formatDate(post.data.publishDate, post.data.language)}
+                    {dateFormatter.format(post.data.publishDate)}
                   </time>
-
                   <div class="post-copy">
-                    <h2>{post.data.title}</h2>
-                    <p>{post.data.description}</p>
+                    <h2 lang={post.data.language}>{post.data.title}</h2>
+                    <p lang={post.data.language}>{post.data.description}</p>
+                    <div class="post-meta">
+                      <span>{getPostReadingTime(post)} min read</span>
+                      <span>
+                        {categoryLabels[getBlogCategory(post.data.tags)]}
+                      </span>
+                      {import.meta.env.DEV && post.data.draft && (
+                        <span class="draft-label">Draft</span>
+                      )}
+                    </div>
                   </div>
-
-                  <div class="post-meta">
-                    <span>{getPostReadingTime(post)} 分钟</span>
-                    {post.data.tags.length > 0 && (
-                      <span class="post-topic">{post.data.tags[0]}</span>
-                    )}
-                  </div>
-
                   <span class="post-arrow" aria-hidden="true">
                     →
                   </span>
@@ -123,318 +149,308 @@ const categories = categoryOrder.filter((category) =>
               </li>
             ))}
           </ol>
-        ) : (
-          <section class="empty-state">
-            <h2>暂无公开文章</h2>
-            <p>正在整理内容，完成后会在这里发布。</p>
-          </section>
-        )
-      }
-      <div class="filter-empty" hidden>这个分类下暂时没有文章。</div>
-    </main>
+          <p class="filter-empty" hidden>
+            No articles in this topic yet.
+          </p>
+        </section>
+      ) : (
+        <section class="empty-state" aria-labelledby="empty-title">
+          <h2 id="empty-title">Notes are on the way.</h2>
+          <p>
+            I'm collecting ideas and working on new articles. In the meantime,
+            take a look at my projects.
+          </p>
+          <a href="/projects">Explore projects →</a>
+        </section>
+      )
+    }
   </div>
 </Layout>
 
 <style>
   .blogs-page {
-    max-width: 72rem;
-    margin: 0 auto;
+    --blog-rule: #1f1f1f1a;
+    --blog-muted: #6b6b6b;
+    --blog-accent: #2f6f6d;
     padding: 4rem 0 2rem;
+    font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
   }
-
+  a,
+  button {
+    transition: color 180ms ease;
+  }
+  a:hover,
+  button:hover {
+    color: var(--blog-accent);
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--blog-accent);
+    outline-offset: 5px;
+  }
   .blogs-header {
-    padding-bottom: 3rem;
-  }
-
-  .blogs-kicker {
-    margin: 0 0 1rem;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.5);
-  }
-
-  .blogs-heading {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 3rem;
+    gap: 2rem;
+    margin-bottom: 3rem;
   }
-
-  .blogs-heading h1 {
-    margin: 0;
-    font-size: clamp(3rem, 7vw, 5.5rem);
-    line-height: 1;
-    letter-spacing: -0.055em;
+  .blogs-header h1 {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: 0;
   }
-
-  .blogs-heading > div > p {
-    margin: 1.25rem 0 0;
-    max-width: 36rem;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    color: rgba(31, 31, 31, 0.62);
+  .blogs-header p {
+    max-width: 34rem;
+    margin-top: 1rem;
+    color: var(--blog-muted);
+    font-size: 1rem;
+    line-height: 1.75;
+    text-wrap: pretty;
   }
-
   .blogs-utility {
     display: flex;
+    align-items: baseline;
     flex-shrink: 0;
-    align-items: center;
     gap: 1.5rem;
-    padding-bottom: 0.3rem;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.7rem;
-    color: rgba(31, 31, 31, 0.5);
+    padding-bottom: 0.25rem;
+    font-size: 0.8125rem;
   }
-
+  .blogs-utility > span {
+    color: var(--blog-muted);
+  }
   .blogs-utility a {
-    color: #2f6f6d;
+    color: var(--blog-accent);
   }
-
-  .post-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid rgba(31, 31, 31, 0.12);
+  .preview-note {
+    margin: -1rem 0 2rem;
+    color: var(--blog-muted);
+    font-size: 0.75rem;
+    line-height: 1.7;
   }
-
+  .archive-toolbar {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--blog-rule);
+  }
   .blog-filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.7rem 1.5rem;
-    padding: 0 0 0.45rem;
+    gap: 0.5rem 1.5rem;
   }
   .blog-filters button {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.45rem;
-    padding: 0.3rem 0;
-    border: 0;
-    border-bottom: 1px solid transparent;
+    gap: 0.375rem;
+    padding: 0.375rem 0;
     background: transparent;
-    color: rgba(31, 31, 31, 0.48);
-    font:
-      0.72rem/1.4 "IBM Plex Mono",
-      monospace;
-    transition:
-      color 180ms ease,
-      border-color 180ms ease;
+    color: var(--blog-muted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    border-bottom: 1px solid transparent;
   }
-  .blog-filters button small {
-    font-size: 0.58rem;
-    color: rgba(31, 31, 31, 0.3);
+  .blog-filters small {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.625rem;
   }
   .blog-filters button:hover,
   .blog-filters button[aria-pressed="true"] {
-    border-bottom-color: #2f6f6d;
-    color: #2f6f6d;
+    color: var(--blog-accent);
   }
-  .blog-filters button:focus-visible {
-    border-radius: 0.15rem;
-    outline: 2px solid #2f6f6d;
-    outline-offset: 3px;
+  .blog-filters button[aria-pressed="true"] {
+    border-bottom-color: var(--blog-accent);
   }
-  .filter-empty {
-    padding: 3rem 0;
-    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
-    color: rgba(31, 31, 31, 0.55);
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
-
   .post-item {
-    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+    border-bottom: 1px solid var(--blog-rule);
   }
-
+  .post-item[hidden],
+  .filter-empty[hidden] {
+    display: none;
+  }
   .post-link {
     display: grid;
-    grid-template-columns: 8rem minmax(0, 1fr) 8rem 1.25rem;
-    gap: 1.5rem;
-    align-items: center;
-    padding: 1.65rem 0;
-    color: inherit;
+    grid-template-columns: 8rem minmax(0, 1fr) 1.25rem;
+    align-items: baseline;
+    column-gap: 2rem;
+    padding: 2rem 0;
   }
-
-  .post-link time,
-  .post-meta {
+  .post-link time {
     font-family: "IBM Plex Mono", monospace;
-    font-size: 0.7rem;
-    color: rgba(31, 31, 31, 0.47);
+    font-size: 0.6875rem;
+    line-height: 1.8;
+    color: var(--blog-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
-
   .post-copy {
     min-width: 0;
+    max-width: 44rem;
   }
-
   .post-copy h2 {
-    margin: 0;
-    font-size: clamp(1.2rem, 2vw, 1.55rem);
-    line-height: 1.3;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
     transition: color 180ms ease;
   }
-
   .post-copy p {
     display: -webkit-box;
-    margin: 0.5rem 0 0;
-    overflow: hidden;
-    color: rgba(31, 31, 31, 0.58);
-    font-size: 0.9rem;
-    line-height: 1.55;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    color: var(--blog-muted);
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
   }
-
   .post-meta {
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    align-items: flex-end;
-    text-align: right;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.6875rem;
+    line-height: 1.8;
+    color: var(--blog-muted);
   }
-
-  .post-topic {
-    max-width: 8rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: rgba(47, 111, 109, 0.8);
+  .post-meta > span:first-child {
+    font-family: "IBM Plex Mono", monospace;
   }
-
+  .draft-label {
+    color: var(--blog-accent);
+  }
   .post-arrow {
-    color: rgba(31, 31, 31, 0.35);
+    justify-self: end;
+    color: var(--blog-muted);
     transition:
       color 180ms ease,
       transform 180ms ease;
   }
-
   .post-link:hover h2 {
-    color: #2f6f6d;
+    color: var(--blog-accent);
   }
-
   .post-link:hover .post-arrow {
-    color: #2f6f6d;
+    color: var(--blog-accent);
     transform: translateX(3px);
   }
-
-  .post-link:focus-visible,
-  .blogs-utility a:focus-visible {
-    border-radius: 0.2rem;
-    outline: 2px solid #2f6f6d;
-    outline-offset: 4px;
+  .filter-empty {
+    padding: 2rem 0;
+    color: var(--blog-muted);
+    font-size: 0.9375rem;
   }
-
   .empty-state {
-    padding: 3rem 0;
-    border-top: 1px solid rgba(31, 31, 31, 0.12);
-    border-bottom: 1px solid rgba(31, 31, 31, 0.12);
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--blog-rule);
+    border-bottom: 1px solid var(--blog-rule);
   }
-
   .empty-state h2 {
-    margin: 0;
-    font-size: 1.4rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0;
   }
-
   .empty-state p {
-    margin: 0.5rem 0 0;
-    color: rgba(31, 31, 31, 0.58);
+    max-width: 32rem;
+    margin-top: 0.75rem;
+    color: var(--blog-muted);
+    font-size: 0.9375rem;
+    line-height: 1.8;
   }
-
-  @media (max-width: 760px) {
+  .empty-state a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--blog-accent);
+    font-size: 0.875rem;
+  }
+  @media (max-width: 767px) {
     .blogs-page {
-      padding-top: 2.75rem;
+      padding-top: 2.5rem;
     }
-
     .blogs-header {
-      padding-bottom: 2.25rem;
-    }
-
-    .blogs-heading {
-      align-items: flex-start;
       flex-direction: column;
-      gap: 1.25rem;
+      align-items: stretch;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
-
-    .blogs-heading h1 {
-      font-size: clamp(2.8rem, 14vw, 4rem);
-    }
-
-    .blogs-heading > div > p {
-      margin-top: 1rem;
-      font-size: 1rem;
-    }
-
     .blogs-utility {
-      width: 100%;
       justify-content: space-between;
-      padding-bottom: 0;
+      padding: 0;
     }
-
+    .preview-note {
+      margin-top: 0;
+    }
+    .blog-filters {
+      gap: 0.5rem 1.25rem;
+    }
+    .blog-filters button {
+      padding: 0.625rem 0;
+    }
     .post-link {
       grid-template-columns: minmax(0, 1fr) 1.25rem;
       gap: 0.5rem 1rem;
-      padding: 1.4rem 0;
+      padding: 1.5rem 0;
     }
-
     .post-link time {
       grid-column: 1;
-      grid-row: 1;
     }
-
     .post-copy {
       grid-column: 1;
-      grid-row: 2;
     }
-
-    .post-copy p {
-      -webkit-line-clamp: 2;
-    }
-
-    .post-meta {
-      grid-column: 1;
-      grid-row: 3;
-      flex-direction: row;
-      gap: 0.8rem;
-      align-items: center;
-      text-align: left;
-    }
-
     .post-arrow {
       grid-column: 2;
-      grid-row: 1 / 4;
-      align-self: center;
+      grid-row: 2;
+    }
+    .post-copy h2 {
+      font-size: 1.125rem;
     }
   }
-
   @media (prefers-reduced-motion: reduce) {
+    a,
+    button,
     .post-copy h2,
     .post-arrow {
       transition: none;
+    }
+    .post-link:hover .post-arrow {
+      transform: none;
     }
   }
 </style>
 
 <script>
-  const filterButtons = Array.from(
-    document.querySelectorAll<HTMLButtonElement>("[data-category]"),
-  );
-  const postItems = Array.from(
-    document.querySelectorAll<HTMLElement>("[data-post-category]"),
-  );
-  const filterEmpty = document.querySelector<HTMLElement>(".filter-empty");
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const category = button.dataset.category ?? "全部";
-      let count = 0;
-      filterButtons.forEach((item) =>
-        item.setAttribute("aria-pressed", String(item === button)),
-      );
-      postItems.forEach((item) => {
-        const visible =
-          category === "全部" || item.dataset.postCategory === category;
-        item.hidden = !visible;
-        if (visible) count += 1;
+  const archive = document.querySelector<HTMLElement>("[data-blog-archive]");
+  if (archive) {
+    const buttons = Array.from(
+      archive.querySelectorAll<HTMLButtonElement>("[data-category]"),
+    );
+    const items = Array.from(
+      archive.querySelectorAll<HTMLElement>("[data-post-category]"),
+    );
+    const empty = archive.querySelector<HTMLElement>(".filter-empty");
+    const status = archive.querySelector<HTMLElement>("[data-filter-status]");
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const category = button.dataset.category ?? "all";
+        let count = 0;
+        buttons.forEach((item) =>
+          item.setAttribute("aria-pressed", String(item === button)),
+        );
+        items.forEach((item) => {
+          const visible =
+            category === "all" || item.dataset.postCategory === category;
+          item.hidden = !visible;
+          if (visible) count += 1;
+        });
+        if (empty) empty.hidden = count > 0;
+        if (status)
+          status.textContent = `Showing ${count} ${count === 1 ? "article" : "articles"}${category === "all" ? "" : ` in ${button.querySelector("span")?.textContent ?? category}`}.`;
       });
-      if (filterEmpty) filterEmpty.hidden = count > 0;
     });
-  });
+  }
 </script>
