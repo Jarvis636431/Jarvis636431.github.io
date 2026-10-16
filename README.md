@@ -219,3 +219,11 @@ Articles moved from the blog root retain their original URLs through an explicit
 `slug` in frontmatter. Leave that slug unchanged when reorganizing an existing
 article. New articles without a custom slug use their folder path in the URL.
 Comment IDs, publication dates, and draft status are independent of folders.
+
+### Article heading levels
+
+The detail page supplies the article title as its `h1`. Start the Markdown body
+with `##` sections, use `###` for their subsections, and keep heading levels
+consecutive. Code-block examples are independent of this rule. The table of
+contents includes body `h1`–`h3` for compatibility with older articles, with
+indentation relative to the shallowest body heading. The page title is excluded.

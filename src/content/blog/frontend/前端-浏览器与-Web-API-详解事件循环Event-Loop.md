@@ -11,7 +11,7 @@ draft: true
 readingTime: 4
 ---
 
-# 什么是事件循环机制  
+## 什么是事件循环机制
 
 > **事件循环（Event Loop）是浏览器或 Node.js 为 JavaScript 提供的一种任务调度机制，负责决定异步代码何时执行。
 > 同步任务是直接执行的，不参与事件循环**
@@ -52,10 +52,10 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 核心：
 - 微任务优先度高于宏任务。
 - Promise.then 一定比 setTimeout 更早执行
-## JavaScript 运行环境模型
+### JavaScript 运行环境模型
 
 搞清楚事件循环，就必须搞清楚谁负责什么。
-## **（1）JavaScript 引擎（V8）**
+### **（1）JavaScript 引擎（V8）**
 
 负责：
 - 解释 / 执行同步 JS 代码
@@ -72,7 +72,7 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 
 👉 这些是环境提供的！
 
-## **（2）浏览器提供的 Web API**
+### **（2）浏览器提供的 Web API**
 
 这些 API 是事件循环的基础，包括：
 - setTimeout / setInterval
@@ -84,7 +84,7 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 - WebSocket
 这些都属于浏览器，不属于 JS。
 
-## **（3）事件循环 Event Loop（浏览器提供）**
+### **（3）事件循环 Event Loop（浏览器提供）**
 
 负责在：
 - **宏任务队列（macrotask queue）**
@@ -92,8 +92,8 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 之间协调执行顺序。
 事件循环本身也不是 JS，而是浏览器 / Node 环境提供的。
 
-## 三、任务类型：宏任务 & 微任务
-## **宏任务（Macrotask）**
+### 三、任务类型：宏任务 & 微任务
+### **宏任务（Macrotask）**
 
 每完成一个宏任务，页面可以重新渲染。
 宏任务包括：
@@ -105,7 +105,7 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 - I/O
 - MessageChannel
 - UI render
-## **微任务（Microtask）**
+### **微任务（Microtask）**
 
 微任务在 **当前宏任务执行结束后立即执行**，并且 **在下一个宏任务开始前执行完所有微任务**。
 
@@ -114,7 +114,7 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 - queueMicrotask
 - MutationObserver
 - process.nextTick（Node 独有）
-## 事件循环的执行顺序
+### 事件循环的执行顺序
 
 浏览器事件循环的流程如下：
 1. 执行一个宏任务（如 script）
@@ -126,7 +126,7 @@ JS 是单线程，通过 **事件循环** 来处理异步：
 ⚠️ 注意：“执行所有微任务” 是关键！！
 
 执行微任务不会被打断，直到队列清空。
-## 结合 Web API 看一个经典例子
+### 结合 Web API 看一个经典例子
 
 ```javascript
 console.log("script start");
@@ -178,7 +178,7 @@ timeout
 
 ```
 
-## 为什么 Promise 比 setTimeout 先执行？
+### 为什么 Promise 比 setTimeout 先执行？
 原因：
 
 - Promise.then 属于 **微任务**
@@ -187,7 +187,7 @@ timeout
     **一个宏任务 → 执行所有微任务 → 下一个宏任务**
 所以 Promise.then 一定比 setTimeout 早。
 
-## 加入 async/await 时的事件循环
+### 加入 async/await 时的事件循环
 
 ```
 
@@ -214,10 +214,10 @@ foo end
 
 ```
 
-### **原因：**
+#### **原因：**
 - await 会把后续代码放入微任务队列
 - 所以 foo end 是微任务
-## Node.js 的事件循环（额外）
+### Node.js 的事件循环（额外）
 Node 和浏览器不一样，因为 Node 有 libuv。
 Node 的宏任务阶段有：
 1. timers（setTimeout）

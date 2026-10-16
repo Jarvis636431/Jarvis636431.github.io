@@ -271,7 +271,7 @@ export function initArticle() {
     });
 
     article
-      .querySelectorAll<HTMLElement>("h2[id], h3[id]")
+      .querySelectorAll<HTMLElement>("h1[id], h2[id], h3[id]")
       .forEach((heading) => {
         if (heading.querySelector(".heading-anchor")) return;
         const anchor = document.createElement("a");

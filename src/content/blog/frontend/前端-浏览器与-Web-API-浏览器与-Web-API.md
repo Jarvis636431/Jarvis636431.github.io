@@ -71,7 +71,7 @@ readingTime: 3
 **为什么 fetch 没有上传进度？**
 因为 fetch 基于 Streams API，不会暴露底层进度事件。
 
-# 6. Service Worker
+## 6. Service Worker
 
 Service Worker 是浏览器提供的“可编程代理层”，作用包括：
 
@@ -90,14 +90,14 @@ Service Worker 是浏览器提供的“可编程代理层”，作用包括：
   
 它运行在独立线程，不阻塞主线程。
 
-## 为什么 localStorage 是同步 API，而 IndexedDB 是异步 API
+### 为什么 localStorage 是同步 API，而 IndexedDB 是异步 API
 
 **原因：性能 + 线程阻塞。**
 
 localStorage 操作很轻量，设计之初（2008 年左右）用于小数据，允许同步。
 但 IndexedDB 可能读取几十 MB 数据，如果同步会卡死主线程，因此必须是异步 API。
 
-## **EventSource（SSE）和 WebSocket 有什么区别？**
+### **EventSource（SSE）和 WebSocket 有什么区别？**
 
 |**特性**|**SSE（EventSource）**|**WebSocket**|
 |---|---|---|
@@ -109,9 +109,9 @@ localStorage 操作很轻量，设计之初（2008 年左右）用于小数据�
 |复杂度|简单|较高|
 
 SSE 背后仍然是 HTTP，是纯文本流，更轻量。
-## 10. Clipboard API 是什么？与 document.execCommand 有什么区别？
+### 10. Clipboard API 是什么？与 document.execCommand 有什么区别？
 
-### **答案：**
+#### **答案：**
 
 **Clipboard API：**
 

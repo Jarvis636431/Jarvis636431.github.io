@@ -12,10 +12,11 @@ const component = readFileSync(
 const script = component.match(/<script is:inline>([\s\S]*?)<\/script>/)[1];
 
 function renderToc(ids) {
-  const headings = ids.map((id, index) => ({
-    id,
+  const headings = ids.map((entry, index) => ({
+    id: typeof entry === "string" ? entry : entry.id,
     textContent: `Section ${index + 1}`,
     tagName: index === 0 ? "H2" : "H3",
+    ...(typeof entry === "string" ? {} : entry),
   }));
   const links = [];
   const toggle = { addEventListener() {} };
@@ -41,7 +42,12 @@ function renderToc(ids) {
     querySelector: () => toggle,
     setAttribute() {},
   };
-  const article = { querySelectorAll: () => headings };
+  const article = {
+    querySelectorAll(selector) {
+      const tags = selector.split(",").map((tag) => tag.trim().toUpperCase());
+      return headings.filter((heading) => tags.includes(heading.tagName));
+    },
+  };
   const document = {
     readyState: "complete",
     querySelectorAll: () => [root],
@@ -113,4 +119,35 @@ test("duplicate headings get unique anchors without taking an existing suffixed 
       1,
     );
   });
+});
+
+test("legacy h1 interview rounds and their subsections are all included and highlighted", () => {
+  const toc = renderToc([
+    { id: "round-one", tagName: "H1", textContent: "一面" },
+    { id: "coding", tagName: "H3", textContent: "手撕" },
+    { id: "round-two", tagName: "H1", textContent: "二面" },
+    { id: "project", tagName: "H3", textContent: "项目" },
+    { id: "round-three", tagName: "H1", textContent: "三面" },
+  ]);
+  assert.equal(toc.links.length, 5);
+  assert.equal(toc.links[0].textContent, "一面");
+  assert.match(toc.links[0].className, /toc-depth-1/);
+  assert.match(toc.links[1].className, /toc-depth-3/);
+  for (const index of [0, 2, 4]) {
+    toc.enter(index);
+    assert.equal(toc.links[index].getAttribute("aria-current"), "true");
+    assert.equal(
+      toc.links.filter((link) => link.classList.contains("active")).length,
+      1,
+    );
+  }
+});
+
+test("h2-based articles start at the first visual TOC level", () => {
+  const toc = renderToc([
+    { id: "round", tagName: "H2" },
+    { id: "coding", tagName: "H3" },
+  ]);
+  assert.match(toc.links[0].className, /toc-depth-1/);
+  assert.match(toc.links[1].className, /toc-depth-2/);
 });

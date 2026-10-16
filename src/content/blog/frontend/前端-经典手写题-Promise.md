@@ -49,9 +49,9 @@ function limitLoad(tasks, limit) {
 - 控制并发必须维护 **队列** 和 **activeCount**
 - 必须按任务顺序返回结果
 
-# **##** 
+## **##** 
 
-## 2. 手写 Promise.retry
+### 2. 手写 Promise.retry
 
 > 实现一个 retry(fn, count)，失败后自动重试，直到成功或次数耗尽。
 
@@ -75,12 +75,12 @@ function retry(fn, count) {
 
 ```
 
-### **📌考点说明**
+#### **📌考点说明**
 
 - 需要递归
 - return 一个新的 Promise
 - 必须在失败时继续 retry
-## 3. 手写 Promise.all
+### 3. 手写 Promise.all
 
 > 按顺序返回结果，任意一个失败就 reject。
 
@@ -110,7 +110,7 @@ function myAll(promises) {
 - 必须按顺序返回结果
 - Promise.resolve 处理非 Promise 值
 - 一个报错立刻 reject
-## 4. 手写 Promise.race
+### 4. 手写 Promise.race
 
 ```javascript
 function myRace(promises) {
@@ -128,9 +128,9 @@ function myRace(promises) {
 
 ---
 
-# **##** 
+## **##** 
 
-## 5. 手写 Promise.allSettled
+### 5. 手写 Promise.allSettled
 
 ```
 
@@ -157,7 +157,7 @@ function myAllSettled(promises) {
 
 ```
 
-### **📌考点说明**
+#### **📌考点说明**
 
 - 所有的都要执行完
     
@@ -166,9 +166,9 @@ function myAllSettled(promises) {
 
 ---
 
-# **##** 
+## **##** 
 
-## 6. 手写 Promise.any
+### 6. 手写 Promise.any
 
 > 只要一个成功就 resolve，全部失败才 reject（AggregateError）
 
@@ -195,11 +195,11 @@ function myAny(promises) {
 
 ```
 
-### **📌考点说明**
+#### **📌考点说明**
 
 - 必须用 AggregateError
 - 所有都失败才 reject
-## 7. 手写一个简单的 Promise（极简版）
+### 7. 手写一个简单的 Promise（极简版）
 
   
 
@@ -261,7 +261,7 @@ class MyPromise {
 
 ```
 
-### **📌考点说明**
+#### **📌考点说明**
 
 - 只能由 pending → fulfilled/rejected
 - then 必须返回新的 Promise
@@ -269,7 +269,7 @@ class MyPromise {
   
 在真正面试时，只要能写出这个中等难度版本就够过了。
 
-## 8. 手写 Promise.finally
+### 8. 手写 Promise.finally
 
 ```javascript
 Promise.prototype.myFinally = function(cb) {
@@ -283,7 +283,7 @@ Promise.prototype.myFinally = function(cb) {
 
 finally 不会改变值，只是透传。
 
-## 9. 并发池：手写一个 promisePool（LeetCode 高频）
+### 9. 并发池：手写一个 promisePool（LeetCode 高频）
 
 > 同时执行最大 n 个 promise，返回所有结果。
 

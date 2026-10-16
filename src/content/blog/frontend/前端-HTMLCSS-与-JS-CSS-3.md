@@ -126,12 +126,12 @@ border-box 更稳定，宽度包含 padding + border。
 
 > Grid 是二维布局，Flex 是一维布局。
 
-# 七、常见布局问题
+## 七、常见布局问题
 
-## **8. 如何实现左边固定 + 右边自适应布局？**
+### **8. 如何实现左边固定 + 右边自适应布局？**
 
 三种经典写法：  
-### **1. Flex**
+#### **1. Flex**
 
 ```css
 .container { display: flex; }
@@ -140,7 +140,7 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-### **2. Grid**
+#### **2. Grid**
 
 ```css
 .container {
@@ -150,10 +150,10 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-### **3. float + margin-left**
+#### **3. float + margin-left**
 传统方式，略老。
-## **9. 如何让一个元素水平垂直居中？**
-### **方法 1：flex**
+### **9. 如何让一个元素水平垂直居中？**
+#### **方法 1：flex**
 
 ```css
 .center {
@@ -164,7 +164,7 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-### **方法 2：position + transform**
+#### **方法 2：position + transform**
 
 ```css
 .center {
@@ -176,7 +176,7 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-### **3. Grid**
+#### **3. Grid**
 
 ```css
 .parent {
@@ -186,9 +186,9 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-## 九、动画 / 过渡
+### 九、动画 / 过渡
 
-## **10. transition 和 animation 的区别？**
+### **10. transition 和 animation 的区别？**
 
 |**transition**|**animation**|
 |---|---|
@@ -196,9 +196,9 @@ border-box 更稳定，宽度包含 padding + border。
 |只能开始 → 结束|可无限循环|
 |写法简单|可组合多个 keyframe|
 
-## 十、层叠上下文（Stacking Context）
+### 十、层叠上下文（Stacking Context）
 
-## **11. 哪些属性能触发层叠上下文？**
+### **11. 哪些属性能触发层叠上下文？**
 
 - position: relative/absolute + z-index
 - opacity < 1
@@ -207,9 +207,9 @@ border-box 更稳定，宽度包含 padding + border。
 - mix-blend-mode
 - isolation: isolate
 - will-change
-## 十一、响应式
+### 十一、响应式
 
-## **12. 媒体查询怎么写？**
+### **12. 媒体查询怎么写？**
 
 ```css
 @media (max-width: 768px) {
@@ -218,16 +218,16 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-## 十二、margin 合并（塌陷）是什么？如何解决？
-### **现象：**
+### 十二、margin 合并（塌陷）是什么？如何解决？
+#### **现象：**
 
 上下两个 margin 会合并成一个。
-### **解决：**
+#### **解决：**
 
 - 触发 BFC（比如 overflow: hidden）
 - 父容器加 padding-top
 - 父容器加 border-top
-## 十三、隐藏元素的方式
+### 十三、隐藏元素的方式
 
 |**方法**|**特点**|
 |---|---|
@@ -236,9 +236,9 @@ border-box 更稳定，宽度包含 padding + border。
 |opacity: 0|占空间，可点击（注意）|
 |clip-path: inset(0 0 0 0)|高级手段|
 |height: 0 + overflow: hidden|可动画|
-## 十四、CSS 优化
+### 十四、CSS 优化
 
-## **14. 如何优化 CSS 性能？**
+### **14. 如何优化 CSS 性能？**
 
 - 合理使用组合选择器，避免过深层级
 - 减少重排与重绘
@@ -246,9 +246,9 @@ border-box 更稳定，宽度包含 padding + border。
 - 使用 will-change 进行 GPU 加速
 - 避免使用 * 选择器
 
-## 十五、如何实现 1px 边框
+### 十五、如何实现 1px 边框
 
-### **方法 1：利用 transform**
+#### **方法 1：利用 transform**
 
 ```css
 .border {
@@ -258,7 +258,7 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-### **方法 2：伪元素 + 0.5px**
+#### **方法 2：伪元素 + 0.5px**
 
 ```css
 ::after {
@@ -267,5 +267,5 @@ border-box 更稳定，宽度包含 padding + border。
 
 ```
 
-### **方法 3：使用 devicePixelRatio 判断 DPR**
+#### **方法 3：使用 devicePixelRatio 判断 DPR**
 

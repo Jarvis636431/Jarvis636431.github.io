@@ -46,13 +46,16 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
       const toc = document.getElementById(tocId);
       if (!article || !toc) return;
 
-      const headings = Array.from(article.querySelectorAll("h2, h3"));
+      const headings = Array.from(article.querySelectorAll("h1, h2, h3"));
       const slugify = (s) =>
         s
           .toLowerCase()
           .trim()
           .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
           .replace(/^-+|-+$/g, "");
+      const baseDepth = Math.min(
+        ...headings.map((heading) => Number(heading.tagName.slice(1))),
+      );
       const items = [];
       const usedIds = new Set();
       const existingIds = new Set(
@@ -69,7 +72,7 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
         }
         usedIds.add(id);
         h.id = id;
-        const depth = h.tagName === "H2" ? 2 : 3;
+        const depth = Number(h.tagName.slice(1)) - baseDepth + 1;
         items.push({ id, depth, text });
       });
       if (items.length < 2) {
@@ -160,13 +163,42 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
     flex-direction: column;
     gap: 0.15rem;
     max-height: 60vh;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 0.375rem;
+    --toc-scrollbar-thumb: rgba(31, 31, 31, 0.16);
+    scrollbar-width: thin;
+    scrollbar-color: var(--toc-scrollbar-thumb) transparent;
+    scrollbar-gutter: stable;
+  }
+
+  :global(.detail__toc-list:hover),
+  :global(.detail__toc-list:focus-within) {
+    --toc-scrollbar-thumb: rgba(47, 111, 109, 0.45);
+  }
+
+  :global(.detail__toc-list::-webkit-scrollbar) {
+    width: 5px;
+  }
+
+  :global(.detail__toc-list::-webkit-scrollbar-track) {
+    background: transparent;
+  }
+
+  :global(.detail__toc-list::-webkit-scrollbar-thumb) {
+    background: var(--toc-scrollbar-thumb);
+    border-radius: 999px;
+  }
+
+  :global(.detail__toc-list::-webkit-scrollbar-button) {
+    display: none;
   }
 
   :global(.detail__toc-item) {
     display: block;
     padding: 0.42rem 0 0.42rem 0.75rem;
     border-left: 2px solid transparent;
+    overflow-wrap: anywhere;
     color: rgba(31, 31, 31, 0.72);
     text-decoration: none;
     font-size: 0.78rem;
@@ -192,17 +224,18 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
   }
 
   :global(.detail__toc .toc-depth-1) {
+    padding-left: 0.75rem;
     font-weight: 600;
   }
 
   :global(.detail__toc .toc-depth-2) {
-    padding-left: 0.75rem;
+    padding-left: 1.5rem;
     font-size: 0.78rem;
     color: rgba(31, 31, 31, 0.65);
   }
 
   :global(.detail__toc .toc-depth-3) {
-    padding-left: 1.5rem;
+    padding-left: 2.25rem;
     font-size: 0.74rem;
     color: rgba(31, 31, 31, 0.6);
   }

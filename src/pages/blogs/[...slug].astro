@@ -453,9 +453,9 @@ const relatedPosts = getRelatedPosts(post, allPosts);
   }
   .article-layout {
     display: grid;
-    grid-template-columns: minmax(11rem, 13rem) minmax(0, 45rem);
-    justify-content: center;
-    gap: clamp(3rem, 7vw, 6rem);
+    grid-template-columns: minmax(15rem, 17rem) minmax(0, 45rem);
+    justify-content: start;
+    gap: clamp(2rem, 4vw, 3rem);
     align-items: start;
   }
   .article-main {
@@ -853,6 +853,7 @@ const relatedPosts = getRelatedPosts(post, allPosts);
   :global(.article-content .prose) {
     max-width: 100%;
   }
+  :global(.article-content .prose h1),
   :global(.article-content .prose h2),
   :global(.article-content .prose h3) {
     scroll-margin-top: 7rem;
@@ -883,6 +884,7 @@ const relatedPosts = getRelatedPosts(post, allPosts);
       opacity 160ms ease,
       color 160ms ease;
   }
+  :global(.article-content h1:hover .heading-anchor),
   :global(.article-content h2:hover .heading-anchor),
   :global(.article-content h3:hover .heading-anchor),
   :global(.heading-anchor:focus-visible) {

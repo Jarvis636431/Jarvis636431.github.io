@@ -11,9 +11,9 @@ draft: true
 readingTime: 18
 ---
 
-# 一面——12.05
-##### 代码题
-##### 1.箭头函数的 this
+## 一面——12.05
+### 代码题
+### 1.箭头函数的 this
 
 ```javascript
 var a = 10
@@ -44,7 +44,7 @@ obj.say.call({a: 1})
 obj.say() 的 this **不会指向 obj**，因为箭头函数无法通过调用方式改变 this。
 **4.追问：如果加上 call 呢**
 箭头函数的 this 不会被 call / apply / bind 改变，所以a:1会直接被忽略
-##### 2.JS 的对象
+### 2.JS 的对象
 
 ```javascript
 let foo={}
@@ -70,8 +70,8 @@ foo[obj2] = 'hello2'  // foo["[object Object]"] = "hello2"  ← 覆盖
 ```
 
 因为两个 key 最终都是同一个字符串"[ object Object ]"，所以后一次赋值会覆盖前一次赋值。
-##### 八股：
-###### 1.JS 的基础类型一共有几种：
+### 八股：
+#### 1.JS 的基础类型一共有几种：
 7 种：
 1. **number**
 2. **string**
@@ -80,9 +80,9 @@ foo[obj2] = 'hello2'  // foo["[object Object]"] = "hello2"  ← 覆盖
 5. **undefined**
 6. **symbol**
 7. **bigint**
-###### 2.Object 的 key 可以有几种类型：
+#### 2.Object 的 key 可以有几种类型：
 在 JavaScript 中，普通对象（Object）的 key 只能是两种：string symbol 其他类型都会被转换成 string。
-###### 3.JS 的隐式类型转换
+#### 3.JS 的隐式类型转换
 隐式类型转换（Implicit Type Conversion）是 **JavaScript 在需要某种类型却拿到另一种类型时自动发生的类型转换**。
 它遵循 **ECMAScript 的抽象操作**，主要是下面三个核心步骤
 **JavaScript 隐式类型转换的三大核心过程**
@@ -147,7 +147,7 @@ if ([]) console.log("true")  // true
 ```
 
 继续代码输出题
-##### 3.Promise
+### 3.Promise
 
 ```javascript
 async function getValue(){
@@ -168,7 +168,7 @@ console.log(val);       // 打印 Promise 对象
 
 ```
 
-##### 4.Promise
+### 4.Promise
 
 ```javascript
 new Promise((resolve, reject) => {
@@ -231,7 +231,7 @@ new Promise((resolve, reject) => {
 
 ```
 
-##### 5. Promise
+### 5. Promise
 
 ```javascript
 async function fetchData(){
@@ -271,7 +271,7 @@ fetchData().catch(() => console.log('error'))
 
 ```
 
-##### 八股：如何全局捕获同步异步错误呢
+### 八股：如何全局捕获同步异步错误呢
 浏览器端：
 1.捕获同步错误(包括运行时异常)：
 
@@ -306,8 +306,8 @@ window.addEventListener('error', function(event) {
 ```
 
 必须使用捕获阶段(True)
-##### React代码题
-###### 1.React 的状态更新
+### React代码题
+#### 1.React 的状态更新
 
 ```javascript
 function Counter() {
@@ -349,7 +349,7 @@ return (
 - setNumber(number + 5) 只发起更新，不立即修改 number
 - setTimeout 的回调**捕获**了这次渲染闭包中的旧 number
 因为**函数组件的变量不会在原地改变**，React 是通过“重新执行组件函数”来让变量更新的，而 setTimeout 回调不会触发新渲染，它只执行捕获的旧闭包变量。
-###### 2. useEffect
+#### 2. useEffect
 
 ```tsx
 function Counter() {
@@ -383,7 +383,7 @@ useEffect handler called
 useEffect 的依赖是 [number]当 number 发生变化时：
 1. React 先运行上一次 effect 的 cleanup（return 函数）
 2. 再运行新的 effect handler
-###### 3.找到代码中的错误
+#### 3.找到代码中的错误
 
 ```tsx
 function useFetchFriendStatus(friendId) {
@@ -425,8 +425,8 @@ const [online, setOnline] = useState('online')
 核心(联系到 Fiber 架构)：
 Hook 依赖调用顺序来维护内部状态，而不是变量名。  React 在 Fiber 上维护一条 Hook 链表，每执行一次 useState/useEffect，就向链表写入一个 hook 节点。如果你把 Hook 放在条件、循环、回调里，会导致执行顺序变化，React 无法正确匹配 hook → 状态错乱。所以 Hook 必须在函数组件的顶层调用
 
-##### Node 相关
-###### 八股：Node的事件循环机制
+### Node 相关
+#### 八股：Node的事件循环机制
 答案：**Node.js 事件循环由 libuv 驱动，分 6 个阶段，每个阶段依次执行队列中的回调，各阶段之间插入微任务检查。**
 Node 的 loop 会不停执行如下阶段：
 1. **timers**
@@ -445,7 +445,7 @@ Node 的 loop 会不停执行如下阶段：
     - 执行 setImmediate 回调
 6. **close callbacks**
     - 执行 close 事件，如 socket.on('close', ...)
-###### Node 中的 CommonJS 的导出规则
+#### Node 中的 CommonJS 的导出规则
 1.代码输出题
 
 ```javascript
@@ -507,8 +507,8 @@ console.log(obj.a); // 1
 
 ```
 
-#### 手写代码：
-##### 1.结合 TS 的泛型，实现一个 POST 函数，支持多个 API 的调用请求与返回
+### 手写代码：
+#### 1.结合 TS 的泛型，实现一个 POST 函数，支持多个 API 的调用请求与返回
 关键在于不同 API 的请求体和响应体的数据类型和格式不一样，如何使用泛型来约束，实现这么一个统一的方法
 答案：
 
@@ -555,7 +555,7 @@ function post<TReq extends { id: string }, TRes>(
 
 ```
 
-##### 2.写一个函数add，支持固定次数的链式调用，输出结果总和。如 add(1)(2)(3) -> 输出6
+#### 2.写一个函数add，支持固定次数的链式调用，输出结果总和。如 add(1)(2)(3) -> 输出6
 答案：
 
 ```javascript
@@ -585,7 +585,7 @@ function add(x) {
 1. valueOf()
 2. toString()
 只要让这两个函数返回最终 sum 即可。
-##### 3.数组扁平化：给定一个数组，要求递归地将数组扁平化。也就是实现Array.flat方法 [1,[2],[3,[4,5]]] => [1,2,3,4,5]
+#### 3.数组扁平化：给定一个数组，要求递归地将数组扁平化。也就是实现Array.flat方法 [1,[2],[3,[4,5]]] => [1,2,3,4,5]
 答案：
 
 ```javascript
@@ -610,33 +610,33 @@ function flat(arr) {
 
 ```
 
-#### 项目+八股
-##### 1.看到你项目中配置了 https 的证书，那么https相比于http的优势在哪
-###### 1.**数据加密：防止窃听（Eavesdropping）**
+### 项目+八股
+#### 1.看到你项目中配置了 https 的证书，那么https相比于http的优势在哪
+##### 1.**数据加密：防止窃听（Eavesdropping）**
 HTTP 明文传输，任何人都可以看到：
 - 登录账号密码
 - Cookie
 - Token
 - 请求内容
 HTTPS 使用 **TLS** 加密，使中间人（MITM）无法直接读取数据。
-###### **2.数据完整性：防止篡改（Tampering）**
+##### **2.数据完整性：防止篡改（Tampering）**
 在 HTTP 下，攻击者可以修改请求和响应：
 - 注入广告
 - 注入恶意脚本
 - 篡改接口返回值
 HTTPS 使用 **MAC（消息认证码）** 和 **数字签名** 防止被修改。
-###### **3.服务器身份验证：防止伪装（Spoofing）**
+##### **3.服务器身份验证：防止伪装（Spoofing）**
 CA 证书保证你访问的就是：
 - 真正的服务器
 - 而不是钓鱼网站
 - 也不是中间人伪造的 IP
 这是 HTTP 无法做到的。
-###### 4. **性能更快（HTTP/2 依赖 HTTPS）**
+##### 4. **性能更快（HTTP/2 依赖 HTTPS）**
 很多人以为 HTTPS 更慢，其实反过来：
 - HTTP/2 必须在 TLS（HTTPS） 上运行
 - 拥有多路复用、头部压缩、流量控制
 - 页面资源总加载时间更快
-###### 追问：https 是如何确定请求的是真实服务器的
+##### 追问：https 是如何确定请求的是真实服务器的
 HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确认你访问的确是真实服务器。
 客户端会检验证书是否合法、域名是否匹配、是否由受信的 CA 签发、是否被篡改。
 最终浏览器用证书公钥加密随机数，只有持有对应“私钥”的真实服务器才能解密，从而证明它的身份
@@ -664,7 +664,7 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 **4. 服务器用自己的私钥解密随机数**
 成功解密 → 证明是真正的服务器
 **5. 双方用这个随机数生成会话密钥，后续所有数据对称加密**
-##### 2.如何避免请求风暴
+#### 2.如何避免请求风暴
 题目详细描述，假如说有一个 APP，我刚进入首页的时候会发起许多个请求，假设这时候 access token刚过期，这些所有的请求都触发了 401 需要 refresh的请求，这里就积累了一堆过期 token 的请求，该怎么避免这种情况
 标准答案：
 1. **检测 401（token 过期）**
@@ -681,12 +681,12 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 - 导致服务压力陡增，甚至死锁
 所以必须让：多个请求只触发一次 token 刷新
 具体解法：**使用“请求队列 + 刷新锁（Refresh Token Lock）” 只刷新一次**
-##### 3. 为什么要集成 Sentry 这种监控体系，具体关注了哪些指标
+#### 3. 为什么要集成 Sentry 这种监控体系，具体关注了哪些指标
 为了保证系统稳定性和业务连续性，需要对系统进行**可观测（Observability）**建设。
 包括：**监控（Metrics）+ 日志（Log）+ 链路追踪（Tracing）**
 
  **监控体系要关注哪些关键指标**
- ###### **一、业务指标（最重要）**
+ ##### **一、业务指标（最重要）**
 
 | **指标**  | **说明**           | **为什么重要**  |
 | ------- | ---------------- | ---------- |
@@ -696,7 +696,7 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 | 错误率     | 页面 JS 错误、接口错误    | 判断线上是否稳定   |
 | 转化漏斗    | 重要流程如支付、登录       | 直接影响业务收入   |
 | 用户行为    | 停留时长、点击路径        | 用于产品优化     |
- ###### **二、性能指标（前端 + 后端）**
+ ##### **二、性能指标（前端 + 后端）**
  **前端性能（Core Web Vitals）**
 
 - LCP（最大内容绘制）
@@ -709,7 +709,7 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 - 吞吐量 QPS / TPS
 - 队列长度
 - 数据库查询耗时
-###### **三、系统资源指标（Server / Pod / Node）**
+##### **三、系统资源指标（Server / Pod / Node）**
 
 | **指标**        | **说明**           |
 | ------------- | ---------------- |
@@ -718,7 +718,7 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 | 磁盘 IO / 网络 IO | 是否成为瓶颈           |
 | 磁盘剩余空间        | 防止写文件失败          |
 | 线程池/连接池使用率    | 防止耗尽             |
-###### **四、稳定性相关指标**
+##### **四、稳定性相关指标**
 
 - 错误率（JS Error / API Error / 崩溃率）
 - 重试率
@@ -727,14 +727,14 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 - 延迟的 P90 / P95 / P99（尾延迟）
 >高延迟来自链路瓶颈：DB、缓存失效、队列阻塞、线程池满等。
 
-###### **五、链路监控（Tracing）**
+##### **五、链路监控（Tracing）**
 使用工具：Jaeger / SkyWalking / Zipkin / OpenTelemetry
 可观察：
 - 每个请求经过哪些服务
 - 哪一段链路慢
 - 有没有服务超时、重试、熔断
 这是**微服务时代必备**。
-###### **六、日志（Log）体系**
+##### **六、日志（Log）体系**
 全链路日志包含：
 - 业务日志
 - 错误日志
@@ -742,9 +742,9 @@ HTTPS 通过 **数字证书 + CA 信任体系 + 服务器私钥验证** 来确�
 - 安全日志
 通常使用 ELK（Elasticsearch + Logstash + Kibana）或 Loki / OpenSearch。
 
-##### 4.跨域相关的解决办法
+#### 4.跨域相关的解决办法
 主要是在后端配置 CORS 跨域资源共享的响应头，以及在 Nginx 中做相关的配置，具体可见跨域
-##### 5.JWT是什么，JWT既然是无状态的，那他会有安全隐患，该怎么解决
+#### 5.JWT是什么，JWT既然是无状态的，那他会有安全隐患，该怎么解决
  **1. JWT 无法主动失效（最大问题）**
 JWT 一旦签发，**在过期之前都是有效的**：
 - 服务端不存储 session
@@ -811,7 +811,7 @@ Cookie: token=eyJhbGciOi...
 - 或者已经过期的 token 还能继续使用
 > 所以生产环境常用 httpOnly + secure cookie，并结合 **黑名单** 或 **短 token + refresh token** 来解决
 
-# 二面——12.09
+## 二面——12.09
 ### 项目
 1.讲讲你的实习经历，做的项目具体是什么
 2.选一个你的项目讲讲，你主要负责了什么，具体实现了什么功能
