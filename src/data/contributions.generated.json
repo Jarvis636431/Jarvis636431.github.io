@@ -1,6 +1,40 @@
 {
   "pullRequests": [
     {
+      "repository": "NervJS/taro",
+      "number": 19513,
+      "title": "fix(h5): release audio context listeners on destroy",
+      "url": "https://github.com/NervJS/taro/pull/19513",
+      "body": "<!--\r\n请务必阅读贡献者指南：https://github.com/NervJS/taro/blob/master/CONTRIBUTING.md\r\n并使用 \"[x]\" 进行勾选\r\n-->\r\n\r\n**这个 PR 做了什么？** (简要描述所做更改)\r\n\r\n修复 H5 端 `InnerAudioContext.destroy()` 后仍保留全局路由事件监听的问题。此前每次创建音频实例都会注册路由变化回调，但销毁时没有注销。\r\n\r\n现在销毁实例时会注销该监听、清空内部回调并移除音频资源引用；重复调用 `destroy()` 不会再次触发停止回调。新增了销毁前后路由事件行为的回归测试。\r\n\r\n运行 `pnpm --filter @tarojs/taro-h5 exec jest --runInBand --silent`，17 个测试文件、116 个用例全部通过。\r\n\r\n**这个 PR 是什么类型？** (至少选择一个)\r\n\r\n- [x] 错误修复 (Bugfix) issue: 无\r\n- [ ] 新功能 (Feature)\r\n- [ ] 代码重构 (Refactor)\r\n- [ ] TypeScript 类型定义修改 (Types)\r\n- [ ] 文档修改 (Docs)\r\n- [ ] 代码风格更新 (Code style update)\r\n- [ ] 构建优化 (Chore)\r\n- [ ] 其他，请描述 (Other, please describe):\r\n\r\n**这个 PR 涉及以下平台：**\r\n\r\n- [ ] 所有平台\r\n- [x] Web 端（H5）\r\n- [ ] 移动端（React-Native）\r\n- [ ] 鸿蒙（Harmony）\r\n- [ ] 鸿蒙容器（Harmony Hybrid）\r\n- [ ] ASCF 元服务\r\n- [ ] 快应用（QuickApp）\r\n- [ ] 所有小程序\r\n- [ ] 微信小程序\r\n- [ ] 企业微信小程序\r\n- [ ] 京东小程序\r\n- [ ] 百度小程序\r\n- [ ] 支付宝小程序\r\n- [ ] 支付宝 IOT 小程序\r\n- [ ] 钉钉小程序\r\n- [ ] QQ 小程序\r\n- [ ] 飞书小程序\r\n- [ ] 快手小程序\r\n- [ ] 头条小程序\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n## Summary by CodeRabbit\n\n* **Bug Fixes**\n  * 音频上下文销毁后会停止播放并清理相关回调与状态，避免路由变化或重复销毁时再次触发处理。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-09-30T09:24:36Z",
+      "mergedAt": "2026-10-16T04:17:34Z",
+      "additions": 48,
+      "deletions": 7,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 2,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
+      "number": 19512,
+      "title": "fix(h5): convert canvas pixel data correctly",
+      "url": "https://github.com/NervJS/taro/pull/19512",
+      "body": "<!--\r\n请务必阅读贡献者指南：https://github.com/NervJS/taro/blob/master/CONTRIBUTING.md\r\n并使用 \"[x]\" 进行勾选\r\n-->\r\n\r\n**这个 PR 做了什么？** (简要描述所做更改)\r\n\r\n修复 H5 端 Canvas 像素数据接口的运行时数据格式：\r\n\r\n- `canvasGetImageData` 返回 `ImageData.data`，与接口声明的 `Uint8ClampedArray` 一致。\r\n- `canvasPutImageData` 根据传入的宽高创建 `ImageData`，再写入像素数组并绘制。\r\n- 找不到画布或 2D 上下文、像素数组长度与尺寸不符时，返回失败结果。\r\n\r\n新增了像素读写及失败场景的回归测试。运行 `pnpm --filter @tarojs/taro-h5 exec jest --runInBand --silent`，17 个测试文件、119 个用例全部通过。\r\n\r\n**这个 PR 是什么类型？** (至少选择一个)\r\n\r\n- [x] 错误修复 (Bugfix) issue: 无\r\n- [ ] 新功能 (Feature)\r\n- [ ] 代码重构 (Refactor)\r\n- [ ] TypeScript 类型定义修改 (Types)\r\n- [ ] 文档修改 (Docs)\r\n- [ ] 代码风格更新 (Code style update)\r\n- [ ] 构建优化 (Chore)\r\n- [ ] 其他，请描述 (Other, please describe):\r\n\r\n**这个 PR 涉及以下平台：**\r\n\r\n- [ ] 所有平台\r\n- [x] Web 端（H5）\r\n- [ ] 移动端（React-Native）\r\n- [ ] 鸿蒙（Harmony）\r\n- [ ] 鸿蒙容器（Harmony Hybrid）\r\n- [ ] ASCF 元服务\r\n- [ ] 快应用（QuickApp）\r\n- [ ] 所有小程序\r\n- [ ] 微信小程序\r\n- [ ] 企业微信小程序\r\n- [ ] 京东小程序\r\n- [ ] 百度小程序\r\n- [ ] 支付宝小程序\r\n- [ ] 支付宝 IOT 小程序\r\n- [ ] 钉钉小程序\r\n- [ ] QQ 小程序\r\n- [ ] 飞书小程序\r\n- [ ] 快手小程序\r\n- [ ] 头条小程序\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n## Summary by CodeRabbit\n\n- **功能改进**\n  - 读取画布图像数据时，返回实际图像尺寸和像素数据。\n  - 写入像素数据时，可指定图像尺寸；像素数据长度与尺寸不匹配时会返回错误。\n- **错误处理**\n  - 画布或 2D 上下文不可用时，读取和写入图像数据会返回错误信息。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-09-30T09:23:16Z",
+      "mergedAt": "2026-10-16T03:34:46Z",
+      "additions": 113,
+      "deletions": 53,
+      "changedFiles": 3,
+      "commits": 2,
+      "comments": 2,
+      "reviewComments": 1,
+      "mergedBy": "Single-Dancer"
+    },
+    {
       "repository": "web-infra-dev/rspress",
       "number": 3751,
       "title": "docs(contributing): update development and testing instructions",
