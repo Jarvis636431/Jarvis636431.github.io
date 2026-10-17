@@ -50,21 +50,63 @@
     width: min(46rem, calc(100% - 2rem));
     max-width: none;
     max-height: calc(100dvh - 2rem);
-    margin: min(12vh, 6rem) auto 1rem;
+    margin: 1.5rem auto 1rem;
     padding: 0;
     border: 1px solid #1f1f1f1a;
-    border-radius: 0.75rem;
+    border-radius: 20px;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      opacity 0.3s ease,
+      border-radius 0.1s ease;
     background: #f6f4ef;
     color: #1f1f1f;
     box-shadow: 0 18px 64px #1f1f1f26;
   }
   .search-dialog::backdrop {
     background: #1f1f1f40;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .search-dialog[data-state="open"] {
+    opacity: 1;
+    border-radius: 16px;
+  }
+  .search-dialog[data-state="open"]::backdrop {
+    opacity: 1;
+  }
+  .search-dialog[data-state="closing"] {
+    transition-delay: 0.3s, 0.1s;
+  }
+  .search-dialog[data-state="closing"]::backdrop {
+    transition-delay: 0.3s;
   }
   .search-panel {
     display: flex;
     flex-direction: column;
-    max-height: min(38rem, 76dvh);
+    height: 56px;
+    max-height: calc(100dvh - 3rem);
+    transition: height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .search-dialog[data-state="open"] .search-panel {
+    height: 400px;
+  }
+  .search-dialog[data-state="closing"] .search-panel {
+    transition-delay: 0.1s;
+  }
+  .search-results,
+  .search-footer,
+  .search-input-row input,
+  #search-close {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .search-dialog[data-state="open"] .search-results,
+  .search-dialog[data-state="open"] .search-footer,
+  .search-dialog[data-state="open"] input,
+  .search-dialog[data-state="open"] #search-close {
+    opacity: 1;
+    transition-delay: 0.1s;
   }
   .search-input-row {
     display: flex;
@@ -73,6 +115,7 @@
     padding: 0.875rem 1rem;
     border-bottom: 1px solid #1f1f1f1a;
     flex: none;
+    height: 56px;
   }
   .search-input-row > svg {
     flex: none;
@@ -108,7 +151,8 @@
     outline-offset: 2px;
   }
   .search-results {
-    min-height: 8rem;
+    min-height: 0;
+    flex: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 0.5rem;
@@ -195,6 +239,17 @@
     color: #255a58;
     border-radius: 2px;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .search-dialog,
+    .search-dialog::backdrop,
+    .search-panel,
+    .search-results,
+    .search-footer,
+    .search-input-row input,
+    #search-close {
+      transition: none;
+    }
+  }
   @media (max-width: 639px) {
     .search-dialog {
       margin-top: 1rem;
@@ -226,6 +281,12 @@
   let lastFocusedElement: HTMLElement | null = null;
   let previousOverflow = "";
   let previousPadding = "";
+  let closeTimer: number | undefined;
+  let openingFrame: number | undefined;
+  let closing = false;
+  let headerStyles = { opacity: "", pointerEvents: "", transitionDelay: "" };
+  const header = document.getElementById("main-header");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const dialog = document.getElementById("search-dialog") as HTMLDialogElement;
   const input = document.getElementById("search-input") as HTMLInputElement;
   const resultsContainer = document.getElementById("search-results")!;
@@ -407,30 +468,90 @@
     updateSelectedResult(0, false);
   }
 
+  function clearMotion() {
+    window.clearTimeout(closeTimer);
+    if (openingFrame !== undefined) window.cancelAnimationFrame(openingFrame);
+    closeTimer = undefined;
+    openingFrame = undefined;
+  }
+
   function openSearch() {
-    if (dialog.open) return;
-    lastFocusedElement =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    previousOverflow = document.body.style.overflow;
-    previousPadding = document.body.style.paddingRight;
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-    document.body.style.overflow = "hidden";
-    if (scrollbarWidth)
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    dialog.showModal();
+    if (dialog.open && !closing) return;
+    clearMotion();
+    closing = false;
+    if (!dialog.open) {
+      lastFocusedElement =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      previousOverflow = document.body.style.overflow;
+      previousPadding = document.body.style.paddingRight;
+      if (header)
+        headerStyles = {
+          opacity: header.style.opacity,
+          pointerEvents: header.style.pointerEvents,
+          transitionDelay: header.style.transitionDelay,
+        };
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      if (scrollbarWidth)
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      dialog.dataset.state = "opening";
+      dialog.showModal();
+      renderMessage("Search titles, topics, or article text.");
+    }
+    if (header) {
+      header.style.transitionDelay = "0s";
+      header.style.opacity = "0";
+      header.style.pointerEvents = "none";
+    }
     input.setAttribute("aria-expanded", "true");
     input.focus();
-    renderMessage("Search titles, topics, or article text.");
+    if (reduceMotion.matches) {
+      dialog.dataset.state = "open";
+    } else {
+      // Paint the compact search bar before expanding, matching the original motion.
+      openingFrame = requestAnimationFrame(() => {
+        openingFrame = requestAnimationFrame(() => {
+          openingFrame = undefined;
+          if (dialog.open && !closing) dialog.dataset.state = "open";
+        });
+      });
+    }
     void loadIndex();
+  }
+
+  function closeSearch() {
+    if (!dialog.open || closing) return;
+    clearMotion();
+    closing = true;
+    dialog.dataset.state = "closing";
+    if (header) {
+      header.style.transitionDelay = reduceMotion.matches ? "0s" : "0.2s";
+      header.style.opacity = headerStyles.opacity;
+      header.style.pointerEvents = headerStyles.pointerEvents;
+    }
+    if (reduceMotion.matches) dialog.close();
+    else closeTimer = window.setTimeout(() => dialog.close(), 600);
   }
 
   document
     .getElementById("search-close")
-    ?.addEventListener("click", () => dialog.close());
+    ?.addEventListener("click", closeSearch);
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeSearch();
+  });
   dialog.addEventListener("close", () => {
+    clearMotion();
+    closing = false;
+    delete dialog.dataset.state;
+    if (header) {
+      header.style.opacity = headerStyles.opacity;
+      header.style.pointerEvents = headerStyles.pointerEvents;
+      header.style.transitionDelay = headerStyles.transitionDelay;
+    }
     document.body.style.overflow = previousOverflow;
     document.body.style.paddingRight = previousPadding;
     input.value = "";
@@ -442,7 +563,7 @@
   dialog.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !event.isComposing) {
       event.preventDefault();
-      dialog.close();
+      closeSearch();
     }
   });
   dialog.addEventListener("click", (event) => {
@@ -454,12 +575,12 @@
       event.clientY < bounds.top ||
       event.clientY > bounds.bottom
     )
-      dialog.close();
+      closeSearch();
   });
   window.addEventListener("keydown", (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
-      if (dialog.open) dialog.close();
+      if (dialog.open && !closing) closeSearch();
       else openSearch();
     }
   });
