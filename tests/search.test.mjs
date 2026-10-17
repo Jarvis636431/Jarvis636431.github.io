@@ -1,12 +1,19 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createSearch, getSearchExcerpt } from "../src/lib/search.ts";
+import {
+  createSearch,
+  getSearchExcerpt,
+  getSearchMetadata,
+} from "../src/lib/search.ts";
 import { getSearchText } from "../src/lib/markdown.mjs";
 
 const item = (changes = {}) => ({
   title: "A practical guide",
   description: "An introduction to model evaluation.",
   body: "The main article text.",
+  alternateTitles: [],
+  alternateDescriptions: [],
+  aliases: [],
   tags: ["learning"],
   category: "rec",
   collection: "blog",
@@ -121,4 +128,70 @@ test("index extraction preserves prose, headings, code, and image descriptions w
     text,
     /Hidden metadata|\[!NOTE\]|\*\*|```|private-path|assets\/curve|unsearchable_script/,
   );
+});
+
+test("English project display names retain Chinese names and explicit aliases for search", () => {
+  const metadata = getSearchMetadata(
+    {
+      title: "微北洋",
+      titleEn: "WePeiYang",
+      description: "天津大学师生使用的校园应用。",
+      descriptionEn: "A cross-platform campus application.",
+      aliases: ["WePeiYang-Flutter", " WePeiYang-Flutter "],
+    },
+    true,
+  );
+  const search = createSearch([
+    item({ ...metadata, body: "Campus services." }),
+  ]);
+  for (const query of ["WePeiYang", "微北洋", "wepeiyang-flutter"]) {
+    const result = search.search(query)[0];
+    assert.equal(result.item.title, "WePeiYang");
+    assert.equal(
+      result.item.description,
+      "A cross-platform campus application.",
+    );
+    if (query === "微北洋")
+      assert.ok(
+        result.matches.some((match) => match.key === "alternateTitles"),
+      );
+    if (query === "wepeiyang-flutter")
+      assert.ok(result.matches.some((match) => match.key === "aliases"));
+  }
+  assert.deepEqual(metadata.aliases, ["WePeiYang-Flutter"]);
+});
+
+test("article display names stay in their original language while English titles are searchable", () => {
+  const metadata = getSearchMetadata({
+    title: "逻辑回归入门",
+    titleEn: "Logistic regression",
+    description: "理解概率预测与参数训练。",
+    descriptionEn: "Understanding probabilistic predictions.",
+    aliases: ["LR training"],
+  });
+  const search = createSearch([item({ ...metadata, body: "Training." })]);
+  for (const query of ["逻辑回归", "Logistic regression", "LR training"]) {
+    assert.equal(search.search(query)[0].item.title, "逻辑回归入门");
+  }
+  const excerpt = getSearchExcerpt(
+    search.search("probabilistic")[0],
+    "probabilistic",
+  );
+  assert.match(excerpt.text, /probabilistic predictions/);
+  assert.equal(
+    excerpt.text.slice(excerpt.ranges[0][0], excerpt.ranges[0][1] + 1),
+    "probabilistic",
+  );
+});
+
+test("search metadata falls back cleanly when English names or aliases are absent", () => {
+  const metadata = getSearchMetadata(
+    { title: "项目", description: "项目介绍内容。" },
+    true,
+  );
+  assert.equal(metadata.title, "项目");
+  assert.equal(metadata.description, "项目介绍内容。");
+  assert.deepEqual(metadata.alternateTitles, []);
+  assert.deepEqual(metadata.alternateDescriptions, []);
+  assert.deepEqual(metadata.aliases, []);
 });

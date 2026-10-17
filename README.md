@@ -68,6 +68,13 @@ The GitHub link displays an icon and `owner/repository`, without the URL prefix.
 Omit the field or leave it empty to hide that link. Unpublished website addresses
 can also remain empty; no placeholder links are rendered.
 
+Both collections accept optional search aliases, for example
+`aliases: ["WePeiYang-Flutter"]`. Search indexes the original and English titles
+and descriptions plus aliases. Project results use the same English name and
+summary as the project pages when translations are present; article results keep
+the original display title. An alias match shows its matching name beneath the
+result title. Aliases do not change the content URL.
+
 Development includes draft articles in routes, lists, RSS, and search, and archived projects in detail routes and search. The homepage and project list always exclude archived projects. Production excludes drafts and archived projects from their routes and indexes. A scheduled publication date is not enforced.
 
 As of 2026-10-16, all 65 articles are drafts. Production therefore has no article detail pages or RSS items, and search contains only public projects. Draft filtering does not hide source files in a public repository. Review sensitive information before changing `draft` to `false`.

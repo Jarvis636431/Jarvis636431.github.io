@@ -212,6 +212,13 @@
     line-height: 1.5;
     letter-spacing: 0;
   }
+  .search-results :global(.search-result-alias) {
+    margin: 0.25rem 0 0;
+    color: #6b6b6b;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
   .search-results :global(.search-result-excerpt) {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -385,7 +392,23 @@
     excerpt.className = "search-result-excerpt";
     const passage = getSearchExcerpt(result, query);
     appendHighlighted(excerpt, passage.text, passage.ranges);
-    link.append(meta, title, excerpt);
+    link.append(meta, title);
+    const alternateName = matches?.find(
+      (match) =>
+        (match.key === "alternateTitles" || match.key === "aliases") &&
+        match.value &&
+        match.value !== item.title,
+    );
+    if (alternateName?.value) {
+      const alias = document.createElement("p");
+      alias.className = "search-result-alias";
+      alias.append(document.createTextNode("Also known as: "));
+      const name = document.createElement("span");
+      appendHighlighted(name, alternateName.value, alternateName.indices);
+      alias.append(name);
+      link.append(alias);
+    }
+    link.append(excerpt);
 
     if (item.tags.length) {
       const tags = document.createElement("div");

@@ -60,7 +60,7 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
             >
               <div class="project-copy">
                 <h2 lang={project.data.titleEn ? "en" : project.data.language}>
-                  {title}
+                  <a href={`/projects/${project.slug}`}>{title}</a>
                 </h2>
                 <p
                   class="project-summary"
@@ -193,6 +193,13 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
     line-height: 1.2;
     font-weight: 500;
     letter-spacing: -0.035em;
+  }
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  h2 a:hover {
+    color: #2f6f6d;
   }
   .project-links {
     display: flex;

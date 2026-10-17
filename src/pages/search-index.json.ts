@@ -1,7 +1,7 @@
 import { getPosts, getProjects } from "@lib/content";
 import { getBlogCategory } from "@lib/blog";
 import { getSearchText } from "@lib/markdown.mjs";
-import type { SearchItem } from "@lib/search";
+import { getSearchMetadata, type SearchItem } from "@lib/search";
 
 export async function GET() {
   const [posts, projects] = await Promise.all([getPosts(), getProjects()]);
@@ -9,8 +9,7 @@ export async function GET() {
   const searchIndex = [
     ...posts.map(
       (post): SearchItem => ({
-        title: post.data.title,
-        description: post.data.description,
+        ...getSearchMetadata(post.data),
         body: getSearchText(post.body),
         category: getBlogCategory(post) ?? "Uncategorized",
         slug: `/blogs/${post.slug}`,
@@ -21,8 +20,16 @@ export async function GET() {
     ),
     ...projects.map(
       (project): SearchItem => ({
-        title: project.data.title,
-        description: project.data.summary,
+        ...getSearchMetadata(
+          {
+            title: project.data.title,
+            titleEn: project.data.titleEn,
+            description: project.data.summary,
+            descriptionEn: project.data.summaryEn,
+            aliases: project.data.aliases,
+          },
+          true,
+        ),
         body: getSearchText(project.body),
         category: "",
         slug: `/projects/${project.slug}`,

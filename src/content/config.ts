@@ -10,6 +10,7 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     titleEn: z.string().optional(),
+    aliases: z.array(z.string().trim().min(1)).default([]),
     description: z.string().min(10),
     descriptionEn: z.string().optional(),
     commentId: z.string().min(1),
@@ -28,6 +29,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     titleEn: z.string().optional(),
+    aliases: z.array(z.string().trim().min(1)).default([]),
     summary: z.string().min(10),
     summaryEn: z.string().optional(),
     language: z.string().min(2).default("zh-CN"),
