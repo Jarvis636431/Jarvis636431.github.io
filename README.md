@@ -60,6 +60,19 @@ Development includes draft articles in routes, lists, RSS, and search, and archi
 
 As of 2026-10-16, all 65 articles are drafts. Production therefore has no article detail pages or RSS items, and search contains only public projects. Draft filtering does not hide source files in a public repository. Review sensitive information before changing `draft` to `false`.
 
+### Site search
+
+Search covers article and project titles, descriptions, tags, folder categories,
+and body text (including code identifiers). Results prioritize metadata matches,
+show a passage around the matching text, and highlight matching words using safe
+DOM text nodes. At most 20 results are shown per query.
+
+Open search from the navigation or with `Cmd/Ctrl + K`. Use the arrow keys and Enter
+to open a result; Escape or the close button dismisses the dialog and restores focus.
+The index loads on first open, is reused for the page session, and can be retried
+if loading fails. Chinese input composition is respected. Production search uses
+the same draft and archive filtering as the rest of the site.
+
 ### Callouts
 
 Use GitHub-style alerts as top-level blockquotes in Markdown or MDX:
