@@ -6,6 +6,8 @@ summary: "面向建筑设计场景的 AI 辅助系统，探索多模态交互、
 status: "in-progress"
 roles: ["前端开发", "交互实现"]
 stack: ["React", "TypeScript", "Three.js", "Tailwind CSS"]
+externalUrl: ""
+githubUrl: ""
 featured: true
 publishDate: 2025-01-01
 ---

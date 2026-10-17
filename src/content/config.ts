@@ -38,6 +38,19 @@ const projects = defineCollection({
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     externalUrl: optionalUrl,
+    githubUrl: optionalUrl.refine((value) => {
+      if (!value) return true;
+      const url = new URL(value);
+      return (
+        url.protocol === "https:" &&
+        url.hostname === "github.com" &&
+        !url.username &&
+        !url.password &&
+        !url.search &&
+        !url.hash &&
+        /^\/[\w.-]+\/[\w.-]+\/?$/.test(url.pathname)
+      );
+    }, "Use a GitHub repository URL: https://github.com/owner/repository"),
     coverImage: z.string().optional(),
   }),
 });

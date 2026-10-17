@@ -12,7 +12,7 @@ A personal portfolio and technical writing archive built with Astro 5, TypeScrip
 - Client-side fuzzy search over titles, summaries, and tags with Fuse.js and Cmd/Ctrl+K navigation. Article bodies are not indexed.
 - Optional Supabase home-page view counter and Giscus comments through GitHub Discussions.
 - Static RSS, sitemap, robots.txt, and page-specific SEO metadata.
-- GitHub Actions verification, Pages deployment, and daily contribution snapshot synchronization.
+- GitHub Actions verification, Pages deployment, and contribution snapshot synchronization every four hours.
 
 ## Development
 
@@ -49,12 +49,24 @@ Omit arguments for interactive prompts. New posts default to drafts; new project
 
 Schemas live in `src/content/config.ts`:
 
-| Collection | Fields                                                                                                                                                                  |
-| :--------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blog       | `title`, `description` (at least 10 characters), `commentId`, `language`, `publishDate`, optional `updatedDate`, `tags`, `series`, `seriesOrder`, and `draft`           |
-| Projects   | `title`, `summary` (at least 10 characters), `language`, `status`, `roles`, `stack`, `featured`, `publishDate`, optional `updatedDate`, `externalUrl`, and `coverImage` |
+| Collection | Fields                                                                                                                                                                               |
+| :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blog       | `title`, `description` (at least 10 characters), `commentId`, `language`, `publishDate`, optional `updatedDate`, `tags`, `series`, `seriesOrder`, and `draft`                        |
+| Projects   | `title`, `summary` (at least 10 characters), `language`, `status`, `roles`, `stack`, `featured`, `publishDate`, optional `updatedDate`, `externalUrl`, `githubUrl`, and `coverImage` |
 
 Both collections support optional English title and summary fields (`titleEn` with `descriptionEn` / `summaryEn`). The homepage uses these where available; this is not a full translation system. Reading time is calculated from the body rather than stored in frontmatter.
+
+Project list entries show a title, summary, logo, and configured external links.
+Set `externalUrl` to the official website and optional `githubUrl` to a repository:
+
+```yaml
+externalUrl: "https://example.com"
+githubUrl: "https://github.com/owner/repository"
+```
+
+The GitHub link displays an icon and `owner/repository`, without the URL prefix.
+Omit the field or leave it empty to hide that link. Unpublished website addresses
+can also remain empty; no placeholder links are rendered.
 
 Development includes draft articles in routes, lists, RSS, and search, and archived projects in detail routes and search. The homepage and project list always exclude archived projects. Production excludes drafts and archived projects from their routes and indexes. A scheduled publication date is not enforced.
 
@@ -187,7 +199,7 @@ The resume uses a compact, single-column layout inspired by [YAMLResume Calm](ht
 - Maintain personal profile, employment history, education, and skills in `src/data/resume.ts`. These facts are explicitly authored, not inferred from GitHub activity.
 - `src/lib/resume.ts` builds selected projects from featured, non-archived project content. Names and descriptions prefer English metadata, with the original text as fallback; technologies and links come from the same entries used by project pages.
 - Open-source sections are generated from the contribution snapshot: all repositories, merged-PR counts, and each repository's most recent merged PR title and link. There is no separate manually maintained contribution summary.
-- The existing daily contribution sync updates the snapshot and rebuilds the site when metadata changes, so the resume follows the same update cycle. Builds require no GitHub API access. Deployment remains conditional on the full verification gate.
+- The contribution sync (every four hours) updates the snapshot and rebuilds the site when metadata changes, so the resume follows the same update cycle. Builds require no GitHub API access. Deployment remains conditional on the full verification gate.
 - Keep homepage and About copy consistent when changing personal information. About already reuses the resume's experience data.
 
 ## Contribution synchronization
@@ -205,8 +217,9 @@ The selected repository and page are preserved in the URL; switching repositorie
 returns to the first page. Dates use `Asia/Shanghai`. The snapshot contains only PR records; no sync
 timestamp is stored.
 
-`Sync merged PR contributions` runs daily at midnight (00:00 in Asia/Shanghai,
-16:00 UTC), and can be triggered manually from the Actions tab. It queries
+`Sync merged PR contributions` runs every four hours (00:00, 04:00, 08:00,
+12:00, 16:00, and 20:00 in Asia/Shanghai), and can also be triggered manually
+from the Actions tab. It queries
 PRs authored by `Jarvis636431`, excludes their own repositories, verifies actual
 merge times, and keeps existing records if search results temporarily omit them.
 API errors or incomplete results fail the run without changing the snapshot.

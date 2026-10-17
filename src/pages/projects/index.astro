@@ -3,415 +3,289 @@ import Layout from "@layouts/Layout.astro";
 import { getProjects } from "@lib/content";
 
 const projects = await getProjects({ includeArchived: false });
-
+const description =
+  "Selected work across AI-assisted tools, web platforms, and cross-platform applications.";
 const siteOrigin =
   Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
 const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
-
-const projectsStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  name: "Jarvis Hub Projects",
-  url: pageUrl,
-  description: "我参与设计和开发的系统、AI 工具与校园产品。",
-  inLanguage: "zh-CN",
-};
-
-const statusLabel = {
-  launched: "已上线",
-  "in-progress": "开发中",
-  archived: "已归档",
-} as const;
 ---
 
 <Layout
-  title="项目与实践 - Jarvis Hub"
-  lang="zh-CN"
-  description="我参与设计和开发的产品，包括校园服务、实验室系统和 AI 辅助设计工具。"
+  title="Projects - Jarvis Hub"
+  lang="en"
+  description={description}
+  decorativeBackground={false}
   seo={{
     canonical: pageUrl,
     type: "website",
-    image: {
-      src: "/logo.png",
-      alt: "Jarvis Hub logomark",
+    image: { src: "/logo.png", alt: "Jarvis Hub logomark" },
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Jarvis Hub Projects",
+      description,
+      url: pageUrl,
+      inLanguage: "en",
     },
-    structuredData: projectsStructuredData,
   }}
 >
   <div class="projects-page">
     <header class="projects-header">
-      <p>Selected projects</p>
-      <h1>项目与实践</h1>
-      <div class="projects-header__bottom">
-        <span>我参与设计和开发的一些产品与系统。</span>
-        <span>Frontend · Cross-platform · AI</span>
+      <div class="projects-heading">
+        <h1>Projects</h1>
+        <span
+          >{projects.length}
+          {projects.length === 1 ? "project" : "projects"}</span
+        >
       </div>
+      <p>{description}</p>
     </header>
 
-    <main class="projects-grid" aria-label="项目列表">
+    <section class="projects-list" aria-label="Selected projects">
       {
-        projects.map((project, index) => (
-          <article
-            class:list={[
-              "project-card",
-              !project.data.coverImage && "project-card--text",
-              index === 2 && "project-card--wide",
-            ]}
-            lang={project.data.language}
-          >
-            {project.data.coverImage && (
-              <a
-                class="project-card__media"
-                href={`/projects/${project.slug}`}
-                aria-label={`查看 ${project.data.title} 项目详情`}
-              >
-                <img
-                  src={project.data.coverImage}
-                  alt={`${project.data.title} 项目封面`}
-                  loading={index === 0 ? "eager" : "lazy"}
-                />
-              </a>
-            )}
-
-            <div class="project-card__body">
-              <div class="project-card__meta">
-                <span class={`status status--${project.data.status}`}>
-                  {statusLabel[project.data.status]}
-                </span>
-                <span>{new Date(project.data.publishDate).getFullYear()}</span>
-              </div>
-
-              <div class="project-card__intro">
-                <h2>{project.data.title}</h2>
-                <p>{project.data.summary}</p>
-              </div>
-
-              <dl class="project-card__facts">
-                {project.data.roles.length > 0 && (
-                  <div>
-                    <dt>角色</dt>
-                    <dd>{project.data.roles.join(" · ")}</dd>
-                  </div>
-                )}
-                {project.data.stack.length > 0 && (
-                  <div>
-                    <dt>技术</dt>
-                    <dd>{project.data.stack.slice(0, 5).join(" · ")}</dd>
-                  </div>
-                )}
-              </dl>
-
-              <a class="project-card__link" href={`/projects/${project.slug}`}>
-                查看项目 <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </article>
-        ))
+        projects.length === 0 && (
+          <p class="projects-empty">New projects are on the way.</p>
+        )
       }
-    </main>
+      {
+        projects.map((project) => {
+          const title = project.data.titleEn ?? project.data.title;
+          const summary = project.data.summaryEn ?? project.data.summary;
+          return (
+            <article
+              class:list={[
+                "project-entry",
+                !project.data.coverImage && "project-entry--text",
+              ]}
+            >
+              <div class="project-copy">
+                <h2 lang={project.data.titleEn ? "en" : project.data.language}>
+                  {title}
+                </h2>
+                <p
+                  class="project-summary"
+                  lang={project.data.summaryEn ? "en" : project.data.language}
+                >
+                  {summary}
+                </p>
+                {(project.data.externalUrl || project.data.githubUrl) && (
+                  <div class="project-links" aria-label={`${title} links`}>
+                    {project.data.externalUrl && (
+                      <a
+                        href={project.data.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Visit ${title} website`}
+                      >
+                        Website <span aria-hidden="true">↗</span>
+                      </a>
+                    )}
+                    {project.data.githubUrl && (
+                      <a
+                        class="project-github"
+                        href={project.data.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${title} on GitHub`}
+                      >
+                        <svg
+                          aria-hidden="true"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.75"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                        </svg>
+                        <span>
+                          {new URL(project.data.githubUrl).pathname
+                            .replace(/^\/|\/$/g, "")
+                            .replace(/\.git$/, "")}
+                        </span>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+              {project.data.coverImage && (
+                <div class="project-identity" aria-hidden="true">
+                  <img
+                    src={project.data.coverImage}
+                    alt=""
+                    width="128"
+                    height="128"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              )}
+            </article>
+          );
+        })
+      }
+    </section>
   </div>
 </Layout>
 
 <style>
   .projects-page {
-    max-width: 72rem;
+    max-width: 64rem;
     margin: 0 auto;
-    padding: 4rem 0 2rem;
+    padding: 3.5rem 0 2rem;
   }
-
   .projects-header {
-    max-width: 50rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
   }
-
-  .projects-header > p {
-    margin: 0 0 1rem;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.52);
-  }
-
-  .projects-header h1 {
-    margin: 0;
-    font-size: clamp(3rem, 7vw, 5.5rem);
-    line-height: 1;
-    letter-spacing: -0.055em;
-  }
-
-  .projects-header__bottom {
+  .projects-heading {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 2rem;
-    margin-top: 1.75rem;
-    color: rgba(31, 31, 31, 0.62);
-  }
-
-  .projects-header__bottom span:first-child {
-    font-size: 1.05rem;
-  }
-
-  .projects-header__bottom span:last-child {
-    flex-shrink: 0;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
-  }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.5rem;
   }
-
-  .project-card {
-    display: flex;
-    min-width: 0;
-    overflow: hidden;
-    flex-direction: column;
-    border: 1px solid rgba(31, 31, 31, 0.1);
-    border-radius: 1.5rem;
-    background: #fff;
-    transition:
-      border-color 180ms ease,
-      transform 180ms ease;
-  }
-
-  .project-card:hover {
-    border-color: rgba(47, 111, 109, 0.38);
-    transform: translateY(-2px);
-  }
-
-  .project-card--text {
-    min-height: 35rem;
-    background:
-      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      #202523;
-    background-size: 2.5rem 2.5rem;
-    color: white;
-  }
-
-  .project-card--text .project-card__body {
-    justify-content: space-between;
-  }
-
-  .project-card--text h2,
-  .project-card--text .project-card__link {
-    color: white;
-  }
-
-  .project-card--text .project-card__intro p,
-  .project-card--text .project-card__meta,
-  .project-card--text .project-card__facts dt,
-  .project-card--text .project-card__facts dd {
-    color: rgba(255, 255, 255, 0.62);
-  }
-
-  .project-card--text .project-card__facts {
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-
-  .project-card--text .status {
-    color: #8bd2c8;
-  }
-
-  .project-card--wide {
-    grid-column: 1 / -1;
-  }
-
-  .project-card--wide:has(.project-card__media) {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
-  }
-
-  .project-card__media {
-    display: block;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background: #ebece8;
-  }
-
-  .project-card--wide .project-card__media {
-    height: 100%;
-    aspect-ratio: auto;
-  }
-
-  .project-card__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .project-card__media:hover img {
-    transform: scale(1.025);
-  }
-
-  .project-card__body {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 1.75rem;
-    padding: 2rem;
-  }
-
-  .project-card__meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(31, 31, 31, 0.5);
-  }
-
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: #2f6f6d;
-  }
-
-  .status::before {
-    width: 0.42rem;
-    height: 0.42rem;
-    border-radius: 999px;
-    background: currentColor;
-    content: "";
-  }
-
-  .status--in-progress {
-    color: #9b682b;
-  }
-
-  .project-card__intro h2 {
-    margin: 0 0 0.85rem;
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    line-height: 1;
-    letter-spacing: -0.04em;
-  }
-
-  .project-card__intro p {
+  h1 {
     margin: 0;
-    max-width: 34rem;
-    font-size: 1rem;
+    font-size: clamp(2.75rem, 7vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+  }
+  .projects-heading > span {
+    flex: none;
+    color: #6b6b6b;
+    font:
+      0.75rem/1.5 "IBM Plex Mono",
+      monospace;
+  }
+  .projects-header p {
+    max-width: 48ch;
+    margin: 1rem 0 0;
+    color: #6b6b6b;
+    font-size: 1.0625rem;
     line-height: 1.7;
-    color: rgba(31, 31, 31, 0.65);
   }
-
-  .project-card__facts {
+  .project-entry {
     display: grid;
-    gap: 0.75rem;
-    margin: auto 0 0;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgba(31, 31, 31, 0.1);
+    grid-template-columns: minmax(0, 1fr) 10rem;
+    gap: 2rem;
+    align-items: start;
+    padding: 2rem 0;
+    border-top: 1px solid #1f1f1f26;
+  }
+  .project-entry:last-child {
+    border-bottom: 1px solid #1f1f1f26;
   }
 
-  .project-card__facts div {
-    display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr);
-    gap: 0.75rem;
+  .project-copy {
+    min-width: 0;
+  }
+  .project-entry--text .project-copy {
+    grid-column: 1 / -1;
+    max-width: 46rem;
   }
 
-  .project-card__facts dt {
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 0.68rem;
-    color: rgba(31, 31, 31, 0.45);
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: -0.035em;
   }
-
-  .project-card__facts dd {
-    margin: 0;
-    overflow-wrap: anywhere;
-    font-size: 0.84rem;
-    line-height: 1.55;
-    color: rgba(31, 31, 31, 0.68);
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
-
-  .project-card__link {
+  .project-links a {
     display: inline-flex;
     align-items: center;
-    align-self: flex-start;
-    gap: 0.6rem;
-    font-size: 0.9rem;
-    font-weight: 600;
+    gap: 0.5rem;
+    min-width: 0;
+    max-width: 100%;
     color: #2f6f6d;
-    transition: gap 180ms ease;
+    text-decoration: none;
   }
-
-  .project-card__link:hover {
-    gap: 0.9rem;
+  .project-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
   }
-
-  .project-card__media:focus-visible,
-  .project-card__link:focus-visible {
+  .project-github svg {
+    flex: none;
+  }
+  .project-github span {
+    overflow-wrap: anywhere;
+  }
+  a:focus-visible {
     outline: 2px solid #2f6f6d;
-    outline-offset: 3px;
+    outline-offset: 5px;
+    border-radius: 2px;
+  }
+  .project-summary {
+    max-width: 52ch;
+    margin: 0;
+    color: #6b6b6b;
+    font-size: 1rem;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
   }
 
-  @media (max-width: 760px) {
+  .project-identity {
+    display: grid;
+    place-items: center;
+    width: 10rem;
+    aspect-ratio: 1;
+    padding: 1.5rem;
+    border: 1px solid #1f1f1f0d;
+    border-radius: 0.75rem;
+    background: #ffffff66;
+  }
+  .project-identity img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .projects-empty {
+    padding: 2rem 0;
+    color: #6b6b6b;
+  }
+  @media (max-width: 639px) {
     .projects-page {
-      padding-top: 2.75rem;
+      padding-top: 2.5rem;
     }
-
     .projects-header {
-      margin-bottom: 2.25rem;
+      margin-bottom: 2rem;
     }
-
-    .projects-header h1 {
-      font-size: clamp(2.8rem, 14vw, 4rem);
-    }
-
-    .projects-header__bottom {
-      align-items: flex-start;
-      flex-direction: column;
+    .projects-heading {
       gap: 0.75rem;
-      margin-top: 1.25rem;
     }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
+    .projects-heading > span {
+      font-size: 0.6875rem;
+    }
+    .project-entry {
+      grid-template-columns: minmax(0, 1fr) 4rem;
       gap: 1rem;
+      padding: 1.5rem 0;
     }
 
-    .project-card--wide {
-      grid-column: auto;
+    .project-entry--text .project-copy {
+      grid-column: 1 / -1;
+    }
+    .project-identity {
+      width: 4rem;
+      padding: 0.625rem;
+      border-radius: 0.5rem;
     }
 
-    .project-card--wide:has(.project-card__media) {
-      display: flex;
-    }
-
-    .project-card--wide .project-card__media {
-      height: auto;
-      aspect-ratio: 16 / 9;
-    }
-
-    .project-card,
-    .project-card--text {
-      min-height: 0;
-      border-radius: 1rem;
-    }
-
-    .project-card__body {
-      gap: 1.35rem;
-      padding: 1.4rem;
-    }
-
-    .project-card__intro h2 {
-      font-size: 2.25rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .project-card,
-    .project-card__media img,
-    .project-card__link {
-      transition: none;
+    .project-summary {
+      font-size: 0.9375rem;
     }
   }
 </style>

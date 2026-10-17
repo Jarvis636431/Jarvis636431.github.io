@@ -14,6 +14,8 @@ stack:
     "Nginx",
     "Vue3 + ElementPlus + Vite",
   ]
+externalUrl: ""
+githubUrl: ""
 featured: true
 publishDate: 2024-11-05
 coverImage: "/assets/projects/coverimage/idesignLab.png"
