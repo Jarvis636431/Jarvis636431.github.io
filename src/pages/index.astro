@@ -53,6 +53,13 @@ const [posts, projects] = await Promise.all([
           />
         </div>
       </div>
+      <a
+        class="scroll-down"
+        href="#selected-projects"
+        aria-label="Scroll down to selected projects"
+      >
+        <span class="scroll-down-arrow" aria-hidden="true">↓</span>
+      </a>
     </section>
 
     <section
@@ -146,6 +153,7 @@ const [posts, projects] = await Promise.all([
     font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
   }
   .intro {
+    position: relative;
     min-height: calc(100svh - 74px);
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -156,6 +164,45 @@ const [posts, projects] = await Promise.all([
   }
   .intro > * {
     min-width: 0;
+  }
+  .intro .scroll-down {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: min(100%, 16rem);
+    min-height: 64px;
+    padding: 0.5rem 0.75rem;
+    color: var(--home-muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    white-space: nowrap;
+    opacity: 0;
+    transition:
+      opacity 180ms ease,
+      color 180ms ease;
+  }
+  .intro .scroll-down:hover,
+  .intro .scroll-down:focus-visible {
+    opacity: 1;
+  }
+  .scroll-down > span {
+    transform: translateY(8px) scale(0.94);
+    transition: transform 360ms cubic-bezier(0.2, 1.5, 0.4, 1);
+  }
+  .scroll-down:hover > span,
+  .scroll-down:focus-visible > span {
+    transform: translateY(0) scale(1);
+  }
+  .scroll-down-arrow {
+    font-size: 1rem;
+    transition-delay: 40ms;
   }
   .intro h1 {
     font-size: clamp(2.75rem, 4.5vw, 4rem);
@@ -343,7 +390,7 @@ const [posts, projects] = await Promise.all([
       grid-template-columns: minmax(0, 1fr);
       align-content: center;
       gap: 3rem;
-      padding: 3rem 0;
+      padding: 3rem 0 5rem;
     }
     .intro-description {
       font-size: 1rem;
@@ -384,10 +431,13 @@ const [posts, projects] = await Promise.all([
   @media (prefers-reduced-motion: reduce) {
     a,
     h3,
+    .intro .scroll-down,
+    .scroll-down > span,
     .entry-arrow {
       transition: none;
     }
-    a:hover .entry-arrow {
+    a:hover .entry-arrow,
+    .intro .scroll-down > span {
       transform: none;
     }
   }
