@@ -209,13 +209,6 @@ const { compact = false } = Astro.props;
       </footer>
     )
   }
-  {
-    compact && (
-      <a class="all-contributions" href="/contributions">
-        View all contributions
-      </a>
-    )
-  }
 </div>
 
 <script>
@@ -400,15 +393,13 @@ const { compact = false } = Astro.props;
     font-family: "IBM Plex Mono", monospace;
     font-size: 0.7rem;
   }
-  button,
-  .all-contributions {
+  button {
     color: #2f6f6d;
     font-family: "Space Grotesk", sans-serif;
     font-size: 0.85rem;
     text-underline-offset: 0.25em;
   }
-  button:hover,
-  .all-contributions:hover {
+  button:hover {
     text-decoration: underline;
   }
   button {
@@ -596,10 +587,6 @@ const { compact = false } = Astro.props;
   .pagination :global(button:focus-visible) {
     outline: 2px solid #2f6f6d;
     outline-offset: 4px;
-  }
-  .all-contributions {
-    display: inline-block;
-    margin-top: 1rem;
   }
   .contributions--compact .contribution-entry {
     padding: 1.1rem 0;
