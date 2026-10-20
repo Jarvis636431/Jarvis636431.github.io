@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import test from "node:test";
-import { URL } from "node:url";
-import { runInNewContext } from "node:vm";
-import ts from "typescript";
 import config from "../astro.config.mjs";
+import { renderMermaid } from "../src/scripts/mermaid.ts";
 import { renderMarkdown } from "../src/lib/markdown.mjs";
 
 const requireFromAstro = createRequire(import.meta.resolve("astro"));
@@ -32,22 +29,6 @@ for (const [name, render] of [
     assert.match(html, name === "Astro" ? /astro-code/ : /language-js/);
   });
 }
-
-// Exercise the actual layout initializer without loading Mermaid in Node's DOM.
-const layout = readFileSync(
-  new URL("../src/layouts/Layout.astro", import.meta.url),
-  "utf8",
-);
-const start = layout.indexOf("async function renderMermaid()");
-const end = layout.indexOf("void renderMermaid();", start);
-const clientScript = ts
-  .transpileModule(layout.slice(start, end), {
-    compilerOptions: {
-      target: ts.ScriptTarget.ES2022,
-      module: ts.ModuleKind.ES2022,
-    },
-  })
-  .outputText.replace('import("mermaid")', "loadMermaid()");
 
 function createBlock(source) {
   const classes = new Set();
@@ -98,10 +79,7 @@ async function runClient(
     fonts: { ready: Promise.resolve() },
     createElement: () => ({ setAttribute() {} }),
   };
-  await runInNewContext(`${clientScript}; renderMermaid()`, {
-    document,
-    loadMermaid,
-  });
+  await renderMermaid(document, loadMermaid);
   return { imports, rendered, options };
 }
 

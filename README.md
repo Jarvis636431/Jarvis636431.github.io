@@ -198,6 +198,8 @@ Node-run configuration files, automation scripts, and tests keep explicit relati
 - `getFeaturedProjects(limit?)` always excludes archives, including in development, and supplies both the homepage and resume.
 - `src/lib/blog.ts` owns related-post ranking, reading time, and series navigation.
 - `src/scripts/article.ts` initializes article reading progress, code tools, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
+- `src/components/site/` owns the shared header, footer, and view counter. The counter handles its own delayed Supabase initialization, so pages only need to pass `viewCounterSlug` to the layout.
+- `src/scripts/mermaid.ts` initializes diagrams from the layout and loads the Mermaid renderer only when unprocessed diagram blocks are present. Failed diagrams retain their source.
 
 ## Profile and resume
 

@@ -1,0 +1,35 @@
+---
+import ViewCounter from "@components/site/ViewCounter.astro";
+
+interface Props {
+  viewCounterSlug?: string;
+}
+
+const { viewCounterSlug } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="border-t border-black/10 mt-12 md:mt-20">
+  <div
+    class="max-w-6xl mx-auto px-4 py-6 md:py-8 flex flex-row justify-between items-center gap-4 text-xs sm:text-sm text-secondary"
+  >
+    <div class="whitespace-nowrap">© {currentYear} Jarvis Hub</div>
+    <div class="flex shrink-0 items-center gap-4 sm:gap-6">
+      {viewCounterSlug && <ViewCounter slug={viewCounterSlug} />}
+      <a
+        href="https://github.com/Jarvis636431"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-secondary hover:text-accent-cyan transition-colors"
+      >
+        GitHub
+      </a>
+      <a
+        href="mailto:mengda636431@gmail.com"
+        class="text-secondary hover:text-accent-cyan transition-colors"
+      >
+        Email
+      </a>
+    </div>
+  </div>
+</footer>

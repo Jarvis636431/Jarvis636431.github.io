@@ -478,35 +478,4 @@ const [posts, projects] = await Promise.all([
         }
       });
   }
-
-  // View Counter Logic
-  async function initViewCounter() {
-    const container = document.getElementById("footer-view-count");
-    const pageSlug = container?.dataset.viewCounterSlug;
-    if (!pageSlug) return;
-
-    const { supabase } = await import("@lib/supabase");
-    if (!supabase) return;
-
-    const viewCountEl = document.getElementById("view-count-value");
-
-    try {
-      // Increment view count using RPC
-      const { data: newCount, error } = await supabase.rpc(
-        "increment_page_view",
-        {
-          page_slug: pageSlug,
-        },
-      );
-
-      if (!error && newCount !== null) {
-        if (viewCountEl) viewCountEl.innerText = newCount.toLocaleString();
-        if (container) container.classList.remove("opacity-0");
-      }
-    } catch (e) {
-      console.error("Error updating view count:", e);
-    }
-  }
-
-  setTimeout(initViewCounter, 1200);
 </script>
