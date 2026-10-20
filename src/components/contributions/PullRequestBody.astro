@@ -1,6 +1,8 @@
 ---
 import { renderMarkdown } from "@lib/markdown.mjs";
 
+// GitHub PR descriptions are external content and must use the sanitized renderer.
+
 interface Props {
   content: string;
 }

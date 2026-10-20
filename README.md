@@ -112,7 +112,7 @@ Use GitHub-style alerts as top-level blockquotes in Markdown or MDX:
 use a blank quoted line (`>`) to start another paragraph. Lists, code blocks, and
 formulas can appear in the body. Regular blockquotes keep their existing style.
 Alerts render at build time through `rehype-github-alert` with local CSS and no
-client JavaScript. The sanitized Markdown component supports the same syntax.
+client JavaScript. The sanitized PR body renderer supports the same syntax.
 
 ### Mermaid diagrams
 
@@ -130,7 +130,7 @@ flowchart LR
 Diagrams render in the browser using a locally bundled Mermaid dependency, loaded
 only on pages containing diagrams. Add `accTitle` and `accDescr` for accessible
 labels. Wide diagrams scroll horizontally. With JavaScript disabled or a rendering
-failure, the original source remains readable. The sanitized Markdown component
+failure, the original source remains readable. The sanitized PR body renderer
 supports the same fenced syntax. HTML labels and interactive links are disabled.
 
 ### Math formulas
@@ -149,24 +149,11 @@ $$
 Formulas render at build time with KaTeX; styles and fonts are served locally.
 Long display equations scroll horizontally on narrow screens. Keep executable code,
 text diagrams, and experiment output in fenced code blocks. Escape literal dollar
-signs as `\$` in prose. The sanitized Markdown component supports the same syntax.
+signs as `\$` in prose. The sanitized PR body renderer supports the same syntax.
 
 ### Images and code blocks
 
-Regular Markdown images receive lazy loading, captions from alt text, and click-to-zoom behavior. For responsive output with intrinsic dimensions, import a local image through `ArticleImage` in MDX:
-
-```mdx
-import ArticleImage from "@components/ArticleImage.astro";
-import screenshot from "../../assets/blog/screenshot.png";
-
-<ArticleImage
-  src={screenshot}
-  alt="Dashboard overview"
-  caption="Optional caption"
-/>
-```
-
-The image path is illustrative: create the asset and adjust the relative import for the article location.
+Regular Markdown images receive lazy loading, captions from alt text, and click-to-zoom behavior through the article script. There is no separate image component to maintain; use standard Markdown image syntax in articles.
 
 Fenced code supports filename metadata, line numbers, highlighted lines, and explicit collapse. Blocks longer than 24 lines collapse automatically:
 
@@ -187,6 +174,12 @@ import { resumeProfile } from "@data/resume";
 ```
 
 Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases. Leaf modules imported directly by Node tests (such as `src/scripts/search.ts` and `src/lib/seo.ts`) also use explicit relative imports for their dependencies.
+
+## Components
+
+Components are grouped by their callers: `site/` for the shared layout, `blog/` for article details, and `contributions/` for full and compact contribution views. Keep page-specific layout in `src/pages/` rather than adding wrappers without a separate responsibility.
+
+`contributions/PullRequestBody.astro` renders external GitHub descriptions through the sanitized Markdown pipeline. It deliberately remains separate from the trusted Markdown / MDX article renderer. The unused `ArticleImage` component has been removed; article images use standard Markdown syntax and the existing client enhancement script.
 
 ## Site configuration and page metadata
 
@@ -219,7 +212,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 - `getFeaturedProjects(limit?)` always excludes archives, including in development, and supplies both the homepage and resume.
 - `src/lib/blog.ts` owns related-post ranking, reading time, and series navigation.
 - `src/scripts/article.ts` initializes article reading progress, code tools, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
-- `src/components/site/` owns the shared header, footer, and view counter. The counter handles its own delayed Supabase initialization, so pages only need to pass `viewCounterSlug` to the layout.
+- `src/components/site/` owns the shared header, footer, search dialog, and view counter. The counter handles its own delayed Supabase initialization, so pages only need to pass `viewCounterSlug` to the layout.
 - `src/scripts/mermaid.ts` initializes diagrams from the layout and loads the Mermaid renderer only when unprocessed diagram blocks are present. Failed diagrams retain their source.
 
 ## Profile and resume
@@ -273,7 +266,10 @@ public/              # Static images and favicon
 scripts/             # Content scaffolding, sync, legacy MDX migration helpers
 tests/               # Content visibility, recommendations, and navigation regression tests
 src/
-  components/        # Search, TOC, comments, images, contributions, Markdown
+  components/
+    site/            # Header, Footer, Search, ViewCounter
+    blog/            # Toc, Comments
+    contributions/   # Contributions, PullRequestBody
   content/           # Blog and project Markdown / MDX
   data/              # Resume and generated contribution snapshot
   layouts/           # Shared page shell and metadata

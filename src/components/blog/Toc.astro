@@ -180,4 +180,3 @@ const itemClass = `${prefix}__toc-item detail__toc-item`;
     }
   }
 </style>
-<!-- Astro 组件的 scoped <style> 不会匹配运行时插入的元素（例如 JS 动态生成的目录项），这些元素没有组件作用域标记，导致样式失效。解决方式：用 :global(...) 限定父容器，或直接用 Tailwind/全局样式。 -->

@@ -1,5 +1,5 @@
 ---
-import Markdown from "@components/Markdown.astro";
+import PullRequestBody from "@components/contributions/PullRequestBody.astro";
 import {
   contributionProjects,
   contributionSearchUrl,
@@ -167,7 +167,7 @@ const { compact = false } = Astro.props;
                   <details class="entry-description">
                     <summary>PR description</summary>
                     <div>
-                      <Markdown content={pr.body} />
+                      <PullRequestBody content={pr.body} />
                     </div>
                     <a href={pr.url} target="_blank" rel="noopener noreferrer">
                       View discussion on GitHub
