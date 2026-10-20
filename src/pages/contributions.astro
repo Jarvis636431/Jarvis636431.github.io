@@ -55,7 +55,7 @@ const pageUrl = new URL(
     margin-bottom: 2.25rem;
   }
   .back-link {
-    color: #2f6f6d;
+    color: var(--color-accent);
     font-size: 0.85rem;
   }
   h1 {
@@ -67,14 +67,14 @@ const pageUrl = new URL(
   }
   .contributions-header > p {
     max-width: 55ch;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 1rem;
     line-height: 1.7;
   }
   .contributions-header .contributions-summary {
     margin-top: 1rem;
-    font-family: "Space Grotesk", sans-serif;
-    color: #1f1f1f;
+    font-family: var(--font-display);
+    color: var(--color-primary);
     font-size: 0.9rem;
   }
   a:hover {
@@ -82,7 +82,7 @@ const pageUrl = new URL(
     text-underline-offset: 0.25em;
   }
   a:focus-visible {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: 4px;
   }
 </style>

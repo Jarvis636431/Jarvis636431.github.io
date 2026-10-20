@@ -3,13 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 246 244 239;
-    --surface: 255 255 255;
-  }
-
   html {
-    background-color: rgb(var(--background));
+    background-color: var(--color-background);
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
   }
@@ -40,162 +35,16 @@
   }
 }
 
-@layer components {
-  .glass-panel {
-    @apply bg-white/70 backdrop-blur-sm border border-black/10 shadow-sm;
-  }
-
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent-cyan to-accent-violet;
-  }
-}
-
-@layer utilities {
-  .perspective-1000 {
-    perspective: 1000px;
-  }
-
-  .transform-style-3d {
-    transform-style: preserve-3d;
-  }
-
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
-
-  .rotate-y-180 {
-    transform: rotateY(180deg);
-  }
-
-  .image-pixelated {
-    image-rendering: pixelated;
-  }
-}
-
-/* Formulas share the renderer's fonts; long display equations scroll locally. */
-.prose .katex,
-.markdown-body .katex {
-  font-size: 1.05em;
-}
-
-.prose .katex-display,
-.markdown-body .katex-display {
-  max-width: 100%;
-  margin: 1.25rem 0;
-  padding: 0.5rem 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: #2f6f6d55 transparent;
-}
-
-/* Keep each equation intact inside its own horizontal viewport. */
-.prose .katex .base,
-.markdown-body .katex .base {
-  white-space: nowrap;
-}
-
-/* Reuse the Markdown pre element as the diagram's scroll viewport. */
-.prose pre.mermaid-diagram,
-.markdown-body pre.mermaid-diagram {
-  max-width: 100%;
-  padding: 1rem;
-  overflow-x: auto;
-  border: 1px solid #1f1f1f1a;
-  border-radius: 0.5rem;
-  background: #ffffff80;
-  color: #1f1f1f;
-  white-space: normal;
-  scrollbar-width: thin;
-  scrollbar-color: #2f6f6d55 transparent;
-}
-
-.mermaid-diagram svg {
-  display: block;
-  height: auto;
-  margin: 0 auto;
-}
-
-.mermaid-diagram:focus-visible {
-  outline: 2px solid #2f6f6d;
-  outline-offset: 3px;
-}
-
-.mermaid-status {
-  display: block;
-  margin-bottom: 0.75rem;
-  font:
-    0.8125rem/1.5 system-ui,
-    sans-serif;
-  white-space: normal;
-}
-
-/* GitHub-style alerts are generated at build time by rehype-github-alert. */
-.prose .markdown-alert,
-.markdown-body .markdown-alert {
-  --alert-color: #2f6f6d;
-  --alert-background: #2f6f6d08;
-  margin: 1.5rem 0;
-  padding: 0.875rem 1rem;
-  border-left: 3px solid var(--alert-color);
-  border-radius: 0 0.375rem 0.375rem 0;
-  background: var(--alert-background);
-  color: var(--tw-prose-body, #4b4b4b);
-  font-style: normal;
-  overflow-wrap: anywhere;
-}
-
-.prose .markdown-alert-tip,
-.markdown-body .markdown-alert-tip {
-  --alert-color: #427347;
-  --alert-background: #42734708;
-}
-
-.prose .markdown-alert-warning,
-.markdown-body .markdown-alert-warning {
-  --alert-color: #946323;
-  --alert-background: #94632308;
-}
-
-.prose .markdown-alert-important,
-.markdown-body .markdown-alert-important {
-  --alert-color: #76558b;
-  --alert-background: #76558b08;
-}
-
-.prose .markdown-alert-caution,
-.markdown-body .markdown-alert-caution {
-  --alert-color: #a54840;
-  --alert-background: #a5484008;
-}
-
-.prose .markdown-alert > .markdown-alert-title,
-.markdown-body .markdown-alert > .markdown-alert-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0 0 0.5rem;
-  color: var(--alert-color);
-  font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.markdown-alert-title svg {
-  display: block;
-  flex: none;
-  width: 1rem;
-  height: 1rem;
-  fill: currentColor;
-}
-
-.prose .markdown-alert > :nth-child(2),
-.markdown-body .markdown-alert > :nth-child(2) {
-  margin-top: 0;
-}
-
-.prose .markdown-alert > :last-child,
-.markdown-body .markdown-alert > :last-child {
-  margin-bottom: 0;
+.site-background {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgb(var(--color-accent-rgb) / 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgb(var(--color-accent-secondary-rgb) / 0.12),
+      transparent 50%
+    );
 }

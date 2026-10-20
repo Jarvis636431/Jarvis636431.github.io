@@ -52,19 +52,19 @@
     max-height: calc(100dvh - 2rem);
     margin: 1.5rem auto 1rem;
     padding: 0;
-    border: 1px solid #1f1f1f1a;
+    border: 1px solid var(--color-border);
     border-radius: 20px;
     overflow: hidden;
     opacity: 0;
     transition:
       opacity 0.3s ease,
       border-radius 0.1s ease;
-    background: #f6f4ef;
-    color: #1f1f1f;
-    box-shadow: 0 18px 64px #1f1f1f26;
+    background: var(--color-background);
+    color: var(--color-primary);
+    box-shadow: 0 18px 64px var(--color-border-strong);
   }
   .search-dialog::backdrop {
-    background: #1f1f1f40;
+    background: rgb(var(--color-primary-rgb) / 0.25098);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
@@ -113,13 +113,13 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.875rem 1rem;
-    border-bottom: 1px solid #1f1f1f1a;
+    border-bottom: 1px solid var(--color-border);
     flex: none;
     height: 56px;
   }
   .search-input-row > svg {
     flex: none;
-    color: #6b6b6b;
+    color: var(--color-secondary);
   }
   input {
     min-width: 0;
@@ -128,26 +128,23 @@
     border: 0;
     outline: none;
     background: transparent;
-    font:
-      1rem/1.5 "Space Grotesk",
-      "Noto Sans SC",
-      sans-serif;
+    font: 1rem/1.5 var(--font-display);
   }
   input::placeholder {
-    color: #6b6b6b;
+    color: var(--color-secondary);
   }
   #search-close {
     flex: none;
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
-    color: #6b6b6b;
+    color: var(--color-secondary);
   }
   #search-close:hover {
-    background: #1f1f1f0a;
-    color: #1f1f1f;
+    background: rgb(var(--color-primary-rgb) / 0.03922);
+    color: var(--color-primary);
   }
   #search-close:focus-visible {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
   .search-results {
@@ -157,7 +154,7 @@
     overscroll-behavior: contain;
     padding: 0.5rem;
     scrollbar-width: thin;
-    scrollbar-color: #2f6f6d55 transparent;
+    scrollbar-color: rgb(var(--color-accent-rgb) / 0.33333) transparent;
   }
   .search-footer {
     display: flex;
@@ -166,16 +163,14 @@
     gap: 0.5rem;
     flex: none;
     padding: 0.75rem 1rem;
-    border-top: 1px solid #1f1f1f1a;
-    color: #6b6b6b;
-    font:
-      0.6875rem/1.5 "IBM Plex Mono",
-      monospace;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-secondary);
+    font: 0.6875rem/1.5 var(--font-mono);
   }
   .search-results :global(.search-message) {
     padding: 2.5rem 1rem;
     text-align: center;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.875rem;
   }
   .search-results :global(.search-result) {
@@ -187,11 +182,11 @@
   }
   .search-results :global(.search-result:hover),
   .search-results :global(.search-result[aria-selected="true"]) {
-    border-color: #2f6f6d26;
-    background: #2f6f6d08;
+    border-color: rgb(var(--color-accent-rgb) / 0.14902);
+    background: rgb(var(--color-accent-rgb) / 0.03137);
   }
   .search-results :global(.search-result:focus-visible) {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: -2px;
   }
   .search-results :global(.search-result-meta) {
@@ -199,14 +194,12 @@
     flex-wrap: wrap;
     gap: 0.25rem 0.5rem;
     margin-bottom: 0.375rem;
-    color: #6b6b6b;
-    font:
-      0.6875rem/1.5 "IBM Plex Mono",
-      monospace;
+    color: var(--color-secondary);
+    font: 0.6875rem/1.5 var(--font-mono);
   }
   .search-results :global(.search-result-title) {
     margin: 0;
-    color: #1f1f1f;
+    color: var(--color-primary);
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.5;
@@ -214,7 +207,7 @@
   }
   .search-results :global(.search-result-alias) {
     margin: 0.25rem 0 0;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.75rem;
     line-height: 1.5;
     overflow-wrap: anywhere;
@@ -225,11 +218,8 @@
     -webkit-line-clamp: 3;
     overflow: hidden;
     margin: 0.375rem 0 0;
-    color: #6b6b6b;
-    font:
-      0.875rem/1.7 "Noto Sans SC",
-      system-ui,
-      sans-serif;
+    color: var(--color-secondary);
+    font: 0.875rem/1.7 var(--font-prose);
     overflow-wrap: anywhere;
   }
   .search-results :global(.search-result-tags) {
@@ -237,13 +227,13 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 0.375rem;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.6875rem;
   }
   .search-results :global(mark) {
     padding: 0;
-    background: #2f6f6d1f;
-    color: #255a58;
+    background: rgb(var(--color-accent-rgb) / 0.12157);
+    color: var(--color-accent-hover);
     border-radius: 2px;
   }
   @media (prefers-reduced-motion: reduce) {

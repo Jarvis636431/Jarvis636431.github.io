@@ -18,7 +18,7 @@ const isConfigured = Boolean(repo && repoId && category && categoryId);
 {
   (isConfigured || import.meta.env.DEV) && (
     <section
-      class="mt-20 border-t border-black/10 pt-8"
+      class="mt-20 border-t border-border pt-8"
       aria-labelledby="comments"
     >
       <div class="mb-6 flex items-center justify-between gap-4">
@@ -50,7 +50,7 @@ const isConfigured = Boolean(repo && repoId && category && categoryId);
           async
         />
       ) : (
-        <div class="border-y border-black/10 py-5 text-sm leading-6 text-secondary">
+        <div class="border-y border-border py-5 text-sm leading-6 text-secondary">
           评论区尚未启用，请配置 <code>PUBLIC_GISCUS_REPO</code>、{" "}
           <code>PUBLIC_GISCUS_REPO_ID</code>、
           <code>PUBLIC_GISCUS_CATEGORY</code>和{" "}

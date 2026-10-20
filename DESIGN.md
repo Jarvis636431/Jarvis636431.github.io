@@ -86,7 +86,9 @@ Use `accent-cyan` for interactive focus, hover states, active navigation, and te
 
 ## Typography
 
-Use `Space Grotesk` for headings, labels that need strength, project titles, and navigation. Use `Newsreader` for long-form body copy and article prose. Use `IBM Plex Mono` for dates, status labels, metadata, counters, and small system text.
+Use `Space Grotesk` for headings, labels that need strength, project titles, and navigation. Use `Newsreader` for the site body and the sans-serif `Noto Sans SC` stack for article prose and search excerpts. Use `IBM Plex Mono` for dates, status labels, metadata, counters, and small system text.
+
+Runtime colors and font stacks are defined in `src/styles/tokens.css`; the values in this document describe the design rather than define a second runtime palette. Tailwind utilities and component CSS reference those tokens. Long-form and compact Markdown rules live in `src/styles/prose.css`; blog reading enhancements live in `src/styles/article.css`.
 
 Do not use negative letter spacing. Large display headings can be visually strong, but compact panels, cards, and rows should use modest heading sizes.
 

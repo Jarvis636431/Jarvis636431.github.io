@@ -144,13 +144,13 @@ const [posts, projects] = await Promise.all([
 
 <style>
   .home {
-    --home-rule: #1f1f1f1a;
-    --home-muted: #6b6b6b;
-    --home-accent: #2f6f6d;
+    --home-rule: var(--color-border);
+    --home-muted: var(--color-secondary);
+    --home-accent: var(--color-accent);
     --meta-column: 8rem;
     --column-gap: 2rem;
     padding-bottom: 2rem;
-    font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
+    font-family: var(--font-display);
   }
   .intro {
     position: relative;
@@ -179,7 +179,7 @@ const [posts, projects] = await Promise.all([
     min-height: 64px;
     padding: 0.5rem 0.75rem;
     color: var(--home-muted);
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.6875rem;
     line-height: 1.5;
     white-space: nowrap;
@@ -269,7 +269,7 @@ const [posts, projects] = await Promise.all([
   .contribution-scroll {
     overflow-x: auto;
     scrollbar-width: thin;
-    scrollbar-color: #1f1f1f26 transparent;
+    scrollbar-color: var(--color-border-strong) transparent;
   }
   .contribution-scroll img {
     display: block;
@@ -317,7 +317,7 @@ const [posts, projects] = await Promise.all([
   time,
   .project-stack,
   .reading-time {
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.6875rem;
     line-height: 1.8;
     color: var(--home-muted);

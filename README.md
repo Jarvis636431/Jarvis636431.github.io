@@ -188,6 +188,15 @@ import { resumeProfile } from "@data/resume";
 
 Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases.
 
+## Styling
+
+- `src/styles/tokens.css` is the source of site colors and font stacks. Use `var(--color-accent)` in CSS and RGB channels such as `rgb(var(--color-accent-rgb) / 0.1)` for transparency. Tailwind colors read these same channels, including opacity modifiers such as `bg-accent-cyan/10`.
+- `tailwind.config.mjs` maps tokens to utility names and enables Typography defaults; site-specific prose overrides live in `src/styles/prose.css`.
+- `src/styles/global.css` owns site-wide base rules and the shared decorative background. Page and component layout stays in scoped Astro styles.
+- `src/styles/prose.css` owns long-form `.prose`, compact external `.markdown-body`, and shared KaTeX, Mermaid, and callout styles. The two text formats keep their existing sizes and spacing.
+- `src/styles/article.css` owns blog-only code tools, image captions, table scrolling, and heading anchors, scoped to `.article-content`. The blog detail page imports it; other pages do not need these enhancements.
+- Mermaid reads its palette and font from computed CSS tokens. Shiki and KaTeX retain their renderer-specific syntax colors and math fonts; the resume's print-oriented neutral shades and lightbox overlay remain local.
+
 ## Shared content queries
 
 `src/lib/content.ts` owns draft and archive visibility, newest-first sorting, recent articles, and featured projects. The homepage, blog and project lists/details, RSS, search, and resume call this layer instead of querying collections independently.

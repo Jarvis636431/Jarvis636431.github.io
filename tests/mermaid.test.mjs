@@ -75,6 +75,9 @@ async function runClient(
     };
   };
   const document = {
+    defaultView: {
+      getComputedStyle: () => ({ getPropertyValue: (name) => `theme:${name}` }),
+    },
     querySelectorAll: () => blocks,
     fonts: { ready: Promise.resolve() },
     createElement: () => ({ setAttribute() {} }),
@@ -96,6 +99,11 @@ test("a broken diagram keeps its source and does not block later diagrams", asyn
   const result = await runClient([broken, valid]);
   assert.equal(result.options.securityLevel, "strict");
   assert.equal(result.options.htmlLabels, false);
+  assert.equal(
+    result.options.themeVariables.primaryColor,
+    "theme:--color-diagram-fill",
+  );
+  assert.equal(result.options.fontFamily, "theme:--font-prose");
   assert.equal(broken.parentElement.dataset.mermaidState, "error");
   assert.equal(broken.textContent, "invalid");
   assert.equal(broken.parentElement.innerHTML, "");

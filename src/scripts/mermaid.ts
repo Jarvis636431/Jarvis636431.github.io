@@ -28,21 +28,23 @@ export async function renderMermaid(
     // Pages without diagrams never download the Mermaid renderer.
     const { default: mermaid } = await loadMermaid();
     await root.fonts.ready;
+    const styles = root.defaultView!.getComputedStyle(root.documentElement);
+    const token = (name: string) => styles.getPropertyValue(name).trim();
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: "strict",
       suppressErrorRendering: true,
       htmlLabels: false,
       theme: "base",
-      fontFamily: '"Noto Sans SC", system-ui, sans-serif',
+      fontFamily: token("--font-prose"),
       themeVariables: {
-        primaryColor: "#eef4f2",
-        primaryTextColor: "#1f1f1f",
-        primaryBorderColor: "#2f6f6d",
-        lineColor: "#6b6b6b",
-        secondaryColor: "#f6f4ef",
-        tertiaryColor: "#ffffff",
-        background: "#f6f4ef",
+        primaryColor: token("--color-diagram-fill"),
+        primaryTextColor: token("--color-primary"),
+        primaryBorderColor: token("--color-accent"),
+        lineColor: token("--color-secondary"),
+        secondaryColor: token("--color-background"),
+        tertiaryColor: token("--color-surface"),
+        background: token("--color-background"),
       },
     });
     for (const [index, code] of blocks.entries()) {

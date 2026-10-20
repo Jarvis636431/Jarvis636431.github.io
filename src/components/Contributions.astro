@@ -348,7 +348,7 @@ const { compact = false } = Astro.props;
 
 <style>
   .contributions {
-    color: #1f1f1f;
+    color: var(--color-primary);
   }
   [hidden] {
     display: none !important;
@@ -360,7 +360,7 @@ const { compact = false } = Astro.props;
     margin: 0 0 0.75rem;
     font-size: 0.85rem;
     font-weight: 500;
-    color: #6b6b6b;
+    color: var(--color-secondary);
   }
   .repositories ul {
     display: flex;
@@ -375,27 +375,27 @@ const { compact = false } = Astro.props;
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #1f1f1f1a;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    font-family: "Space Grotesk", sans-serif;
+    font-family: var(--font-display);
     font-size: 0.8rem;
     overflow-wrap: anywhere;
   }
   .repositories button:hover,
   .repositories button[aria-pressed="true"] {
-    border-color: #2f6f6d;
-    color: #2f6f6d;
-    background: #2f6f6d0d;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: rgb(var(--color-accent-rgb) / 0.05098);
     text-decoration: none;
   }
   .repositories button span {
-    color: #6b6b6b;
-    font-family: "IBM Plex Mono", monospace;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
     font-size: 0.7rem;
   }
   button {
-    color: #2f6f6d;
-    font-family: "Space Grotesk", sans-serif;
+    color: var(--color-accent);
+    font-family: var(--font-display);
     font-size: 0.85rem;
     text-underline-offset: 0.25em;
   }
@@ -408,12 +408,12 @@ const { compact = false } = Astro.props;
   a:focus-visible,
   button:focus-visible,
   summary:focus-visible {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: 4px;
   }
   .results-count {
     margin: 0 0 0.75rem;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.8rem;
   }
   .contribution-list {
@@ -423,26 +423,26 @@ const { compact = false } = Astro.props;
   }
   .contribution-entry {
     padding: 1.75rem 0;
-    border-top: 1px solid #1f1f1f1a;
+    border-top: 1px solid var(--color-border);
   }
   .entry-meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem;
-    color: #6b6b6b;
-    font-family: "IBM Plex Mono", monospace;
+    color: var(--color-secondary);
+    font-family: var(--font-mono);
     font-size: 0.7rem;
   }
   .entry-meta a {
-    color: #2f6f6d;
+    color: var(--color-accent);
     overflow-wrap: anywhere;
   }
   .merged-state {
     padding: 0.15rem 0.5rem;
     border-radius: 4px;
-    background: #2f6f6d0d;
-    color: #2f6f6d;
+    background: rgb(var(--color-accent-rgb) / 0.05098);
+    color: var(--color-accent);
   }
   .contribution-entry h3 {
     max-width: 65ch;
@@ -453,7 +453,7 @@ const { compact = false } = Astro.props;
     overflow-wrap: anywhere;
   }
   .contribution-entry h3 a:hover {
-    color: #2f6f6d;
+    color: var(--color-accent);
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
@@ -462,7 +462,7 @@ const { compact = false } = Astro.props;
     flex-wrap: wrap;
     gap: 0.4rem 1.5rem;
     margin: 0;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.8rem;
   }
   .entry-labels {
@@ -475,9 +475,9 @@ const { compact = false } = Astro.props;
   }
   .entry-labels li {
     padding: 0.2rem 0.6rem;
-    border: 1px solid #1f1f1f1a;
+    border: 1px solid var(--color-border);
     border-radius: 999px;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.75rem;
     overflow-wrap: anywhere;
   }
@@ -494,18 +494,18 @@ const { compact = false } = Astro.props;
     align-items: baseline;
   }
   .entry-stats dt {
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 0.75rem;
   }
   .entry-stats dd {
     margin: 0;
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     overflow-wrap: anywhere;
   }
   .entry-stats a,
   .additions {
-    color: #2f6f6d;
+    color: var(--color-accent);
   }
   .entry-description {
     margin-top: 1.1rem;
@@ -514,16 +514,16 @@ const { compact = false } = Astro.props;
   .entry-description summary {
     width: fit-content;
     cursor: pointer;
-    color: #2f6f6d;
+    color: var(--color-accent);
   }
   .entry-description > div {
     max-height: 26rem;
     overflow: auto;
     margin-top: 1rem;
     padding: 1rem;
-    border: 1px solid #1f1f1f1a;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #f8f7f4;
+    background: var(--color-surface-muted);
     color: #525252;
     overflow-wrap: anywhere;
     line-height: 1.7;
@@ -531,7 +531,7 @@ const { compact = false } = Astro.props;
   .entry-description > a {
     display: inline-block;
     margin-top: 0.75rem;
-    color: #2f6f6d;
+    color: var(--color-accent);
   }
   .contributions-footer {
     display: flex;
@@ -540,10 +540,10 @@ const { compact = false } = Astro.props;
     justify-content: space-between;
     gap: 1rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #1f1f1f1a;
+    border-top: 1px solid var(--color-border);
   }
   .contributions-footer > a {
-    color: #2f6f6d;
+    color: var(--color-accent);
     font-size: 0.85rem;
   }
   .contributions-footer > a:hover {
@@ -569,23 +569,23 @@ const { compact = false } = Astro.props;
     min-width: 2.75rem;
     min-height: 2.75rem;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #1f1f1f1a;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    color: #2f6f6d;
-    font-family: "Space Grotesk", sans-serif;
+    color: var(--color-accent);
+    font-family: var(--font-display);
     font-size: 0.85rem;
   }
   .pagination :global(button[aria-current="page"]) {
-    border-color: #2f6f6d;
-    background: #2f6f6d0d;
+    border-color: var(--color-accent);
+    background: rgb(var(--color-accent-rgb) / 0.05098);
   }
   .pagination :global(button:disabled) {
-    color: #6b6b6b;
+    color: var(--color-secondary);
     opacity: 0.5;
     cursor: default;
   }
   .pagination :global(button:focus-visible) {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: 4px;
   }
   .contributions--compact .contribution-entry {

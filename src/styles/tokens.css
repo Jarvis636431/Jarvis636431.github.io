@@ -1,0 +1,50 @@
+/* Canonical site palette and font stacks. Use channels for translucent colors. */
+:root {
+  --color-background-rgb: 246 244 239;
+  --color-surface-rgb: 255 255 255;
+  --color-primary-rgb: 31 31 31;
+  --color-secondary-rgb: 107 107 107;
+  --color-accent-rgb: 47 111 109;
+  --color-accent-secondary-rgb: 197 154 109;
+  --color-background: rgb(var(--color-background-rgb));
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-primary: rgb(var(--color-primary-rgb));
+  --color-secondary: rgb(var(--color-secondary-rgb));
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-accent-secondary: rgb(var(--color-accent-secondary-rgb));
+  --color-accent-hover: #255a58;
+  --color-surface-muted: #f8f7f4;
+  --color-prose: #4b4b4b;
+  --color-diagram-fill: #eef4f2;
+  --color-border: rgb(var(--color-primary-rgb) / 0.1);
+  --color-border-strong: rgb(var(--color-primary-rgb) / 0.15);
+  --color-border-subtle: rgb(var(--color-primary-rgb) / 0.05);
+  --color-rule: #e5e7eb;
+  --color-marker: #d1d5db;
+  --color-marker-muted: #9ca3af;
+
+  /* Semantic callout colors, shared by articles and external Markdown. */
+  --color-tip-rgb: 66 115 71;
+  --color-warning-rgb: 148 99 35;
+  --color-important-rgb: 118 85 139;
+  --color-caution-rgb: 165 72 64;
+
+  /* Dark code tools complement Shiki's github-dark syntax theme. */
+  --color-code-background: #24292e;
+  --color-code-muted: #b1bdc8;
+  --color-code-scrollbar: #64717c;
+  --color-code-error-rgb: 255 160 140;
+  --color-code-error: #ffc1b4;
+  --color-code-highlight-rgb: 98 179 175;
+  --color-code-success: #9cdbbf;
+  --color-code-focus: #80c8c2;
+
+  --font-display:
+    "Space Grotesk", "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+  --font-body:
+    "Newsreader", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", serif;
+  --font-prose:
+    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}

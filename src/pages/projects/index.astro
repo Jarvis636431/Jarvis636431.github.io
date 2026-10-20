@@ -155,15 +155,13 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
   }
   .projects-heading > span {
     flex: none;
-    color: #6b6b6b;
-    font:
-      0.75rem/1.5 "IBM Plex Mono",
-      monospace;
+    color: var(--color-secondary);
+    font: 0.75rem/1.5 var(--font-mono);
   }
   .projects-header p {
     max-width: 48ch;
     margin: 1rem 0 0;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 1.0625rem;
     line-height: 1.7;
   }
@@ -173,10 +171,10 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
     gap: 2rem;
     align-items: start;
     padding: 2rem 0;
-    border-top: 1px solid #1f1f1f26;
+    border-top: 1px solid var(--color-border-strong);
   }
   .project-entry:last-child {
-    border-bottom: 1px solid #1f1f1f26;
+    border-bottom: 1px solid var(--color-border-strong);
   }
 
   .project-copy {
@@ -199,7 +197,7 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
     text-decoration: none;
   }
   h2 a:hover {
-    color: #2f6f6d;
+    color: var(--color-accent);
   }
   .project-links {
     display: flex;
@@ -216,7 +214,7 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
     gap: 0.5rem;
     min-width: 0;
     max-width: 100%;
-    color: #2f6f6d;
+    color: var(--color-accent);
     text-decoration: none;
   }
   .project-links a:hover {
@@ -230,14 +228,14 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
     overflow-wrap: anywhere;
   }
   a:focus-visible {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: 5px;
     border-radius: 2px;
   }
   .project-summary {
     max-width: 52ch;
     margin: 0;
-    color: #6b6b6b;
+    color: var(--color-secondary);
     font-size: 1rem;
     line-height: 1.75;
     overflow-wrap: anywhere;
@@ -249,9 +247,9 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
     width: 10rem;
     aspect-ratio: 1;
     padding: 1.5rem;
-    border: 1px solid #1f1f1f0d;
+    border: 1px solid var(--color-border-subtle);
     border-radius: 0.75rem;
-    background: #ffffff66;
+    background: rgb(var(--color-surface-rgb) / 0.4);
   }
   .project-identity img {
     width: 100%;
@@ -261,7 +259,7 @@ const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
   }
   .projects-empty {
     padding: 2rem 0;
-    color: #6b6b6b;
+    color: var(--color-secondary);
   }
   @media (max-width: 639px) {
     .projects-page {

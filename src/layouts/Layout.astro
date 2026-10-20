@@ -1,7 +1,9 @@
 ---
 import { SEO } from "astro-seo";
 import "katex/dist/katex.min.css";
+import "@styles/tokens.css";
 import "@styles/global.css";
+import "@styles/prose.css";
 import Search from "@components/Search.astro";
 import Header, { type NavLink } from "@components/site/Header.astro";
 import Footer from "@components/site/Footer.astro";
@@ -170,11 +172,11 @@ const structuredData = seo?.structuredData;
   >
     {
       decorativeBackground && (
-        <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(47,111,109,0.12),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(197,154,109,0.12),transparent_50%)]" />
+        <div class="site-background fixed inset-0 -z-10" />
       )
     }
     <a
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-surface text-primary rounded-md border border-black/10"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-surface text-primary rounded-md border border-border"
       href="#main">Skip to content</a
     >
 

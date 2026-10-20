@@ -155,11 +155,11 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
 
 <style>
   .blogs-page {
-    --blog-rule: #1f1f1f1a;
-    --blog-muted: #6b6b6b;
-    --blog-accent: #2f6f6d;
+    --blog-rule: var(--color-border);
+    --blog-muted: var(--color-secondary);
+    --blog-accent: var(--color-accent);
     padding: 4rem 0 2rem;
-    font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
+    font-family: var(--font-display);
   }
   a,
   button {
@@ -222,7 +222,7 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
     border-bottom: 1px solid transparent;
   }
   .blog-filters small {
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.625rem;
   }
   .blog-filters button:hover,
@@ -252,7 +252,7 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
     padding: 2rem 0;
   }
   .post-link time {
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 0.6875rem;
     line-height: 1.8;
     color: var(--blog-muted);
@@ -292,7 +292,7 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
     color: var(--blog-muted);
   }
   .post-meta > span:first-child {
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
   }
   .draft-label {
     color: var(--blog-accent);

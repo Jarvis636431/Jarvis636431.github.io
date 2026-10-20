@@ -114,7 +114,7 @@ const structuredData = {
     line-height: 1.85;
   }
   .about-intro .about-lead {
-    color: #1f1f1f;
+    color: var(--color-primary);
     font-size: 1.2rem;
   }
   .about-links {
@@ -124,14 +124,14 @@ const structuredData = {
     margin-top: 1.75rem;
   }
   .about-links a {
-    color: #2f6f6d;
+    color: var(--color-accent);
     font-size: 0.9rem;
     text-underline-offset: 0.3em;
   }
   .about-section {
     margin-top: 3rem;
     padding-top: 1.75rem;
-    border-top: 1px solid rgba(31, 31, 31, 0.12);
+    border-top: 1px solid rgb(var(--color-primary-rgb) / 0.12);
   }
   .about-section h2 {
     margin: 0 0 1.5rem;
@@ -184,7 +184,7 @@ const structuredData = {
     margin: 0;
   }
   .all-contributions {
-    color: #2f6f6d;
+    color: var(--color-accent);
     font-size: 0.85rem;
     text-underline-offset: 0.25em;
   }
@@ -193,7 +193,7 @@ const structuredData = {
     text-underline-offset: 0.3em;
   }
   a:focus-visible {
-    outline: 2px solid #2f6f6d;
+    outline: 2px solid var(--color-accent);
     outline-offset: 5px;
   }
   @media (max-width: 480px) {
