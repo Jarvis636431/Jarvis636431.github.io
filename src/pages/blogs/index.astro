@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import { getBlogCategory, getPostReadingTime } from "@lib/blog";
 import { getPosts } from "@lib/content";
@@ -6,13 +7,12 @@ import { getPosts } from "@lib/content";
 const posts = await getPosts();
 const description =
   "Notes on frontend engineering, AI applications, and building software.";
-const siteOrigin =
-  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
+const siteOrigin = Astro.site?.origin ?? siteConfig.url;
 const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const blogStructuredData = {
   "@context": "https://schema.org",
   "@type": "Blog",
-  name: "Jarvis Hub Blogs",
+  name: `${siteConfig.name} Blogs`,
   url: pageUrl,
   description,
   inLanguage: "en",
@@ -44,14 +44,14 @@ const categories = Array.from(categoryCounts, ([name, count]) => ({
 ---
 
 <Layout
-  title="Blogs - Jarvis Hub"
+  title={`Blogs - ${siteConfig.name}`}
   lang="en"
   description={description}
   decorativeBackground={false}
   seo={{
     canonical: pageUrl,
     type: "website",
-    image: { src: "/logo.png", alt: "Jarvis Hub logomark" },
+    image: siteConfig.image,
     structuredData: blogStructuredData,
   }}
 >

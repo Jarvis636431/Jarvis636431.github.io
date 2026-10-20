@@ -1,3 +1,4 @@
+import { siteConfig } from "@config/site.mjs";
 import { getPosts } from "@lib/content";
 
 const escapeXml = (value) =>
@@ -11,7 +12,7 @@ const escapeXml = (value) =>
 export async function GET(context) {
   const posts = await getPosts();
 
-  const site = context.site?.toString() ?? "https://jarvis636431.github.io";
+  const site = context.site?.toString() ?? siteConfig.url;
   const siteUrl = site.endsWith("/") ? site.slice(0, -1) : site;
   const items = posts
     .map((post) => {
@@ -35,10 +36,10 @@ export async function GET(context) {
   const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Jarvis Hub 博客</title>
-    <description>关于前端工程、产品系统、AI 工具与持续学习的笔记。</description>
+    <title>${escapeXml(siteConfig.rss.title)}</title>
+    <description>${escapeXml(siteConfig.rss.description)}</description>
     <link>${escapeXml(siteUrl)}</link>
-    <language>zh-CN</language>
+    <language>${escapeXml(siteConfig.rss.language)}</language>
     ${items}
   </channel>
 </rss>`;

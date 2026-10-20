@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import ViewCounter from "@components/site/ViewCounter.astro";
 
 interface Props {
@@ -13,11 +14,11 @@ const currentYear = new Date().getFullYear();
   <div
     class="max-w-6xl mx-auto px-4 py-6 md:py-8 flex flex-row justify-between items-center gap-4 text-xs sm:text-sm text-secondary"
   >
-    <div class="whitespace-nowrap">© {currentYear} Jarvis Hub</div>
+    <div class="whitespace-nowrap">© {currentYear} {siteConfig.name}</div>
     <div class="flex shrink-0 items-center gap-4 sm:gap-6">
       {viewCounterSlug && <ViewCounter slug={viewCounterSlug} />}
       <a
-        href="https://github.com/Jarvis636431"
+        href={siteConfig.github.url}
         target="_blank"
         rel="noopener noreferrer"
         class="text-secondary hover:text-accent-cyan transition-colors"
@@ -25,7 +26,7 @@ const currentYear = new Date().getFullYear();
         GitHub
       </a>
       <a
-        href="mailto:mengda636431@gmail.com"
+        href={`mailto:${siteConfig.email}`}
         class="text-secondary hover:text-accent-cyan transition-colors"
       >
         Email

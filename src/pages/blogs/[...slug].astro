@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import "@styles/article.css";
 import Toc from "@components/Toc.astro";
@@ -49,8 +50,7 @@ const updatedDateIso = post.data.updatedDate
   ? new Date(post.data.updatedDate).toISOString()
   : undefined;
 
-const siteOrigin =
-  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
+const siteOrigin = Astro.site?.origin ?? siteConfig.url;
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const articleStructuredData: Record<string, unknown> = {
   "@context": "https://schema.org",
@@ -61,14 +61,14 @@ const articleStructuredData: Record<string, unknown> = {
   dateModified: updatedDateIso ?? publishDateIso,
   author: {
     "@type": "Person",
-    name: "Jarvis Hub",
+    name: siteConfig.name,
   },
   publisher: {
     "@type": "Organization",
-    name: "Jarvis Hub",
+    name: siteConfig.name,
     logo: {
       "@type": "ImageObject",
-      url: new URL("/logo.png", siteOrigin).toString(),
+      url: new URL(siteConfig.image.src, siteOrigin).toString(),
     },
   },
   mainEntityOfPage: canonicalUrl,
@@ -96,7 +96,7 @@ const relatedPosts = getRelatedPosts(post, allPosts);
 ---
 
 <Layout
-  title={`${post.data.title} - Jarvis Hub`}
+  title={`${post.data.title} - ${siteConfig.name}`}
   lang={post.data.language}
   description={post.data.description}
   seo={{

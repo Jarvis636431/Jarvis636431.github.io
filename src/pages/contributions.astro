@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import Contributions from "@components/Contributions.astro";
 import {
@@ -9,12 +10,12 @@ const description =
   "Merged open-source pull requests by Jarvis. Explore merged bug fixes, features and documentation across open-source repositories.";
 const pageUrl = new URL(
   "/contributions",
-  Astro.site ?? "https://jarvis636431.github.io",
+  Astro.site ?? siteConfig.url,
 ).toString();
 ---
 
 <Layout
-  title="Open-source contributions - Jarvis Hub"
+  title={`Open-source contributions - ${siteConfig.name}`}
   lang="en"
   description={description}
   seo={{

@@ -1,15 +1,7 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
-import { URL } from "node:url";
-import { runInNewContext } from "node:vm";
 
-// Execute the actual component script with the DOM operations it uses.
-const component = readFileSync(
-  new URL("../src/components/Toc.astro", import.meta.url),
-  "utf8",
-);
-const script = component.match(/<script is:inline>([\s\S]*?)<\/script>/)[1];
+import { initToc } from "../src/scripts/toc.ts";
 
 function renderToc(ids, { height = 200, scrollHeight = ids.length * 30 } = {}) {
   const headings = ids.map((entry, index) => {
@@ -122,15 +114,15 @@ function renderToc(ids, { height = 200, scrollHeight = ids.length * 30 } = {}) {
     },
   };
   let onIntersection;
-  runInNewContext(script, {
+  initToc(
     document,
-    IntersectionObserver: class {
+    class {
       constructor(callback) {
         onIntersection = callback;
       }
       observe() {}
     },
-  });
+  );
   return {
     headings,
     links,

@@ -1,9 +1,10 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 ---
 
 <Layout
-  title="404: Signal Lost - Jarvis Hub"
+  title={`404: Signal Lost - ${siteConfig.name}`}
   lang="en"
   description="System failure. Signal lost."
 >

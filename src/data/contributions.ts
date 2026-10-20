@@ -1,3 +1,4 @@
+import { siteConfig } from "@config/site.mjs";
 import snapshot from "@data/contributions.generated.json";
 
 export interface MergedPullRequest {
@@ -18,8 +19,12 @@ export interface MergedPullRequest {
   mergedBy: string | null;
 }
 
-export const contributionSearchUrl =
-  "https://github.com/search?q=author%3AJarvis636431+is%3Apr+is%3Amerged+is%3Apublic+-user%3AJarvis636431&type=pullrequests";
+export const contributionSearchUrl = `https://github.com/search?${new URLSearchParams(
+  {
+    q: `author:${siteConfig.github.username} is:pr is:merged is:public -user:${siteConfig.github.username}`,
+    type: "pullrequests",
+  },
+)}`;
 
 export const mergedPullRequests: MergedPullRequest[] = snapshot.pullRequests
   .slice()

@@ -1,3 +1,4 @@
+import { siteConfig } from "@config/site.mjs";
 export interface ResumeExperience {
   period: string;
   role: string;
@@ -13,9 +14,9 @@ export const resumeProfile = {
   title: "Software Engineer at Joybuy",
   organization: "Joybuy",
   location: "Beijing, China",
-  email: "mengda636431@gmail.com",
-  website: "https://jarvis636431.github.io/",
-  github: "https://github.com/Jarvis636431",
+  email: siteConfig.email,
+  website: new URL("/", siteConfig.url).toString(),
+  github: siteConfig.github.url,
   summary:
     "Software engineer at Joybuy with a background at Tianjin University and campus technology teams. Focused on AI applications, cross-platform systems, and developer tools, bringing product interactions to life through frontend and full-stack engineering.",
   focus: [

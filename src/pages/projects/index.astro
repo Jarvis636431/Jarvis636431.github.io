@@ -1,28 +1,28 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import { getProjects } from "@lib/content";
 
 const projects = await getProjects({ includeArchived: false });
 const description =
   "Selected work across AI-assisted tools, web platforms, and cross-platform applications.";
-const siteOrigin =
-  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
+const siteOrigin = Astro.site?.origin ?? siteConfig.url;
 const pageUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 ---
 
 <Layout
-  title="Projects - Jarvis Hub"
+  title={`Projects - ${siteConfig.name}`}
   lang="en"
   description={description}
   decorativeBackground={false}
   seo={{
     canonical: pageUrl,
     type: "website",
-    image: { src: "/logo.png", alt: "Jarvis Hub logomark" },
+    image: siteConfig.image,
     structuredData: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      name: "Jarvis Hub Projects",
+      name: `${siteConfig.name} Projects`,
       description,
       url: pageUrl,
       inLanguage: "en",

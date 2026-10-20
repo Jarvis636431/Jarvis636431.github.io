@@ -9,7 +9,7 @@ A personal portfolio and technical writing archive built with Astro 5, TypeScrip
 - Article enhancements: code copying, line numbers, highlighted lines, collapsible code, image captions and zoom, and horizontally scrollable tables.
 - Project archive and detail pages; archived projects are excluded from production.
 - Data-driven resume with print / Save PDF support, plus About and contribution archive pages.
-- Client-side fuzzy search over titles, summaries, and tags with Fuse.js and Cmd/Ctrl+K navigation. Article bodies are not indexed.
+- Client-side fuzzy search over titles, summaries, aliases, tags, categories, and article bodies with Fuse.js and Cmd/Ctrl+K navigation.
 - Optional Supabase home-page view counter and Giscus comments through GitHub Discussions.
 - Static RSS, sitemap, robots.txt, and page-specific SEO metadata.
 - GitHub Actions verification, Pages deployment, and contribution snapshot synchronization every four hours.
@@ -179,14 +179,26 @@ const highlighted = true;
 
 ## Import aliases
 
-Astro reads aliases directly from `tsconfig.json`; do not duplicate these mappings in Vite configuration. Source files use `@components/*`, `@layouts/*`, `@lib/*`, `@data/*`, `@scripts/*`, `@styles/*`, `@content/*`, `@assets/*`, and `@pages/*` for internal imports, including dynamic imports and browser scripts.
+Astro reads aliases directly from `tsconfig.json`; do not duplicate these mappings in Vite configuration. Source files use `@config/*`, `@components/*`, `@layouts/*`, `@lib/*`, `@data/*`, `@scripts/*`, `@styles/*`, `@content/*`, `@assets/*`, and `@pages/*` for internal imports, including dynamic imports and browser scripts.
 
 ```ts
 import { getPosts } from "@lib/content";
 import { resumeProfile } from "@data/resume";
 ```
 
-Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases.
+Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases. Leaf modules imported directly by Node tests (such as `src/scripts/search.ts` and `src/lib/seo.ts`) also use explicit relative imports for their dependencies.
+
+## Site configuration and page metadata
+
+`src/config/site.mjs` owns the site name, origin, navigation, contact links, GitHub identity, default share image, favicon, and RSS defaults. Astro configuration, page metadata, profile data, and contribution automation use the same values. The module has no Astro or browser dependencies.
+
+`src/lib/seo.ts` supplies canonical URLs and complete Open Graph / Twitter metadata. Pages can override their title, description, share image, article dates, tags, or Twitter settings through `Layout`; pages without a custom image use the existing logo as a fallback.
+
+## Client initialization and tests
+
+`Search.astro` and `Toc.astro` own their markup and styles; their bundled scripts call `initSearch` and `initToc` from `src/scripts/`. Tests import those modules directly and inject browser dependencies, without extracting or transpiling Astro source. Search tests cover animation, focus restoration (including mobile menu triggers), and reduced motion; TOC tests cover duplicate headings, tracking, and local scrolling.
+
+The mobile menu is inert while closed. Opening enables its links and moves focus inside; Escape closes it and restores the menu button. Opening search from the mobile menu restores the visible menu button when search closes. Switching to desktop navigation closes the mobile menu and moves focus to a desktop link when needed.
 
 ## Styling
 

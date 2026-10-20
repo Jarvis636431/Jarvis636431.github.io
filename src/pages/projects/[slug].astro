@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import type { CollectionEntry } from "astro:content";
 import { getProjects } from "@lib/content";
@@ -19,8 +20,7 @@ const titleLanguage = project.data.titleEn ? "en" : project.data.language;
 const summaryLanguage = project.data.summaryEn ? "en" : project.data.language;
 const publishDateIso = project.data.publishDate.toISOString();
 const updatedDateIso = project.data.updatedDate?.toISOString();
-const siteOrigin =
-  Astro.site?.origin ?? Astro.url.origin ?? "https://jarvis636431.github.io";
+const siteOrigin = Astro.site?.origin ?? siteConfig.url;
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const projectStructuredData: Record<string, unknown> = {
   "@context": "https://schema.org",
@@ -35,7 +35,7 @@ const projectStructuredData: Record<string, unknown> = {
   datePublished: publishDateIso,
   dateModified: updatedDateIso ?? publishDateIso,
   inLanguage: project.data.language,
-  creator: { "@type": "Person", name: "Jarvis Hub" },
+  creator: { "@type": "Person", name: siteConfig.name },
 };
 if (project.data.coverImage) {
   projectStructuredData.image = [
@@ -57,7 +57,7 @@ const nextProject =
 ---
 
 <Layout
-  title={`${title} - Jarvis Hub`}
+  title={`${title} - ${siteConfig.name}`}
   lang={project.data.language}
   description={summary}
   decorativeBackground={false}

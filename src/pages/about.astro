@@ -1,4 +1,5 @@
 ---
+import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import Contributions from "@components/Contributions.astro";
 import { resumeExperiences, resumeProfile } from "@data/resume";
@@ -11,10 +12,7 @@ const description =
   "Software engineer at Joybuy, focused on AI applications, cross-platform engineering, and developer tools.";
 const experiences = resumeExperiences;
 
-const pageUrl = new URL(
-  "/about",
-  Astro.site ?? "https://jarvis636431.github.io",
-).toString();
+const pageUrl = new URL("/about", Astro.site ?? siteConfig.url).toString();
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
@@ -34,7 +32,7 @@ const structuredData = {
 ---
 
 <Layout
-  title="About - Jarvis Hub"
+  title={`About - ${siteConfig.name}`}
   lang="en"
   description={description}
   seo={{ canonical: pageUrl, type: "profile", structuredData }}

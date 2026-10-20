@@ -1,8 +1,9 @@
+import { siteConfig } from "../src/config/site.mjs";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL, URL } from "node:url";
 import { format } from "prettier";
 
-const author = "Jarvis636431";
+const author = siteConfig.github.username;
 const snapshotPath = fileURLToPath(
   new URL("../src/data/contributions.generated.json", import.meta.url),
 );

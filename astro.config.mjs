@@ -10,11 +10,11 @@ import rehypeKatex from "rehype-katex";
 import rehypeGithubAlert from "rehype-github-alert";
 import remarkCodeMeta from "./src/lib/remark-code-meta.mjs";
 
-const SITE_URL = "https://jarvis636431.github.io";
+import { siteConfig } from "./src/config/site.mjs";
 
 // https://astro.build/config
 export default defineConfig({
-  site: SITE_URL,
+  site: siteConfig.url,
   base: "/",
   trailingSlash: "never",
   integrations: [

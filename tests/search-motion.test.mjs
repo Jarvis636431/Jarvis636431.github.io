@@ -1,22 +1,7 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
-import { URL } from "node:url";
-import { runInNewContext } from "node:vm";
-import ts from "typescript";
 
-const component = readFileSync(
-  new URL("../src/components/Search.astro", import.meta.url),
-  "utf8",
-);
-const source = ts
-  .transpileModule(component.match(/<script>([\s\S]*?)<\/script>/)[1], {
-    compilerOptions: {
-      target: ts.ScriptTarget.ES2022,
-      module: ts.ModuleKind.ES2022,
-    },
-  })
-  .outputText.replace(/^import .*;\s*$/gm, "");
+import { initSearch } from "../src/scripts/search.ts";
 
 function setup(reduced = false) {
   let document;
@@ -64,6 +49,8 @@ function setup(reduced = false) {
       "search-status",
       "search-close",
       "main-header",
+      "mobile-search-btn",
+      "menu-btn",
     ].map((id) => [id, new Element()]),
   );
   const trigger = new Element();
@@ -87,6 +74,9 @@ function setup(reduced = false) {
     return id;
   };
   const window = {
+    HTMLElement: Element,
+    requestAnimationFrame: frame,
+    fetch: async () => ({ ok: true, json: async () => [] }),
     innerWidth: 1000,
     matchMedia: () => ({ matches: reduced }),
     addEventListener() {},
@@ -98,15 +88,7 @@ function setup(reduced = false) {
     clearTimeout: (id) => timers.delete(id),
     cancelAnimationFrame: (id) => frames.delete(id),
   };
-  const api = runInNewContext(`${source}; ({openSearch, closeSearch});`, {
-    document,
-    window,
-    HTMLElement: Element,
-    requestAnimationFrame: frame,
-    fetch: async () => ({ ok: true, json: async () => [] }),
-    createSearch: () => ({ search: () => [] }),
-    getSearchExcerpt() {},
-  });
+  const api = initSearch(document, window);
   const flush = (queue) => {
     while (queue.size) {
       const [id, fn] = queue.entries().next().value;
@@ -180,4 +162,15 @@ test("reduced motion opens and closes immediately without timers", () => {
   ui.closeSearch();
   assert.equal(ui.dialog.open, false);
   assert.equal(ui.timers.size, 0);
+});
+
+test("search opened from the mobile menu restores its visible menu button", () => {
+  const ui = setup(true);
+  ui.document.getElementById("mobile-search-btn").focus();
+  ui.openSearch();
+  ui.closeSearch();
+  assert.equal(
+    ui.document.activeElement,
+    ui.document.getElementById("menu-btn"),
+  );
 });
