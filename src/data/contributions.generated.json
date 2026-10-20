@@ -1,6 +1,40 @@
 {
   "pullRequests": [
     {
+      "repository": "NervJS/taro",
+      "number": 19541,
+      "title": "fix(vite): reset stateful regex cursors in compile filters",
+      "url": "https://github.com/NervJS/taro/pull/19541",
+      "body": "**这个 PR 做了什么？**\n\nReset RegExp `lastIndex` before matching Vite compile include/exclude rules. A global or sticky regex previously retained its cursor, so matching the same path repeatedly could alternate between included and excluded.\n\nAdds tests for global/sticky matchers, existing cursors, exclusion precedence, compile options, string globs and Windows paths. The change is limited to resetting RegExp matchers before each test.\n\n**这个 PR 是什么类型？**\n\n- [x] 错误修复 (Bugfix)\n\n**这个 PR 涉及以下平台：**\n\n- [x] 所有平台（Vite 构建）\n\n**验证**\n\n- Vite runner test:ci: 2 suites / 13 tests passed.\n- ESLint for changed files: passed.\n- Vite runner build: passed with Node 20.19.4 / pnpm 10.0.0.\n- Original implementation fails 7 regression cases.\n\nCloses #19540\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n## Summary by CodeRabbit\n\n- **Bug 修复**\n  - 修复过滤器在重复检查带状态标志的正则表达式时结果不一致的问题。\n  - 确保排除规则优先级、路径匹配及空值输入等场景下的过滤结果符合预期。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-10-16T13:38:41Z",
+      "mergedAt": "2026-10-20T03:34:40Z",
+      "additions": 46,
+      "deletions": 0,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
+      "number": 19543,
+      "title": "fix(h5): accept valid zero and negative location coordinates",
+      "url": "https://github.com/NervJS/taro/pull/19543",
+      "body": "**这个 PR 做了什么？**\n\nFix H5 chooseLocation coordinate validation. Initial coordinates in the southern/western hemisphere were omitted from the map iframe URL, and selecting a point at latitude or longitude 0 incorrectly reported failure.\n\nUse one numeric latitude/longitude range check for both initial coordinates and selected results. Preserve the explicit coord override, cancellation and submitting without a selection.\n\nAdds 27 DOM regression tests covering negative/zero/boundary coordinates, missing and invalid values, map messages, iframe parameters and result callbacks. The original implementation fails 12 cases.\n\n**这个 PR 是什么类型？**\n\n- [x] 错误修复 (Bugfix)\n\n**这个 PR 涉及以下平台：**\n\n- [x] Web 端（H5）\n\n**验证**\n\n- chooseLocation DOM tests: 27 passed.\n- H5 package test:ci: 23 suites / 160 tests passed.\n- ESLint for changed files: passed.\n- H5 package build: passed with Node 20.19.4 / pnpm 10.0.0.\n\nCloses #19542\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n## Summary by CodeRabbit\n\n* **修复**\n  * 地图查询仅在经纬度均为有效数字且处于合法范围内时传入坐标；无效或不完整的坐标将被省略。\n  * 选点结果采用相同的经纬度校验规则，避免无效坐标被视为有效结果。\n  * 显式传入的 `coord` 可覆盖初始坐标生成的查询参数。\n\n* **测试**\n  * 补充对有效、无效及缺失坐标，以及选点成功、失败和取消场景的覆盖。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-10-16T13:55:56Z",
+      "mergedAt": "2026-10-20T03:15:37Z",
+      "additions": 100,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
       "repository": "Tencent/WeKnora",
       "number": 4402,
       "title": "fix(search): preserve chunk types in tool results",
