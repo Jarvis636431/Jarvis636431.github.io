@@ -1,6 +1,23 @@
 {
   "pullRequests": [
     {
+      "repository": "Tencent/WeKnora",
+      "number": 4549,
+      "title": "feat(confluence): support personal access token authentication",
+      "url": "https://github.com/Tencent/WeKnora/pull/4549",
+      "body": "## Description\n\nConfluence Server/Data Center instances that require personal access tokens cannot connect through the current username/password-only connector.\n\nAccept an optional `credentials.token` for Server/DC. A nonblank PAT takes precedence over username/password and sends `Authorization: Bearer <token>` for API requests and private image downloads; username and password may be omitted. An absent or whitespace-only PAT retains Basic authentication. Cloud continues to require email and API token.\n\n- Partition the space-picker cache by authentication mode and credential fingerprint.\n- Add a masked PAT input, conditional required fields, and translations in all six locales. Creation and credential replacement keep the token out of public settings.\n- Document configuration and include a screenshot of the actual editor rendered with local mock configuration.\n\nNo schema migration or dependency change.\n\n## Type of Change\n\n- [x] ✨ New feature\n- [x] 📚 Documentation update\n- [x] 🧪 Test\n\n## Related Issue\n\nFixes #4504\n\n## Testing\n\nPassed:\n\n```sh\ngo test ./internal/datasource/connector/confluence -race -count=1\ngo vet ./internal/datasource/connector/confluence\nGOTOOLCHAIN=go1.26.2 golangci-lint run --new-from-rev=upstream/main ./internal/datasource/connector/confluence/...\ncd frontend\nnode --import tsx --test src/views/knowledge/settings/DataSourceEditorDialog.test.ts\nnpm run type-check\nnode --import tsx --test src/i18n/localeKeyAudit.test.ts\nnpm run build\ncd ..\nnode website-docs/scripts/check-links.mjs\ngit diff --check upstream/main...HEAD\n```\n\nThe editor suite passes all 27 tests; locale audit passes all 15 tests. Lint v2.12.2 reports 0 issues using the repository-compatible Go 1.26 toolchain (the local default Go 1.27 is incompatible with that lint binary). Documentation checking covers 76 documents and 350 internal links, with no broken links.\n\nBackend regressions cover PAT-only credentials, precedence, Basic fallback, Cloud validation, API and image headers, cache isolation/rotation, and same-scope versus rejected cross-scope image redirects. Running the new backend tests with unchanged upstream production files overlaid fails the PAT cases before the fix. Frontend regressions cover PAT-only connection testing/creation, Cloud field visibility, Basic requirements, and replacement through the credentials subresource.\n\nBrowser inspection used the real editor component with a mocked credentials-status endpoint and an example token. No live Confluence instance was used. Full-repository test suites were not run; production build succeeds with the existing large-chunk advisory.\n\n## Checklist\n\n- [x] Diff whitespace check passes\n- [x] Changed Go files are formatted\n- [x] Targeted tests, race checks, vet and diff-scoped lint pass\n- [x] Self-reviewed\n- [x] Added regression tests\n- [x] Updated documentation and locale keys\n- [x] Validation scope and environment limitations documented above\n\n## Screenshots / Recordings\n\nServer/DC PAT entry; username and password become optional. Local mock configuration, example token only.\n\n![Confluence Server/DC PAT editor](https://raw.githubusercontent.com/Jarvis636431/WeKnora/7e9b0137bdd8c0eb9e0e3f54c18ef939217cd846/website-docs/public/screenshots/datasource-confluence-pat.png)\n",
+      "labels": [],
+      "createdAt": "2026-10-21T03:27:30Z",
+      "mergedAt": "2026-10-21T07:12:41Z",
+      "additions": 306,
+      "deletions": 14,
+      "changedFiles": 14,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 1,
+      "mergedBy": "lyingbug"
+    },
+    {
       "repository": "NervJS/taro",
       "number": 19537,
       "title": "fix(h5): prevent uploads after cancellation during file conversion",
