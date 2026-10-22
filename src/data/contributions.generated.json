@@ -2,6 +2,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19511,
+      "title": "fix(weapp): reuse independent subpackage app across pages",
+      "url": "https://github.com/NervJS/taro/pull/19511",
+      "body": "<!--\r\n请务必阅读贡献者指南：https://github.com/NervJS/taro/blob/master/CONTRIBUTING.md\r\n并使用 \"[x]\" 进行勾选\r\n-->\r\n\r\n**这个 PR 做了什么？** (简要描述所做更改)\r\n\r\n关联 #19501。\r\n\r\n独立分包的页面加载器此前会在每个页面首次加载时调用 `createReactApp`。同一独立分包内懒加载第二个页面时，这可能重新创建 React 根节点并覆盖正在使用的 `Current.app`。\r\n\r\n现在仅在当前运行时尚未创建 App 时执行初始化；后续页面仍会正常注册。新增了两个页面依次加载的测试，验证 App 只初始化一次、两个页面均完成注册。\r\n\r\n**这个 PR 是什么类型？** (至少选择一个)\r\n\r\n- [x] 错误修复 (Bugfix) issue: #19501\r\n- [ ] 新功能 (Feature)\r\n- [ ] 代码重构 (Refactor)\r\n- [ ] TypeScript 类型定义修改 (Types)\r\n- [ ] 文档修改 (Docs)\r\n- [ ] 代码风格更新 (Code style update)\r\n- [ ] 构建优化 (Chore)\r\n- [ ] 其他，请描述 (Other, please describe):\r\n\r\n**这个 PR 涉及以下平台：**\r\n\r\n- [ ] 所有平台\r\n- [ ] Web 端（H5）\r\n- [ ] 移动端（React-Native）\r\n- [ ] 鸿蒙（Harmony）\r\n- [ ] 鸿蒙容器（Harmony Hybrid）\r\n- [ ] ASCF 元服务\r\n- [ ] 快应用（QuickApp）\r\n- [ ] 所有小程序\r\n- [x] 微信小程序\r\n- [ ] 企业微信小程序\r\n- [ ] 京东小程序\r\n- [ ] 百度小程序\r\n- [ ] 支付宝小程序\r\n- [ ] 支付宝 IOT 小程序\r\n- [ ] 钉钉小程序\r\n- [ ] QQ 小程序\r\n- [ ] 飞书小程序\r\n- [ ] 快手小程序\r\n- [ ] 头条小程序\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n## Summary by CodeRabbit\n\n* **修复**\n  * 加载同一应用包中的多个独立页面时，应用创建函数仅调用一次，页面配置仍会分别执行。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": ["T-weapp"],
+      "createdAt": "2026-09-30T09:21:14Z",
+      "mergedAt": "2026-10-22T12:13:00Z",
+      "additions": 56,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 2,
+      "comments": 3,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19546,
       "title": "fix(h5): settle getVideoInfo when video loading fails",
       "url": "https://github.com/NervJS/taro/pull/19546",
