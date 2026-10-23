@@ -2,6 +2,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19557,
+      "title": "fix(components): 修复 Picker 重开时的关闭定时器竞争",
+      "url": "https://github.com/NervJS/taro/pull/19557",
+      "body": "**这个 PR 做了什么？**\n\nH5 Picker 在关闭后的 350ms 内重开时，旧定时器会隐藏重新打开的选择器，且关闭动画类名仍然保留。现在记录并清理关闭定时器：重开时取消旧回调并复位动画，重复关闭时以最后一次关闭为准，组件卸载时取消待执行回调。\n\n新增 Stencil 组件测试，通过实际点击事件验证快速重开、正常动画结束、重复关闭、卸载清理和禁用状态。\n\nCloses #19556\n\n**这个 PR 是什么类型？**\n\n- [x] 错误修复 (Bugfix)\n\n**这个 PR 涉及以下平台：**\n\n- [x] Web 端（H5）\n\n**验证**\n\n- 原实现运行新增测试：3 条失败、2 条通过；修复后 5 条全部通过。\n- `pnpm --filter @tarojs/components exec stencil test --spec --runInBand --no-watchman`：72 个单元测试文件、124 个用例、35 个快照通过。此次仅运行 spec，未运行 e2e。\n- `pnpm --filter @tarojs/components run build:ci`：退出码 0；组件库原有构建警告仍存在。\n- 修改文件 ESLint 无错误，原渲染逻辑仍有 4 条 JSX key 警告；`git diff --check` 通过。\n- 使用 Stencil 模拟 DOM 与受控时钟验证，未进行真机或独立浏览器交互测试。\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n- **Bug 修复**\n  - 修复选择器关闭动画期间重新打开或重复关闭时可能出现的状态异常。\n  - 选择器卸载或被禁用时，会正确清理待处理的关闭操作，避免弹层意外显示或状态未重置。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-10-23T04:21:18Z",
+      "mergedAt": "2026-10-23T07:48:26Z",
+      "additions": 120,
+      "deletions": 13,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19555,
       "title": "fix(h5): 释放 chooseMedia 加载失败的临时资源",
       "url": "https://github.com/NervJS/taro/pull/19555",
