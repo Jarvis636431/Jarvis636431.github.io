@@ -1,0 +1,18 @@
+---
+import { renderMarkdown } from "@lib/markdown.mjs";
+import "@styles/prose.css";
+
+interface Props {
+  /** Raw Markdown is sanitized; omit to wrap compiled Astro content in the slot. */
+  content?: string;
+  compact?: boolean;
+  class?: string;
+}
+
+const { content, compact = false, class: className } = Astro.props;
+const html = content === undefined ? undefined : await renderMarkdown(content);
+---
+
+<div class:list={["prose max-w-none", compact && "prose--compact", className]}>
+  {html === undefined ? <slot /> : <Fragment set:html={html} />}
+</div>

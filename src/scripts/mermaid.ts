@@ -4,9 +4,7 @@ export async function renderMermaid(
   loadMermaid = () => import("mermaid"),
 ) {
   const blocks = Array.from(
-    root.querySelectorAll<HTMLElement>(
-      ".prose pre > code.language-mermaid, .markdown-body pre > code.language-mermaid",
-    ),
+    root.querySelectorAll<HTMLElement>(".prose pre > code.language-mermaid"),
   ).filter((code) => !code.parentElement?.dataset.mermaidState);
   if (!blocks.length) return;
 

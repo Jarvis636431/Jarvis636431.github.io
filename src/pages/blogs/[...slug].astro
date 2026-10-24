@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
+import Markdown from "@components/Markdown.astro";
 import "@styles/article.css";
 import Toc from "@components/blog/Toc.astro";
 import Comments from "@components/blog/Comments.astro";
@@ -233,7 +234,7 @@ const relatedPosts = getRelatedPosts(post, allPosts);
         }
 
         <div id="blog-article" class="article-content">
-          <div class="prose max-w-none"><Content /></div>
+          <Markdown><Content /></Markdown>
         </div>
 
         {

@@ -1,5 +1,5 @@
 ---
-import PullRequestBody from "@components/contributions/PullRequestBody.astro";
+import Markdown from "@components/Markdown.astro";
 import {
   contributionProjects,
   contributionSearchUrl,
@@ -96,31 +96,33 @@ const { compact = false } = Astro.props;
                 {pr.title}
               </a>
             </h3>
-            <p class="entry-dates">
-              <span>
-                Merged{" "}
-                <time datetime={pr.mergedAt}>
-                  {formatMergeDate(pr.mergedAt)}
-                </time>
-              </span>
-              {!compact && (
+            <div class="entry-details">
+              <p class="entry-dates">
                 <span>
-                  Opened{" "}
-                  <time datetime={pr.createdAt}>
-                    {formatMergeDate(pr.createdAt)}
+                  Merged{" "}
+                  <time datetime={pr.mergedAt}>
+                    {formatMergeDate(pr.mergedAt)}
                   </time>
                 </span>
+                {!compact && (
+                  <span>
+                    Opened{" "}
+                    <time datetime={pr.createdAt}>
+                      {formatMergeDate(pr.createdAt)}
+                    </time>
+                  </span>
+                )}
+              </p>
+              {!compact && pr.labels.length > 0 && (
+                <ul class="entry-labels" aria-label="GitHub labels">
+                  {pr.labels.map((label) => (
+                    <li>{label}</li>
+                  ))}
+                </ul>
               )}
-            </p>
+            </div>
             {!compact && (
               <>
-                {pr.labels.length > 0 && (
-                  <ul class="entry-labels" aria-label="GitHub labels">
-                    {pr.labels.map((label) => (
-                      <li>{label}</li>
-                    ))}
-                  </ul>
-                )}
                 <dl class="entry-stats">
                   <div>
                     <dt>Files</dt>
@@ -167,7 +169,7 @@ const { compact = false } = Astro.props;
                   <details class="entry-description">
                     <summary>PR description</summary>
                     <div>
-                      <PullRequestBody content={pr.body} />
+                      <Markdown content={pr.body} compact />
                     </div>
                     <a href={pr.url} target="_blank" rel="noopener noreferrer">
                       View discussion on GitHub
@@ -457,6 +459,12 @@ const { compact = false } = Astro.props;
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
+  .entry-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+  }
   .entry-dates {
     display: flex;
     flex-wrap: wrap;
@@ -469,7 +477,7 @@ const { compact = false } = Astro.props;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin: 1rem 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -524,7 +532,6 @@ const { compact = false } = Astro.props;
     border: 1px solid var(--color-border);
     border-radius: 8px;
     background: var(--color-surface-muted);
-    color: #525252;
     overflow-wrap: anywhere;
     line-height: 1.7;
   }

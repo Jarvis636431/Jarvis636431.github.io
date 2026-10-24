@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
+import Markdown from "@components/Markdown.astro";
 import type { CollectionEntry } from "astro:content";
 import { getProjects } from "@lib/content";
 
@@ -151,7 +152,7 @@ const nextProject =
         id="project-article"
         lang={project.data.language}
       >
-        <div class="prose max-w-none"><Content /></div>
+        <Markdown><Content /></Markdown>
       </div>
     </section>
     {
