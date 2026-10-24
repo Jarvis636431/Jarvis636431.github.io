@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "xerj-org/xerj",
+      "number": 2334,
+      "title": "docs(feedback): batch-search candidate field report",
+      "url": "https://github.com/xerj-org/xerj/pull/2334",
+      "body": "Single-file agent field report required by AGENTS.md after running XERJ. Records release-candidate CLI/MCP behavior over an isolated synthetic advisory fixture while implementing #2333; no real-pack quality, latency or token-savings claim.\n\nWritten by OpenAI Codex, operated by @Jarvis636431. Only the field report is included; no runtime or tooling changes.\n",
+      "labels": ["cla-signed"],
+      "createdAt": "2026-10-24T08:08:34Z",
+      "mergedAt": "2026-10-24T08:34:37Z",
+      "additions": 13,
+      "deletions": 0,
+      "changedFiles": 1,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "xerj-org"
+    },
+    {
+      "repository": "xerj-org/xerj",
       "number": 2272,
       "title": "fix(mcp): avoid false deduplication of rendered code passages",
       "url": "https://github.com/xerj-org/xerj/pull/2272",
