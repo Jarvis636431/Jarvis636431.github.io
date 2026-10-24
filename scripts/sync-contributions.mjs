@@ -1,5 +1,5 @@
 import { siteConfig } from "../src/config/site.mjs";
-import { isContributionSyncEnabled } from "../src/config/integrations.mjs";
+import { isContributionSyncEnabled } from "../src/lib/integrations/resolve.mjs";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL, URL } from "node:url";
 import { format } from "prettier";

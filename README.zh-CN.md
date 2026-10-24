@@ -18,7 +18,7 @@
 
 ## 个性化配置
 
-先阅读[配置指南](docs/personalization.zh-CN.md)。个人资料放在 `src/data/profile.mjs`，站点设置放在 `src/config/site.mjs`，可选功能放在 `src/config/integrations.mjs`，文章和项目放在 `src/content/`。
+先阅读[配置指南](docs/personalization.zh-CN.md)。个人资料放在 `src/config/profile.mjs`，站点设置放在 `src/config/site.mjs`，可选功能放在 `src/config/integrations.mjs`，文章和项目放在 `src/content/`。
 
 这些配置与数据是个人站点和未来模板之间的主要差异；页面、组件、脚本和工作流共用同一套实现。
 
@@ -48,12 +48,14 @@ pnpm dev
 ## 内容管理
 
 ```bash
-pnpm new:post --title "My New Post" --template mdx
+pnpm new:post --title "My New Post" --slug frontend/my-new-post --template mdx
 pnpm new:post --title "Series Part One" --series "My Series" --series-order 1
 pnpm new:project --title "My Project"
 ```
 
-不传参数时，会进入交互式输入。新文章默认为草稿；新项目默认为 `in-progress`，会被纳入生产构建，发布前应先检查内容。
+交互式终端中不传参数会进入逐项输入；非交互调用必须提供 `--title`。两个命令共用 `scripts/new-content.mjs`。Slug 可以包含目录，例如 `rec/my-post`，不需要带文件扩展名；脚本自动创建父目录，已有同名 Markdown 或 MDX 时拒绝覆盖。非法参数、模板类型、路径和系列序号会明确报错。
+
+文件始终创建在本仓库中，不受执行命令时的工作目录影响；日期使用 `siteConfig.timeZone`。新文章默认为草稿；新项目默认为 `in-progress`，会被纳入生产构建。生成内容的默认语言为 `zh-CN`，使用其他语言时修改 frontmatter；项目模板包含 `githubUrl` 和别名字段。发布前应先检查内容。使用 `pnpm new:post --help` 或 `pnpm new:project --help` 查看参数。
 
 内容 schema 位于 `src/content/config.ts`：
 
@@ -155,7 +157,7 @@ Astro 直接读取 `tsconfig.json` 中的别名，不需要在 Vite 配置中重
 
 ```ts
 import { getPosts } from "@lib/content";
-import { profile } from "@data/profile.mjs";
+import { profile } from "@config/profile.mjs";
 ```
 
 Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展名的相对路径。原生 Node 不会解析 TypeScript `paths` 别名。由 Node 测试直接导入的叶子模块，例如 `src/scripts/search.ts` 和 `src/lib/seo.ts`，其内部依赖也使用显式相对路径。
@@ -167,6 +169,12 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 `Markdown.astro` 统一正文排版。传入原始 `content` 字符串时，会进行外部 Markdown 安全清理；已由 Astro 编译的内容通过插槽传入。PR 正文采用紧凑排版，博客和项目详情使用标准排版。共享展示组件不会绕过外部 HTML 的安全清理。
 
 未使用的 `ArticleImage` 已移除；文章图片采用标准 Markdown 语法和现有客户端增强脚本。
+
+手写设置和个人资料统一放在 `src/config/`。`src/data/` 只存储数据，目前包含生成的贡献快照，不放查询或格式化逻辑。相关业务逻辑按功能集中在 `src/lib/`：
+
+- `contributions/index.ts` 读取快照、应用配置，并向页面提供仓库汇总与日期；`select.ts` 放纯筛选规则和记录类型。
+- `integrations/resolve.mjs` 解析服务配置和同步规则，不依赖 Astro 或浏览器，供测试、Node 脚本和 Actions 直接调用。`index.ts` 向 Astro 提供结合环境变量解析后的设置；`supabase.ts` 初始化可选的浏览器客户端。
+- Astro 调用方通过 `@lib/contributions` 和 `@lib/integrations` 使用目录入口。Node 调用方使用显式文件路径，导入不依赖运行环境的模块。
 
 ## 站点配置与页面元数据
 
@@ -208,7 +216,7 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 
 简历采用紧凑单栏布局，参考 [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm)。打印/另存为 PDF 操作位于底部，打印时自动隐藏。这是 Astro 页面实现，没有集成 YAMLResume CLI。
 
-- 在 `src/data/profile.mjs` 维护个人资料、首页/About 文案、工作经历、教育和技能。这些信息由作者明确编写，不从 GitHub 活动推断。
+- 在 `src/config/profile.mjs` 维护个人资料、首页/About 文案、工作经历、教育和技能。这些信息由作者明确编写，不从 GitHub 活动推断。
 - `src/lib/resume.ts` 从精选且未归档的项目中生成简历项目部分。名称和简介优先使用英文元数据，否则使用原文；技术栈和链接与项目页保持一致。
 - 开源贡献部分来自贡献快照，包括仓库、合并 PR 数量，以及各仓库最近一次合并的 PR 标题和链接，不单独维护另一份贡献简介。
 - 贡献同步每四小时检查一次，元数据变化时更新快照并重新构建，因此简历遵循相同更新周期。构建不需要调用 GitHub API，部署仍需通过完整验证。
@@ -232,13 +240,17 @@ CLI 和工作流都读取 `src/config/integrations.mjs` 的 `contributions.enabl
 
 本地执行 `pnpm sync:contributions` 可刷新快照；可选的 `GH_TOKEN` 用于提高 API 限额。数据未变化时不会产生提交。
 
+## 维护脚本
+
+根目录 `scripts/` 只保留日常维护用的 Node 命令：`new-content.mjs` 创建文章和项目，`sync-contributions.mjs` 更新对应账号的贡献快照。一次性的 `fix-mdx-*` 迁移脚本已删除。浏览器交互仍放在 `src/scripts/`，不作为仓库维护命令运行。
+
 ## 项目结构
 
 ```text
 .github/workflows/    # 检查、Pages 部署、贡献同步
 docs/                # 配置与使用指南
 public/              # 静态图片和网站图标
-scripts/             # 内容生成、同步、历史 MDX 修复脚本
+scripts/             # 内容生成与贡献同步
 tests/               # 内容规则、可选功能、同步和交互逻辑回归测试
 src/
   components/
@@ -246,10 +258,13 @@ src/
     blog/            # Toc、Comments
     contributions/   # 完整与精简贡献视图
   content/           # 博客与项目 Markdown / MDX
-  config/            # 站点设置与可选集成
-  data/              # 共享个人资料与生成的贡献快照
+  config/            # 个人资料、站点与集成配置，以及类型和校验
+  data/              # 存储的数据：生成的贡献快照
   layouts/           # 共享页面外壳与元数据
-  lib/               # 阅读辅助、Markdown 渲染、Supabase 客户端
+  lib/
+    contributions/   # 快照查询、汇总与纯筛选规则
+    integrations/    # 服务配置解析与可选客户端
+    ...              # 内容查询、阅读辅助、Markdown 与 SEO
   pages/             # 静态路由、RSS、搜索索引
   scripts/           # 浏览器端文章交互
   styles/            # 全局样式
@@ -275,7 +290,7 @@ PR 和手动检查使用 `verify.yml`；向 `main` 推送和手动部署使用 `
 
 `artifact-only` 仅供已经在同一次工作流运行中上传了 `github-pages` 产物的调用方使用，不会读取其他运行中的产物。验证失败会阻止部署。同步工作流使用 `GITHUB_TOKEN` 推送时，不会再触发第二次 push 工作流。
 
-2026-10-24，本地使用 Node.js 22.18.0 和 pnpm 10.14.0 通过完整 `pnpm verify`，包括 63 项测试、Astro 检查、ESLint、格式检查和生产构建。包含公开文章、空项目/履历和关闭集成的独立模板场景也已构建通过。远程 CI 结果仍需在工作流中确认。
+2026-10-24，本地使用 Node.js 22.18.0 和 pnpm 10.14.0 通过完整 `pnpm verify`，包括 69 项测试、Astro 检查、ESLint、格式检查和生产构建。包含公开文章、空项目/履历和关闭集成的独立模板场景也已构建通过。远程 CI 结果仍需在工作流中确认。
 
 Astro frontmatter 与客户端脚本显式使用 `typescript-eslint` 导出的解析器。目前没有自动化浏览器交互测试套件或专门的敏感内容扫描器。
 

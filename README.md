@@ -19,7 +19,7 @@ A personal portfolio and technical writing archive built with Astro 5, TypeScrip
 ## Personalization
 
 Start with [the configuration guide](docs/personalization.md). Personal data lives
-in `src/data/profile.mjs`, site settings in `src/config/site.mjs`, optional
+in `src/config/profile.mjs`, site settings in `src/config/site.mjs`, optional
 capabilities in `src/config/integrations.mjs`, and content in `src/content/`.
 These are the intended differences between a personal site and a future template;
 pages, components, scripts, and workflows share the same implementation.
@@ -52,12 +52,24 @@ Get Giscus IDs from [giscus.app](https://giscus.app) after enabling Discussions 
 ## Content management
 
 ```bash
-pnpm new:post --title "My New Post" --template mdx
+pnpm new:post --title "My New Post" --slug frontend/my-new-post --template mdx
 pnpm new:post --title "Series Part One" --series "My Series" --series-order 1
 pnpm new:project --title "My Project"
 ```
 
-Omit arguments for interactive prompts. New posts default to drafts; new projects default to `in-progress` and are eligible for production. Review content before publishing.
+Omit arguments for interactive prompts; non-interactive callers must supply
+`--title`. The two commands share `scripts/new-content.mjs`. Slugs may include
+folders, such as `rec/my-post`, without a file extension. Parent directories are
+created automatically, and a slug already present as either Markdown or MDX is
+not overwritten. Invalid options, templates, paths, and series orders fail with
+an error. Creation uses this repository's location rather than the shell's current
+directory, and dates follow `siteConfig.timeZone`.
+
+New posts default to drafts; new projects default to `in-progress` and are
+eligible for production. Generated content defaults to `zh-CN`; edit frontmatter
+when writing in another language. New projects include `githubUrl` and aliases.
+Review content before publishing. Use `pnpm new:post --help` or
+`pnpm new:project --help` for the available arguments.
 
 Schemas live in `src/content/config.ts`:
 
@@ -182,7 +194,7 @@ Astro reads aliases directly from `tsconfig.json`; do not duplicate these mappin
 
 ```ts
 import { getPosts } from "@lib/content";
-import { profile } from "@data/profile.mjs";
+import { profile } from "@config/profile.mjs";
 ```
 
 Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases. Leaf modules imported directly by Node tests (such as `src/scripts/search.ts` and `src/lib/seo.ts`) also use explicit relative imports for their dependencies.
@@ -192,6 +204,21 @@ Node-run configuration files, automation scripts, and tests keep explicit relati
 Components are grouped by their callers: `site/` for the shared layout, `blog/` for article details, and `contributions/` for full and compact contribution views. Keep page-specific layout in `src/pages/` rather than adding wrappers without a separate responsibility.
 
 `Markdown.astro` owns shared prose presentation. Pass a raw `content` string for sanitized external Markdown, or compiled Astro content through its slot. PR descriptions use compact typography; blogs and project details use the same component with standard typography. Shared presentation does not bypass HTML sanitization for external content. The unused `ArticleImage` component has been removed; article images use standard Markdown syntax and the existing client enhancement script.
+
+Authored settings and personal information live in `src/config/`. Stored data
+belongs in `src/data/`; it contains the generated contribution snapshot, not
+queries or formatting logic. Related contribution and integration logic is
+grouped under `src/lib/`:
+
+- `contributions/index.ts` loads the snapshot, applies settings, and supplies
+  repository summaries and dates to pages; `select.ts` contains pure selection
+  rules and record types.
+- `integrations/resolve.mjs` resolves service settings and the sync policy without
+  Astro or browser dependencies, so tests, Node scripts, and Actions can import
+  it directly. `index.ts` supplies the environment-resolved settings to Astro;
+  `supabase.ts` initializes the optional browser client.
+- Astro callers use `@lib/contributions` and `@lib/integrations` as directory
+  entry points. Node callers use explicit file paths to dependency-free modules.
 
 ## Site configuration and page metadata
 
@@ -231,7 +258,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 
 The resume uses a compact, single-column layout inspired by [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm). The print / Save PDF action is at the bottom of the document and is hidden when printing. This is an Astro implementation, not a YAMLResume CLI integration.
 
-- Maintain personal profile, homepage/About copy, employment history, education, and skills in `src/data/profile.mjs`. These facts are explicitly authored, not inferred from GitHub activity.
+- Maintain personal profile, homepage/About copy, employment history, education, and skills in `src/config/profile.mjs`. These facts are explicitly authored, not inferred from GitHub activity.
 - `src/lib/resume.ts` builds selected projects from featured, non-archived project content. Names and descriptions prefer English metadata, with the original text as fallback; technologies and links come from the same entries used by project pages.
 - Open-source sections are generated from the contribution snapshot: all repositories, merged-PR counts, and each repository's most recent merged PR title and link. There is no separate manually maintained contribution summary.
 - The contribution sync (every four hours) updates the snapshot and rebuilds the site when metadata changes, so the resume follows the same update cycle. Builds require no GitHub API access. Deployment remains conditional on the full verification gate.
@@ -276,12 +303,20 @@ of inactivity in a public repository.
 Run `pnpm sync:contributions` locally (optional `GH_TOKEN` for higher API limits).
 Unchanged metadata does not produce a commit.
 
+## Maintenance scripts
+
+The root `scripts/` contains only ongoing Node maintenance commands:
+`new-content.mjs` creates posts and projects, and `sync-contributions.mjs` updates
+the account-owned contribution snapshot. The one-time `fix-mdx-*` migration
+scripts have been removed. Browser interactions remain in `src/scripts/` and do
+not run as repository maintenance commands.
+
 ## Project structure
 
 ```text
 .github/workflows/    # Verification, Pages deployment, contribution sync
 public/              # Static images and favicon
-scripts/             # Content scaffolding, sync, legacy MDX migration helpers
+scripts/             # Content scaffolding and contribution sync
 tests/               # Content visibility, recommendations, and navigation regression tests
 src/
   components/
@@ -289,10 +324,13 @@ src/
     blog/            # Toc, Comments
     contributions/   # Full and compact contribution views
   content/           # Blog and project Markdown / MDX
-  config/            # Site identity and optional integrations
-  data/              # Shared personal profile and generated contribution snapshot
+  config/            # Personal profile, site settings, integration settings and validation
+  data/              # Stored data: generated contribution snapshot
   layouts/           # Shared page shell and metadata
-  lib/               # Reading helpers, Markdown pipeline, Supabase client
+  lib/
+    contributions/   # Snapshot queries, summaries and pure selection rules
+    integrations/    # Service settings resolution and optional clients
+    ...              # Content, reading, Markdown and SEO helpers
   pages/             # Static routes, RSS, search index
   scripts/           # Browser-side article interactions
   styles/            # Global CSS
@@ -314,7 +352,7 @@ src/
 | `pnpm new:post` / `pnpm new:project` | Scaffold content                                 |
 | `pnpm sync:contributions`            | Refresh the merged-PR snapshot                   |
 
-Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-24 using Node.js 22.18.0 and pnpm 10.14.0, including 63 tests, Astro check, ESLint, formatting, and production build. A separate template scenario with a public article, empty projects/profile sections, and disabled integrations also builds successfully. Remote CI execution must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-24 using Node.js 22.18.0 and pnpm 10.14.0, including 69 tests, Astro check, ESLint, formatting, and production build. A separate template scenario with a public article, empty projects/profile sections, and disabled integrations also builds successfully. Remote CI execution must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
 
 ## Nested blog folders
 

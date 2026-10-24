@@ -1,12 +1,12 @@
 ---
 import { siteConfig } from "@config/site.mjs";
-import { profile } from "@data/profile.mjs";
+import { profile } from "@config/profile.mjs";
 import Layout from "@layouts/Layout.astro";
 import Contributions from "@components/contributions/Contributions.astro";
 import {
   contributionProjects,
   mergedPullRequestCount,
-} from "@data/contributions";
+} from "@lib/contributions";
 const description = `Merged open-source pull requests by ${profile.name}. Explore merged bug fixes, features and documentation across open-source repositories.`;
 const pageUrl = new URL(
   "/contributions",

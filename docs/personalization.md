@@ -11,7 +11,7 @@ this site's integrations enabled; no personal content has been replaced.
 
 | File                                         | Responsibility                                                                         |
 | -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `src/data/profile.mjs`                       | Name, role, email, GitHub username, home/About copy, experience, education, and skills |
+| `src/config/profile.mjs`                     | Name, role, email, GitHub username, home/About copy, experience, education, and skills |
 | `src/config/site.mjs`                        | Branding, domain, language, timezone, navigation, RSS, favicon, and share image        |
 | `src/config/integrations.mjs`                | Feature switches, Giscus settings, contribution sync, and page size                    |
 | `.env` / Actions repository variables        | Optional service IDs, Supabase URL and anonymous key                                   |
@@ -23,6 +23,13 @@ There is no separate workflow copy of the author's GitHub username or Giscus
 repository. Use empty arrays for absent experience or skills, an empty education
 institution to omit education, and empty email/GitHub username values to omit
 those contact links. Home and project archives provide empty states.
+
+Configuration files declare and validate settings; runtime resolution lives in
+`src/lib/integrations/resolve.mjs`. The CLI and workflow import this pure module,
+while Astro reads environment-resolved settings from `src/lib/integrations/index.ts`.
+Contribution queries are grouped in `src/lib/contributions/`; `src/data/` stores
+only the snapshot. These internal modules normally do not need editing when
+changing personal information or feature settings.
 
 ## Configuration checks
 

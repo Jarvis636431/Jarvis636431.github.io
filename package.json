@@ -13,8 +13,8 @@
     "verify": "pnpm run test && pnpm run check && pnpm run lint && pnpm run format:check && pnpm run build",
     "preview": "astro preview",
     "astro": "astro",
-    "new:post": "node scripts/new-post.js",
-    "new:project": "node scripts/new-project.js",
+    "new:post": "node scripts/new-content.mjs post",
+    "new:project": "node scripts/new-content.mjs project",
     "sync:contributions": "node scripts/sync-contributions.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },

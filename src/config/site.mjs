@@ -1,5 +1,5 @@
 // @ts-check
-import { profile } from "../data/profile.mjs";
+import { profile } from "./profile.mjs";
 import { validateSiteSettings } from "./validate.mjs";
 
 /** Shared by Astro and Node automation; no framework or browser dependencies. */

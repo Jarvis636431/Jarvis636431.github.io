@@ -1,6 +1,6 @@
 import { siteConfig } from "@config/site.mjs";
 import { integrationConfig } from "@config/integrations.mjs";
-import { selectContributions } from "@lib/contributions";
+import { selectContributions } from "./select.ts";
 import snapshot from "@data/contributions.generated.json";
 
 export const contributionSearchUrl =

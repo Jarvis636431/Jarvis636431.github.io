@@ -2,12 +2,12 @@
 import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import Contributions from "@components/contributions/Contributions.astro";
-import { profile } from "@data/profile.mjs";
+import { profile } from "@config/profile.mjs";
 import { integrationConfig } from "@config/integrations.mjs";
 import {
   contributionProjects,
   mergedPullRequestCount,
-} from "@data/contributions";
+} from "@lib/contributions";
 
 const description = profile.about.description;
 const experiences = profile.experiences;

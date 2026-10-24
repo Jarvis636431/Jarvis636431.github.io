@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { selectContributions } from "../src/lib/contributions.ts";
+import { selectContributions } from "../src/lib/contributions/select.ts";
 import {
   fetchContributions,
   mergeSnapshot,

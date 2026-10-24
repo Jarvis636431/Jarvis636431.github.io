@@ -1,3 +1,3 @@
-import { resolveIntegrations } from "../config/integrations.mjs";
+import { resolveIntegrations } from "./resolve.mjs";
 
 export const integrations = resolveIntegrations(import.meta.env);

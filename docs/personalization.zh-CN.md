@@ -8,7 +8,7 @@
 
 | 文件                                         | 用途                                                               |
 | -------------------------------------------- | ------------------------------------------------------------------ |
-| `src/data/profile.mjs`                       | 姓名、职业、邮箱、GitHub 用户名、首页/About 文案、经历、教育和技能 |
+| `src/config/profile.mjs`                     | 姓名、职业、邮箱、GitHub 用户名、首页/About 文案、经历、教育和技能 |
 | `src/config/site.mjs`                        | 站点名称、域名、语言、时区、导航、RSS、网站图标和分享图片          |
 | `src/config/integrations.mjs`                | 功能开关、Giscus 设置、贡献同步和每页条数                          |
 | `.env` / Actions 仓库变量                    | 可选服务的 ID、Supabase 地址和匿名密钥                             |
@@ -18,6 +18,8 @@
 配置使用标准 ESM，Astro 和 Node 自动化脚本都能读取。工作流不再单独维护作者的 GitHub 用户名或 Giscus 仓库名称。
 
 没有经历或技能时，保留空数组；不展示教育背景时，将学校名称设为空字符串；邮箱或 GitHub 用户名为空时，对应的联系链接会隐藏。首页和项目列表也提供了无内容时的提示。
+
+配置文件只声明和校验设置，运行时解析逻辑放在 `src/lib/integrations/resolve.mjs`。CLI 和工作流直接调用这个纯模块；Astro 从 `src/lib/integrations/index.ts` 获取结合环境变量解析后的设置。贡献查询统一放在 `src/lib/contributions/`，`src/data/` 只存储快照。修改个人信息或功能开关时，通常不需要改这些内部实现。
 
 ## 配置检查
 

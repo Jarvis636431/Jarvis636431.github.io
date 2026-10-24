@@ -3,7 +3,7 @@ import test from "node:test";
 import {
   isContributionSyncEnabled,
   resolveIntegrations,
-} from "../src/config/integrations.mjs";
+} from "../src/lib/integrations/resolve.mjs";
 
 import { createConfig } from "./fixtures/config.mjs";
 

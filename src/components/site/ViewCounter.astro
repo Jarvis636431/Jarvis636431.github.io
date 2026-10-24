@@ -29,7 +29,7 @@ const { slug } = Astro.props;
     const pageSlug = container?.dataset.viewCounterSlug;
     if (!pageSlug) return;
 
-    const { supabase } = await import("@lib/supabase");
+    const { supabase } = await import("@lib/integrations/supabase");
     if (!supabase) return;
 
     const viewCountEl = document.getElementById("view-count-value");

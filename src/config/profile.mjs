@@ -1,5 +1,5 @@
 // @ts-check
-import { validateProfile } from "../config/validate.mjs";
+import { validateProfile } from "./validate.mjs";
 
 const person = {
   name: "Jarvis",
@@ -18,7 +18,7 @@ const person = {
   ],
 };
 
-/** @type {import("../config/types.ts").Profile["experiences"]} */
+/** @type {import("./types.ts").Profile["experiences"]} */
 const experiences = [
   {
     period: "2026 — Present",
@@ -71,7 +71,7 @@ const experiences = [
   },
 ];
 
-/** @type {import("../config/types.ts").Profile["skills"]} */
+/** @type {import("./types.ts").Profile["skills"]} */
 const skills = [
   {
     label: "Frontend",
@@ -98,7 +98,7 @@ const education = {
 };
 
 /** Author-maintained personal data. Pages and automation read from this entry point.
- * @type {import("../config/types.ts").Profile}
+ * @type {import("./types.ts").Profile}
  */
 export const profile = {
   ...person,
