@@ -1,4 +1,9 @@
-/** Optional capabilities. Keep personal service settings here, credentials in .env. */
+// @ts-check
+import { validateHttpUrl, validateIntegrationConfig } from "./validate.mjs";
+
+/** Optional capabilities. Keep personal service settings here, credentials in .env.
+ * @type {import("./types.ts").IntegrationConfig}
+ */
 export const integrationConfig = {
   comments: {
     enabled: true,
@@ -15,14 +20,17 @@ export const integrationConfig = {
     pageSize: 6,
   },
 };
+validateIntegrationConfig(integrationConfig);
 
 /** The CLI and scheduled workflow use the same opt-in rule.
  * @param {string} username
+ * @param {import("./types.ts").IntegrationConfig} [config]
  */
 export function isContributionSyncEnabled(
   username,
   config = integrationConfig,
 ) {
+  validateIntegrationConfig(config);
   return Boolean(
     config.contributions.enabled &&
     config.contributions.sync &&
@@ -32,10 +40,14 @@ export function isContributionSyncEnabled(
 
 /** Resolve optional services without requiring Astro, a browser, or credentials.
  * @param {Record<string, string | undefined>} env
+ * @param {import("./types.ts").IntegrationConfig} [config]
  */
 export function resolveIntegrations(env, config = integrationConfig) {
+  validateIntegrationConfig(config);
   const comments = {
     ...config.comments,
+    repository: config.comments.repository.trim(),
+    category: config.comments.category.trim(),
     repositoryId: env.PUBLIC_GISCUS_REPO_ID?.trim() ?? "",
     categoryId: env.PUBLIC_GISCUS_CATEGORY_ID?.trim() ?? "",
   };
@@ -44,6 +56,9 @@ export function resolveIntegrations(env, config = integrationConfig) {
     url: env.PUBLIC_SUPABASE_URL?.trim() ?? "",
     anonymousKey: env.PUBLIC_SUPABASE_ANON_KEY?.trim() ?? "",
   };
+  if (viewCounter.enabled && viewCounter.url && viewCounter.anonymousKey) {
+    validateHttpUrl(viewCounter.url, "PUBLIC_SUPABASE_URL");
+  }
   return {
     comments: {
       ...comments,

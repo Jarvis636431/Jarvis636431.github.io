@@ -275,9 +275,9 @@ PR 和手动检查使用 `verify.yml`；向 `main` 推送和手动部署使用 `
 
 `artifact-only` 仅供已经在同一次工作流运行中上传了 `github-pages` 产物的调用方使用，不会读取其他运行中的产物。验证失败会阻止部署。同步工作流使用 `GITHUB_TOKEN` 推送时，不会再触发第二次 push 工作流。
 
-2026-10-24，本地使用 Node.js 22.18.0 和 pnpm 10.14.0 通过完整 `pnpm verify`，包括 57 项测试、Astro 检查、ESLint、格式检查和生产构建。包含公开文章、空项目/履历和关闭集成的独立模板场景也已构建通过。远程 CI 结果仍需在工作流中确认。
+2026-10-24，本地使用 Node.js 22.18.0 和 pnpm 10.14.0 通过完整 `pnpm verify`，包括 63 项测试、Astro 检查、ESLint、格式检查和生产构建。包含公开文章、空项目/履历和关闭集成的独立模板场景也已构建通过。远程 CI 结果仍需在工作流中确认。
 
-Astro frontmatter 与客户端脚本显式使用 `typescript-eslint` 导出的解析器。剩余工作见 [TODO.md](TODO.md)。目前没有自动化浏览器交互测试套件或专门的敏感内容扫描器。
+Astro frontmatter 与客户端脚本显式使用 `typescript-eslint` 导出的解析器。目前没有自动化浏览器交互测试套件或专门的敏感内容扫描器。
 
 ## 博客子目录
 

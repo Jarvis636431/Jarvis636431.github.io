@@ -19,6 +19,21 @@
 
 没有经历或技能时，保留空数组；不展示教育背景时，将学校名称设为空字符串；邮箱或 GitHub 用户名为空时，对应的联系链接会隐藏。首页和项目列表也提供了无内容时的提示。
 
+## 配置检查
+
+个人资料与功能配置使用 `@ts-check`，并通过 `src/config/types.ts` 共享类型定义。`pnpm check` 会检查字段结构；文件本身仍是标准 ESM，Node 无需安装项目依赖即可执行。
+
+加载配置时也会校验关键字段，并在错误中指出字段名，例如 `Invalid configuration: contributions.pageSize must be a positive integer`。
+
+- 功能开关必须是布尔值，不能写成字符串 `"false"`。
+- `pageSize` 必须是正整数。
+- 站点地址必须是域名根路径下的完整 HTTP(S) URL；时区必须能被 `Intl.DateTimeFormat` 识别。
+- GitHub 账号填写用户名，评论仓库使用 `owner/repository` 格式。
+- 联系方式仍允许留空。浏览量开启且连接配置完整时，会检查 Supabase 地址；关闭或配置不完整时，不初始化服务。
+- URL 校验报错不会输出其中可能包含的账号或密码。
+
+测试使用独立配置样例，不依赖本站当前的个人设置，因此关闭全部集成也不会改变测试的预期结果。
+
 ## 可选功能
 
 ```js

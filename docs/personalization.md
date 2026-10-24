@@ -24,6 +24,24 @@ repository. Use empty arrays for absent experience or skills, an empty education
 institution to omit education, and empty email/GitHub username values to omit
 those contact links. Home and project archives provide empty states.
 
+## Configuration checks
+
+Profile and integration files use `@ts-check` with shared types in
+`src/config/types.ts`. `pnpm check` checks their structure while the files remain
+ordinary ESM that Node can execute without installing project dependencies.
+
+Configuration is also validated when loaded. Errors identify the field: for
+example, `Invalid configuration: contributions.pageSize must be a positive integer`.
+Feature switches must be booleans, the site URL must be an absolute HTTP(S) URL
+at the domain root, and the timezone must be recognized by `Intl.DateTimeFormat`.
+GitHub usernames and comment repositories use username and `owner/repository`
+formats respectively. Empty contact values remain supported. A configured,
+enabled counter also validates its Supabase URL; disabled or incomplete services
+do not attempt initialization. Errors never echo URL credentials.
+
+Tests use independent configuration examples, so changing this site's defaults,
+including disabling all integrations, does not change test expectations.
+
 ## Optional capabilities
 
 ```js

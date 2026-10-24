@@ -1,6 +1,8 @@
+// @ts-check
 import { profile } from "../data/profile.mjs";
+import { validateSiteSettings } from "./validate.mjs";
 
-/** Shared by Astro, browser-facing pages and Node automation; no runtime imports. */
+/** Shared by Astro and Node automation; no framework or browser dependencies. */
 const name = "Jarvis Hub";
 const githubUsername = profile.githubUsername.trim();
 const logo = "/logo.png";
@@ -31,3 +33,4 @@ export const siteConfig = {
     language: "zh-CN",
   },
 };
+validateSiteSettings(siteConfig);
