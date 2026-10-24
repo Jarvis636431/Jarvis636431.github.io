@@ -170,11 +170,24 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 
 未使用的 `ArticleImage` 已移除；文章图片采用标准 Markdown 语法和现有客户端增强脚本。
 
-手写设置和个人资料统一放在 `src/config/`。`src/data/` 只存储数据，目前包含生成的贡献快照，不放查询或格式化逻辑。相关业务逻辑按功能集中在 `src/lib/`：
+## 业务逻辑模块
 
-- `contributions/index.ts` 读取快照、应用配置，并向页面提供仓库汇总与日期；`select.ts` 放纯筛选规则和记录类型。
-- `integrations/resolve.mjs` 解析服务配置和同步规则，不依赖 Astro 或浏览器，供测试、Node 脚本和 Actions 直接调用。`index.ts` 向 Astro 提供结合环境变量解析后的设置；`supabase.ts` 初始化可选的浏览器客户端。
-- Astro 调用方通过 `@lib/contributions` 和 `@lib/integrations` 使用目录入口。Node 调用方使用显式文件路径，导入不依赖运行环境的模块。
+`src/lib/` 按职责组织。手写设置放在 `src/config/`，存储的快照放在 `src/data/`，DOM 交互放在 `src/scripts/`。
+
+| 模块             | 职责与入口                                                                                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content/`       | `index.ts` 查询 Astro 内容集合；`select.ts` 放纯筛选与排序规则；`blog.ts` 放文章规则；`resume.ts` 组合简历数据                                     |
+| `markdown/`      | `plugins.mjs` 共享 GFM、公式和提示块扩展；`render.mjs` 安全渲染外部 Markdown；`text.mjs` 提取搜索文本；`remark-code-meta.mjs` 保留文章代码块元信息 |
+| `search/`        | `index.ts` 实现 Fuse 搜索与摘要片段；`metadata.ts` 在构建时整理标题、简介和别名，不导入 Fuse                                                       |
+| `contributions/` | `index.ts` 读取快照并提供仓库汇总和日期；`select.ts` 放纯筛选规则与记录类型                                                                        |
+| `integrations/`  | `resolve.mjs` 解析设置和同步规则，不依赖 Astro 或浏览器；`index.ts` 读取环境变量；`supabase.ts` 初始化可选客户端                                   |
+| `seo.ts`         | 生成 canonical URL 和分享元数据，保持独立文件                                                                                                      |
+
+调用方使用具体入口，不通过全局聚合文件导入所有模块。Astro 页面使用 `@lib/content`、`@lib/contributions` 等对应路径；测试与 Node 命令使用带扩展名的显式路径导入纯模块。
+
+`content/resume.ts` 组合内容查询和贡献数据，内容查询入口不反向依赖简历模块。浏览器搜索只导入搜索引擎，不加载 Markdown 渲染或 Astro 内容查询。
+
+两条 Markdown 渲染管线共享语法插件，但保留各自的信任边界：作者编写的 Markdown/MDX 由 Astro 编译并进行代码高亮；字符串内容调用 `renderExternalMarkdown()`，先清理作者 HTML，再由可信扩展生成公式和提示块。搜索文本提取不渲染 HTML。
 
 ## 站点配置与页面元数据
 
@@ -201,13 +214,13 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 
 ## 共享内容查询
 
-`src/lib/content.ts` 统一管理草稿与归档可见性、按发布时间倒序排列、近期文章和精选项目。首页、博客与项目列表/详情、RSS、搜索和简历都调用这一层，不分别查询集合。
+`src/lib/content/` 统一管理草稿与归档可见性、按发布时间倒序排列、近期文章和精选项目。纯筛选规则放在 `select.ts`；`index.ts` 负责加载 Astro 内容集合并应用这些规则。首页、博客与项目列表/详情、RSS、搜索和简历都调用这一层，不分别查询集合。
 
 - `getPosts()` 仅在开发环境默认包含草稿，可以显式传入 `includeDrafts` 覆盖。
 - `getProjects()` 仅在开发环境默认包含归档项目；项目列表传入 `includeArchived: false`，始终只展示公开项目。
 - `getRecentPosts(limit)` 使用相同的文章可见性规则。
 - `getFeaturedProjects(limit?)` 始终排除归档项目，包括开发环境，同时供首页和简历使用。
-- `src/lib/blog.ts` 管理相关文章排序、阅读时间和系列导航。
+- `src/lib/content/blog.ts` 管理相关文章排序、阅读时间和系列导航。
 - `src/scripts/article.ts` 初始化阅读进度、代码工具、图片预览、表格、标题锚点和分享功能，由详情页的 Astro 脚本导入并打包。
 - `src/components/site/` 管理共享页头、页脚、搜索弹窗和浏览量组件。计数器自行延迟初始化 Supabase，页面只需向布局传入 `viewCounterSlug`。
 - `src/scripts/mermaid.ts` 从布局初始化图表，仅在存在未处理的图表代码块时加载 Mermaid；失败时保留源码。
@@ -217,7 +230,7 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 简历采用紧凑单栏布局，参考 [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm)。打印/另存为 PDF 操作位于底部，打印时自动隐藏。这是 Astro 页面实现，没有集成 YAMLResume CLI。
 
 - 在 `src/config/profile.mjs` 维护个人资料、首页/About 文案、工作经历、教育和技能。这些信息由作者明确编写，不从 GitHub 活动推断。
-- `src/lib/resume.ts` 从精选且未归档的项目中生成简历项目部分。名称和简介优先使用英文元数据，否则使用原文；技术栈和链接与项目页保持一致。
+- `src/lib/content/resume.ts` 从精选且未归档的项目中生成简历项目部分。名称和简介优先使用英文元数据，否则使用原文；技术栈和链接与项目页保持一致。
 - 开源贡献部分来自贡献快照，包括仓库、合并 PR 数量，以及各仓库最近一次合并的 PR 标题和链接，不单独维护另一份贡献简介。
 - 贡献同步每四小时检查一次，元数据变化时更新快照并重新构建，因此简历遵循相同更新周期。构建不需要调用 GitHub API，部署仍需通过完整验证。
 - 首页、About、简历、联系链接和人物元数据读取同一份个人资料。站点名称、地址、导航和时区仍由 `src/config/site.mjs` 管理。
@@ -262,9 +275,12 @@ src/
   data/              # 存储的数据：生成的贡献快照
   layouts/           # 共享页面外壳与元数据
   lib/
+    content/         # 内容查询、筛选、文章规则与简历数据组合
     contributions/   # 快照查询、汇总与纯筛选规则
     integrations/    # 服务配置解析与可选客户端
-    ...              # 内容查询、阅读辅助、Markdown 与 SEO
+    markdown/        # 共享语法插件、安全 HTML 渲染与文本提取
+    search/          # 浏览器搜索引擎与构建期元数据
+    seo.ts           # 页面元数据
   pages/             # 静态路由、RSS、搜索索引
   scripts/           # 浏览器端文章交互
   styles/            # 全局样式

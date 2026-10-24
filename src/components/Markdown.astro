@@ -1,5 +1,5 @@
 ---
-import { renderMarkdown } from "@lib/markdown.mjs";
+import { renderExternalMarkdown } from "@lib/markdown/render.mjs";
 import "@styles/prose.css";
 
 interface Props {
@@ -10,7 +10,8 @@ interface Props {
 }
 
 const { content, compact = false, class: className } = Astro.props;
-const html = content === undefined ? undefined : await renderMarkdown(content);
+const html =
+  content === undefined ? undefined : await renderExternalMarkdown(content);
 ---
 
 <div class:list={["prose max-w-none", compact && "prose--compact", className]}>

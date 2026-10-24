@@ -4,11 +4,8 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import robotsTxt from "astro-robots-txt";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import rehypeGithubAlert from "rehype-github-alert";
-import remarkCodeMeta from "./src/lib/remark-code-meta.mjs";
+import { remarkPlugins, rehypePlugins } from "./src/lib/markdown/plugins.mjs";
+import remarkCodeMeta from "./src/lib/markdown/remark-code-meta.mjs";
 
 import { siteConfig } from "./src/config/site.mjs";
 
@@ -41,8 +38,8 @@ export default defineConfig({
   },
   markdown: {
     syntaxHighlight: { type: "shiki", excludeLangs: ["mermaid"] },
-    remarkPlugins: [remarkGfm, remarkMath, remarkCodeMeta],
-    rehypePlugins: [rehypeGithubAlert, rehypeKatex],
+    remarkPlugins: [...remarkPlugins, remarkCodeMeta],
+    rehypePlugins,
     shikiConfig: {
       wrap: true,
       theme: "github-dark",

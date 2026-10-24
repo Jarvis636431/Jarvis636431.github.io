@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import test from "node:test";
 import config from "../astro.config.mjs";
 import { renderMermaid } from "../src/scripts/mermaid.ts";
-import { renderMarkdown } from "../src/lib/markdown.mjs";
+import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
 
 const requireFromAstro = createRequire(import.meta.resolve("astro"));
 const { createMarkdownProcessor } = await import(
@@ -18,7 +18,7 @@ for (const [name, render] of [
       return (await processor.render(source)).code;
     },
   ],
-  ["sanitized Markdown", renderMarkdown],
+  ["sanitized Markdown", renderExternalMarkdown],
 ]) {
   test(`${name} preserves Mermaid source while regular code keeps its renderer`, async () => {
     const html = await render(

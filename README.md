@@ -205,20 +205,32 @@ Components are grouped by their callers: `site/` for the shared layout, `blog/` 
 
 `Markdown.astro` owns shared prose presentation. Pass a raw `content` string for sanitized external Markdown, or compiled Astro content through its slot. PR descriptions use compact typography; blogs and project details use the same component with standard typography. Shared presentation does not bypass HTML sanitization for external content. The unused `ArticleImage` component has been removed; article images use standard Markdown syntax and the existing client enhancement script.
 
-Authored settings and personal information live in `src/config/`. Stored data
-belongs in `src/data/`; it contains the generated contribution snapshot, not
-queries or formatting logic. Related contribution and integration logic is
-grouped under `src/lib/`:
+## Library modules
 
-- `contributions/index.ts` loads the snapshot, applies settings, and supplies
-  repository summaries and dates to pages; `select.ts` contains pure selection
-  rules and record types.
-- `integrations/resolve.mjs` resolves service settings and the sync policy without
-  Astro or browser dependencies, so tests, Node scripts, and Actions can import
-  it directly. `index.ts` supplies the environment-resolved settings to Astro;
-  `supabase.ts` initializes the optional browser client.
-- Astro callers use `@lib/contributions` and `@lib/integrations` as directory
-  entry points. Node callers use explicit file paths to dependency-free modules.
+`src/lib/` is organized by responsibility. Authored settings belong in
+`src/config/`; stored snapshots belong in `src/data/`; DOM interactions belong
+in `src/scripts/`.
+
+| Module           | Responsibility and entry points                                                                                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content/`       | `index.ts` queries Astro collections; `select.ts` owns pure visibility/sorting rules; `blog.ts` supplies article rules; `resume.ts` assembles resume data                                |
+| `markdown/`      | `plugins.mjs` shares GFM, math and callout extensions; `render.mjs` sanitizes external Markdown; `text.mjs` extracts search text; `remark-code-meta.mjs` preserves article code metadata |
+| `search/`        | `index.ts` implements Fuse search and excerpts; `metadata.ts` prepares build-time titles, descriptions and aliases without importing Fuse                                                |
+| `contributions/` | `index.ts` loads the snapshot and supplies repository summaries/dates; `select.ts` owns pure selection rules and record types                                                            |
+| `integrations/`  | `resolve.mjs` resolves settings and sync policy without Astro/browser dependencies; `index.ts` reads the environment; `supabase.ts` initializes the optional client                      |
+| `seo.ts`         | Builds canonical URLs and sharing metadata; remains a standalone module                                                                                                                  |
+
+Use specific entry points instead of a global barrel that imports every module.
+Astro pages use `@lib/content`, `@lib/contributions`, and other scoped paths.
+Tests and Node commands import pure modules with explicit file extensions.
+`content/resume.ts` combines collection queries with contributions; the query
+entry point does not import resume code. Browser search imports only its engine,
+not Markdown rendering or Astro collection queries.
+
+Both Markdown renderers share syntax plugins, but keep separate trust boundaries:
+Astro compiles authored Markdown/MDX with syntax highlighting; string content uses
+`renderExternalMarkdown()` and sanitizes author HTML before trusted extensions
+produce math and callout markup. Search text extraction never renders HTML.
 
 ## Site configuration and page metadata
 
@@ -243,13 +255,13 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 
 ## Shared content queries
 
-`src/lib/content.ts` owns draft and archive visibility, newest-first sorting, recent articles, and featured projects. The homepage, blog and project lists/details, RSS, search, and resume call this layer instead of querying collections independently.
+`src/lib/content/` owns draft and archive visibility, newest-first sorting, recent articles, and featured projects. Pure selection rules live in `select.ts`; `index.ts` loads Astro collections and applies those rules. The homepage, blog and project lists/details, RSS, search, and resume call this layer instead of querying collections independently.
 
 - `getPosts()` includes drafts only during development; pass `includeDrafts` to override explicitly.
 - `getProjects()` includes archived projects only during development; the project list passes `includeArchived: false` to preserve its public-only behavior.
 - `getRecentPosts(limit)` uses the same article visibility rules.
 - `getFeaturedProjects(limit?)` always excludes archives, including in development, and supplies both the homepage and resume.
-- `src/lib/blog.ts` owns related-post ranking, reading time, and series navigation.
+- `src/lib/content/blog.ts` owns related-post ranking, reading time, and series navigation.
 - `src/scripts/article.ts` initializes article reading progress, code tools, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
 - `src/components/site/` owns the shared header, footer, search dialog, and view counter. The counter handles its own delayed Supabase initialization, so pages only need to pass `viewCounterSlug` to the layout.
 - `src/scripts/mermaid.ts` initializes diagrams from the layout and loads the Mermaid renderer only when unprocessed diagram blocks are present. Failed diagrams retain their source.
@@ -259,7 +271,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 The resume uses a compact, single-column layout inspired by [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm). The print / Save PDF action is at the bottom of the document and is hidden when printing. This is an Astro implementation, not a YAMLResume CLI integration.
 
 - Maintain personal profile, homepage/About copy, employment history, education, and skills in `src/config/profile.mjs`. These facts are explicitly authored, not inferred from GitHub activity.
-- `src/lib/resume.ts` builds selected projects from featured, non-archived project content. Names and descriptions prefer English metadata, with the original text as fallback; technologies and links come from the same entries used by project pages.
+- `src/lib/content/resume.ts` builds selected projects from featured, non-archived project content. Names and descriptions prefer English metadata, with the original text as fallback; technologies and links come from the same entries used by project pages.
 - Open-source sections are generated from the contribution snapshot: all repositories, merged-PR counts, and each repository's most recent merged PR title and link. There is no separate manually maintained contribution summary.
 - The contribution sync (every four hours) updates the snapshot and rebuilds the site when metadata changes, so the resume follows the same update cycle. Builds require no GitHub API access. Deployment remains conditional on the full verification gate.
 - Homepage, About, resume, contact links, and person metadata read the same profile data. Site branding, origin, navigation, and timezone remain in `src/config/site.mjs`.
@@ -328,9 +340,12 @@ src/
   data/              # Stored data: generated contribution snapshot
   layouts/           # Shared page shell and metadata
   lib/
+    content/         # Collection queries, selection, article rules and resume assembly
     contributions/   # Snapshot queries, summaries and pure selection rules
     integrations/    # Service settings resolution and optional clients
-    ...              # Content, reading, Markdown and SEO helpers
+    markdown/        # Shared syntax plugins, sanitized HTML and text extraction
+    search/          # Browser search engine and build-time metadata
+    seo.ts           # Page metadata
   pages/             # Static routes, RSS, search index
   scripts/           # Browser-side article interactions
   styles/            # Global CSS

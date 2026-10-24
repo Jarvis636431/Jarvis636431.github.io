@@ -1,11 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  createSearch,
-  getSearchExcerpt,
-  getSearchMetadata,
-} from "../src/lib/search.ts";
-import { getSearchText } from "../src/lib/markdown.mjs";
+import { createSearch, getSearchExcerpt } from "../src/lib/search/index.ts";
+import { getSearchMetadata } from "../src/lib/search/metadata.ts";
+import { getSearchText } from "../src/lib/markdown/text.mjs";
 
 const item = (changes = {}) => ({
   title: "A practical guide",

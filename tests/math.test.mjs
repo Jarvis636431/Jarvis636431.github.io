@@ -8,7 +8,7 @@ import remarkParse from "remark-parse";
 import remarkMath from "remark-math";
 import katex from "katex";
 import config from "../astro.config.mjs";
-import { renderMarkdown } from "../src/lib/markdown.mjs";
+import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
 
 const requireFromAstro = createRequire(import.meta.resolve("astro"));
 const { createMarkdownProcessor } = await import(
@@ -33,7 +33,7 @@ for (const [name, render] of [
       return (await processor.render(source)).code;
     },
   ],
-  ["sanitized Markdown", renderMarkdown],
+  ["sanitized Markdown", renderExternalMarkdown],
 ]) {
   test(`${name} renders inline and display math while preserving code`, async () => {
     const html = await render(sample);
@@ -47,7 +47,7 @@ for (const [name, render] of [
 }
 
 test("sanitized Markdown still removes unsafe HTML and math links", async () => {
-  const html = await renderMarkdown(String.raw`<script>alert(1)</script>
+  const html = await renderExternalMarkdown(String.raw`<script>alert(1)</script>
 <img src="x" onerror="alert(1)">
 
 $\href{javascript:alert(1)}{x}$`);

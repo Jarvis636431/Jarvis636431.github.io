@@ -2,7 +2,7 @@
 import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import { profile } from "@config/profile.mjs";
-import { getResumeContent } from "@lib/resume";
+import { getResumeContent } from "@lib/content/resume";
 
 const { projects, openSource, mergedPullRequestCount } =
   await getResumeContent();

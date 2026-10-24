@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import test from "node:test";
 import config from "../astro.config.mjs";
-import { renderMarkdown } from "../src/lib/markdown.mjs";
+import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
 
 const requireFromAstro = createRequire(import.meta.resolve("astro"));
 const { createMarkdownProcessor } = await import(
@@ -12,7 +12,7 @@ const processor = await createMarkdownProcessor(config.markdown);
 
 for (const [name, render] of [
   ["Astro", async (source) => (await processor.render(source)).code],
-  ["sanitized Markdown", renderMarkdown],
+  ["sanitized Markdown", renderExternalMarkdown],
 ]) {
   test(`${name} renders all five GitHub callouts with readable titles and icons`, async () => {
     for (const type of ["NOTE", "TIP", "WARNING", "IMPORTANT", "CAUTION"]) {
@@ -74,7 +74,7 @@ for (const [name, render] of [
 }
 
 test("sanitized callouts remove unsafe author HTML while retaining plugin icons", async () => {
-  const html = await renderMarkdown(
+  const html = await renderExternalMarkdown(
     '> [!WARNING]\n> <img src="x" onerror="alert(1)">\n> <script>alert(1)</script>\n> [unsafe](javascript:alert%281%29)',
   );
   assert.match(html, /markdown-alert-warning/);

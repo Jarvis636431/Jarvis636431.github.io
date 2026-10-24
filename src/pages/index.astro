@@ -4,7 +4,7 @@ import { profile } from "@config/profile.mjs";
 import { integrationConfig } from "@config/integrations.mjs";
 import Layout from "@layouts/Layout.astro";
 import { getRecentPosts, getFeaturedProjects } from "@lib/content";
-import { getPostReadingTime } from "@lib/blog";
+import { getPostReadingTime } from "@lib/content/blog";
 
 const [posts, projects] = await Promise.all([
   getRecentPosts(3),

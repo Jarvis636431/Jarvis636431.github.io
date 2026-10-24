@@ -1,7 +1,8 @@
 import { getPosts, getProjects } from "@lib/content";
-import { getBlogCategory } from "@lib/blog";
-import { getSearchText } from "@lib/markdown.mjs";
-import { getSearchMetadata, type SearchItem } from "@lib/search";
+import { getBlogCategory } from "@lib/content/blog";
+import { getSearchText } from "@lib/markdown/text.mjs";
+import { getSearchMetadata } from "@lib/search/metadata";
+import type { SearchItem } from "@lib/search";
 
 export async function GET() {
   const [posts, projects] = await Promise.all([getPosts(), getProjects()]);

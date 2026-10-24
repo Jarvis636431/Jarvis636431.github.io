@@ -1,4 +1,4 @@
-import { getFeaturedProjects } from "@lib/content";
+import { getFeaturedProjects } from "./index.ts";
 import {
   contributionProjects,
   mergedPullRequests,

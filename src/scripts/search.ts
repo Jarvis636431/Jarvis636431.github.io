@@ -2,7 +2,7 @@ import {
   createSearch,
   getSearchExcerpt,
   type SearchItem,
-} from "../lib/search.ts";
+} from "../lib/search/index.ts";
 import type { FuseResult, RangeTuple } from "fuse.js";
 
 /** Bind the search dialog; browser dependencies are injectable for tests. */

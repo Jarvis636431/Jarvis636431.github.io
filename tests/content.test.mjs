@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { selectPosts, selectProjects } from "../src/lib/content.ts";
+import { selectPosts, selectProjects } from "../src/lib/content/select.ts";
 import {
   getAdjacentPosts,
   getBlogCategory,
   getRelatedPosts,
   scoreRelatedPost,
-} from "../src/lib/blog.ts";
+} from "../src/lib/content/blog.ts";
 
 const post = (slug, date, data = {}) => ({
   id: `${slug}.md`,
