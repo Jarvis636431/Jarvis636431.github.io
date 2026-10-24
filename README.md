@@ -33,7 +33,7 @@ Open `http://localhost:4321`. Environment values are optional for local developm
 | `PUBLIC_GISCUS_CATEGORY`, `PUBLIC_GISCUS_CATEGORY_ID` | Identify the Discussions category                                |
 | `PUBLIC_GISCUS_THEME`                                 | Comment theme; defaults to `light`                               |
 
-Get Giscus IDs from [giscus.app](https://giscus.app) after enabling Discussions and installing its GitHub App. Production values are configured in GitHub Actions repository variables; see `.github/workflows/deploy.yml`.
+Get Giscus IDs from [giscus.app](https://giscus.app) after enabling Discussions and installing its GitHub App. Production values are configured in GitHub Actions repository variables and supplied by both `.github/workflows/deploy.yml` and `.github/workflows/sync-contributions.yml`.
 
 `PUBLIC_*` values can be exposed to browsers: use only the Supabase anonymous key, never a service-role key. The repository does not provision the Supabase database or RPC; those must be configured separately with appropriate permissions. Without service configuration, the counter stays hidden and production comments are omitted. Development shows a comment configuration hint.
 
@@ -247,9 +247,13 @@ PRs authored by `Jarvis636431`, excludes their own repositories, verifies actual
 merge times, and keeps existing records if search results temporarily omit them.
 API errors or incomplete results fail the run without changing the snapshot.
 
-When metadata changes, the workflow verifies the site, commits only the generated
-JSON to `main`, and calls the existing deployment workflow directly. Manual runs
-also redeploy unchanged data, allowing a failed deployment to be retried. It uses
+When metadata changes, the workflow runs `pnpm verify` once with production
+configuration, commits only the generated JSON to `main`, and uploads the verified
+`dist/` as a Pages artifact. It then calls the deployment workflow in
+`artifact-only` mode to deploy that same artifact without rebuilding or checking
+out `main` again. Manual runs also verify, build, and redeploy unchanged data,
+allowing a failed deployment to be retried. Scheduled runs with unchanged data
+skip verification, artifact upload, and deployment. It uses
 the built-in `GITHUB_TOKEN`; no personal token is needed. Repository rules must
 allow the bot to push to `main`. The workflow must be on the default branch to
 run on a schedule; GitHub may delay scheduled runs or disable them after 60 days
@@ -295,7 +299,7 @@ src/
 | `pnpm new:post` / `pnpm new:project` | Scaffold content                                 |
 | `pnpm sync:contributions`            | Refresh the merged-PR snapshot                   |
 
-Both verification and deployment workflows use `pnpm verify`. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including content regression tests, Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including content regression tests, Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
 
 ## Nested blog folders
 

@@ -20,7 +20,7 @@ jobs:
     permissions:
       contents: write
     outputs:
-      changed: ${{ steps.sync.outputs.changed }}
+      deploy: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v7
@@ -46,8 +46,16 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify updated site
-        if: steps.sync.outputs.changed == 'true'
+        if: steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         run: pnpm verify
+        env:
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+          PUBLIC_GISCUS_REPO: Jarvis636431/Jarvis636431.github.io
+          PUBLIC_GISCUS_REPO_ID: ${{ vars.PUBLIC_GISCUS_REPO_ID }}
+          PUBLIC_GISCUS_CATEGORY: Announcements
+          PUBLIC_GISCUS_CATEGORY_ID: ${{ vars.PUBLIC_GISCUS_CATEGORY_ID }}
+          PUBLIC_GISCUS_THEME: light
 
       - name: Commit updated snapshot
         if: steps.sync.outputs.changed == 'true'
@@ -58,13 +66,19 @@ jobs:
           git commit -m "chore: sync merged PR contributions"
           git push origin HEAD:main
 
+      - name: Upload verified site
+        if: steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
   deploy:
     needs: sync
-    if: needs.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+    if: needs.sync.outputs.deploy == 'true'
     permissions:
       contents: read
       pages: write
       id-token: write
     uses: ./.github/workflows/deploy.yml
     with:
-      ref: main
+      artifact-only: true

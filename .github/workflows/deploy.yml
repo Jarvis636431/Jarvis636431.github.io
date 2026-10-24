@@ -11,6 +11,11 @@ on:
         required: false
         default: ""
         type: string
+      artifact-only:
+        description: Deploy an existing github-pages artifact from this workflow run
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -24,6 +29,7 @@ concurrency:
 jobs:
   build:
     name: Build Pages artifact
+    if: ${{ !inputs.artifact-only }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -51,6 +57,8 @@ jobs:
   deploy:
     name: Deploy GitHub Pages
     needs: build
+    # A caller may already have verified, built and uploaded this run's artifact.
+    if: ${{ !cancelled() && (needs.build.result == 'success' || (inputs.artifact-only && needs.build.result == 'skipped')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
