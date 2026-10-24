@@ -1,11 +1,11 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
+import expressiveCode from "astro-expressive-code";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import robotsTxt from "astro-robots-txt";
 import { remarkPlugins, rehypePlugins } from "./src/lib/markdown/plugins.mjs";
-import remarkCodeMeta from "./src/lib/markdown/remark-code-meta.mjs";
 
 import { siteConfig } from "./src/config/site.mjs";
 
@@ -15,6 +15,7 @@ export default defineConfig({
   base: "/",
   trailingSlash: "never",
   integrations: [
+    expressiveCode(),
     mdx(),
     sitemap(),
     tailwind({
@@ -37,24 +38,9 @@ export default defineConfig({
     inlineStylesheets: "auto",
   },
   markdown: {
-    syntaxHighlight: { type: "shiki", excludeLangs: ["mermaid"] },
-    remarkPlugins: [...remarkPlugins, remarkCodeMeta],
+    syntaxHighlight: false,
+    remarkPlugins,
     rehypePlugins,
-    shikiConfig: {
-      wrap: true,
-      theme: "github-dark",
-      transformers: [
-        {
-          name: "preserve-code-meta",
-          pre(node) {
-            const meta = this.options.meta?.__raw;
-            if (typeof meta === "string" && meta.trim()) {
-              node.properties["data-code-meta"] = meta;
-            }
-          },
-        },
-      ],
-    },
     smartypants: true,
   },
   server: {

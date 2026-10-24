@@ -39,105 +39,6 @@ export function initArticle() {
     });
   }
 
-  function enhanceCodeBlocks() {
-    if (!article) return;
-
-    const parseHighlightedLines = (value: string) => {
-      const lines = new Set<number>();
-      value.split(",").forEach((part) => {
-        const [start, end = start] = part.split("-").map(Number);
-        if (!Number.isFinite(start) || !Number.isFinite(end)) return;
-        for (let line = start; line <= end; line += 1) lines.add(line);
-      });
-      return lines;
-    };
-
-    const copyText = async (value: string) => {
-      if (!window.navigator.clipboard?.writeText)
-        throw new Error("Copy is unavailable");
-      await window.navigator.clipboard.writeText(value);
-    };
-
-    article.querySelectorAll("pre").forEach((pre) => {
-      if (pre.querySelector(".code-copy-button")) return;
-      const code = pre.querySelector("code");
-      if (!code?.textContent || code.classList.contains("language-mermaid"))
-        return;
-
-      const meta = code.dataset.codeMeta ?? pre.dataset.codeMeta ?? "";
-      const filename = meta.match(/(?:title|filename)=["']([^"']+)["']/)?.[1];
-      const highlightExpression = meta.match(/\{([\d,\s-]+)\}/)?.[1] ?? "";
-      const showLineNumbers =
-        /(?:^|\s)(?:lineNumbers|showLineNumbers)(?:\s|$)/i.test(meta);
-      const forceCollapse = /(?:^|\s)collapse(?:\s|$)/i.test(meta);
-      const rawLanguage = pre.dataset.language ?? "text";
-
-      const toolbar = document.createElement("div");
-      toolbar.className = "code-toolbar";
-      const identity = document.createElement("span");
-      identity.className = "code-identity";
-      if (filename) {
-        const filenameLabel = document.createElement("span");
-        filenameLabel.className = "code-filename";
-        filenameLabel.textContent = filename;
-        identity.append(filenameLabel);
-      }
-      const language = document.createElement("span");
-      language.className = "code-language";
-      language.textContent = rawLanguage;
-      identity.append(language);
-      toolbar.append(identity);
-
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "code-copy-button";
-      button.textContent = "Copy";
-      button.setAttribute("aria-label", "Copy code");
-      button.addEventListener("click", async () => {
-        try {
-          await copyText(code.textContent ?? "");
-          button.dataset.state = "success";
-          button.textContent = "Copied";
-        } catch {
-          button.dataset.state = "error";
-          button.textContent = "Copy failed";
-        }
-        setTimeout(() => {
-          button.textContent = "Copy";
-          delete button.dataset.state;
-        }, 1600);
-      });
-      toolbar.append(button);
-      pre.prepend(toolbar);
-
-      const lines = Array.from(code.querySelectorAll<HTMLElement>(".line"));
-      if (showLineNumbers && lines.length > 0)
-        pre.classList.add("code-with-lines");
-      const highlightedLines = parseHighlightedLines(highlightExpression);
-      lines.forEach((line, index) => {
-        if (highlightedLines.has(index + 1))
-          line.classList.add("is-highlighted");
-      });
-
-      if ((forceCollapse || lines.length > 24) && lines.length > 0) {
-        pre.classList.add("is-collapsible");
-        const foldButton = document.createElement("button");
-        foldButton.type = "button";
-        foldButton.className = "code-fold-button";
-        foldButton.textContent = `Show all ${lines.length} lines`;
-        foldButton.setAttribute("aria-expanded", "false");
-        foldButton.addEventListener("click", () => {
-          const expanded = pre.classList.toggle("is-expanded");
-          foldButton.setAttribute("aria-expanded", String(expanded));
-          foldButton.textContent = expanded
-            ? "Collapse code"
-            : `Show all ${lines.length} lines`;
-        });
-        pre.append(foldButton);
-      }
-    });
-  }
-
   function enhanceArticleImages() {
     if (!article) return;
     const lightbox = document.querySelector<HTMLDialogElement>(
@@ -293,7 +194,6 @@ export function initArticle() {
   });
 
   enhanceArticleLinks();
-  enhanceCodeBlocks();
   enhanceArticleImages();
   enhanceTablesAndHeadings();
   setupArticleActions();

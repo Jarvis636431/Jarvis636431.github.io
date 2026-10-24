@@ -1,20 +1,14 @@
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
 import test from "node:test";
-import config from "../astro.config.mjs";
+import { createArticleProcessor } from "./fixtures/markdown.mjs";
 import { renderMermaid } from "../src/scripts/mermaid.ts";
 import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
-
-const requireFromAstro = createRequire(import.meta.resolve("astro"));
-const { createMarkdownProcessor } = await import(
-  requireFromAstro.resolve("@astrojs/markdown-remark")
-);
 
 for (const [name, render] of [
   [
     "Astro",
     async (source) => {
-      const processor = await createMarkdownProcessor(config.markdown);
+      const processor = await createArticleProcessor();
       return (await processor.render(source)).code;
     },
   ],
@@ -26,7 +20,7 @@ for (const [name, render] of [
     );
     assert.match(html, /<pre><code class="language-mermaid">flowchart LR/);
     assert.match(html, /A\["Input"\] --> B\["Output"\]/);
-    assert.match(html, name === "Astro" ? /astro-code/ : /language-js/);
+    assert.match(html, name === "Astro" ? /expressive-code/ : /language-js/);
   });
 }
 

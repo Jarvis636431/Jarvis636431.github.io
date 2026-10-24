@@ -142,12 +142,14 @@ $$
 
 文章脚本为普通 Markdown 图片添加懒加载、基于 alt 文本的图片说明和点击放大功能。文章直接使用标准 Markdown 图片语法，不需要额外维护图片组件。
 
-代码块支持文件名、行号、指定行高亮和显式折叠。超过 24 行的代码块自动折叠：
+代码块由 Expressive Code 和官方行号、折叠插件处理，配置集中在 `ec.config.mjs`。使用 `title`、`showLineNumbers`、`{2}` 和 `collapse={3-4}` 设置标题、行号、高亮和折叠。超过 24 行时保留前 24 行，其余自动折叠；显式折叠范围优先：
 
 ````md
-```ts title="src/example.ts" lineNumbers {2,4-6} collapse
+```ts title="src/example.ts" showLineNumbers {2} collapse={3-4}
 const first = true;
 const highlighted = true;
+const setup = true;
+const example = true;
 ```
 ````
 
@@ -174,14 +176,14 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 
 `src/lib/` 按职责组织。手写设置放在 `src/config/`，存储的快照放在 `src/data/`，DOM 交互放在 `src/scripts/`。
 
-| 模块             | 职责与入口                                                                                                                                         |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `content/`       | `index.ts` 查询 Astro 内容集合；`select.ts` 放纯筛选与排序规则；`blog.ts` 放文章规则；`resume.ts` 组合简历数据                                     |
-| `markdown/`      | `plugins.mjs` 共享 GFM、公式和提示块扩展；`render.mjs` 安全渲染外部 Markdown；`text.mjs` 提取搜索文本；`remark-code-meta.mjs` 保留文章代码块元信息 |
-| `search/`        | `index.ts` 实现 Fuse 搜索与摘要片段；`metadata.ts` 在构建时整理标题、简介和别名，不导入 Fuse                                                       |
-| `contributions/` | `index.ts` 读取快照并提供仓库汇总和日期；`select.ts` 放纯筛选规则与记录类型                                                                        |
-| `integrations/`  | `resolve.mjs` 解析设置和同步规则，不依赖 Astro 或浏览器；`index.ts` 读取环境变量；`supabase.ts` 初始化可选客户端                                   |
-| `seo.ts`         | 生成 canonical URL 和分享元数据，保持独立文件                                                                                                      |
+| 模块             | 职责与入口                                                                                                       |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `content/`       | `index.ts` 查询 Astro 内容集合；`select.ts` 放纯筛选与排序规则；`blog.ts` 放文章规则；`resume.ts` 组合简历数据   |
+| `markdown/`      | `plugins.mjs` 共享 GFM、公式和提示块扩展；`render.mjs` 安全渲染外部 Markdown；`text.mjs` 提取搜索文本            |
+| `search/`        | `index.ts` 实现 Fuse 搜索与摘要片段；`metadata.ts` 在构建时整理标题、简介和别名，不导入 Fuse                     |
+| `contributions/` | `index.ts` 读取快照并提供仓库汇总和日期；`select.ts` 放纯筛选规则与记录类型                                      |
+| `integrations/`  | `resolve.mjs` 解析设置和同步规则，不依赖 Astro 或浏览器；`index.ts` 读取环境变量；`supabase.ts` 初始化可选客户端 |
+| `seo.ts`         | 生成 canonical URL 和分享元数据，保持独立文件                                                                    |
 
 调用方使用具体入口，不通过全局聚合文件导入所有模块。Astro 页面使用 `@lib/content`、`@lib/contributions` 等对应路径；测试与 Node 命令使用带扩展名的显式路径导入纯模块。
 
@@ -209,7 +211,7 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 - `tailwind.config.mjs` 将 token 映射到工具类，并启用 Typography 默认排版；站点正文覆盖样式放在 `src/styles/prose.css`。
 - `src/styles/global.css` 管理全局基础规则和共享装饰背景。页面与组件布局保留在局部 Astro 样式中。
 - `src/styles/prose.css` 管理 `.prose`、紧凑的 `.prose--compact`，以及共享的 KaTeX、Mermaid 和提示块样式。
-- `src/styles/article.css` 管理博客专属代码工具、图片说明、表格滚动和标题锚点，限定在 `.article-content` 下，仅由博客详情页导入。
+- `src/styles/article.css` 管理博客专属图片说明、表格滚动和标题锚点，限定在 `.article-content` 下，仅由博客详情页导入。
 - Mermaid 从计算后的 CSS token 读取配色和字体。Shiki 和 KaTeX 保留各自的语法颜色与数学字体；简历的打印配色和图片灯箱遮罩保留局部样式。
 
 ## 共享内容查询
@@ -221,7 +223,7 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 - `getRecentPosts(limit)` 使用相同的文章可见性规则。
 - `getFeaturedProjects(limit?)` 始终排除归档项目，包括开发环境，同时供首页和简历使用。
 - `src/lib/content/blog.ts` 管理相关文章排序、阅读时间和系列导航。
-- `src/scripts/article.ts` 初始化阅读进度、代码工具、图片预览、表格、标题锚点和分享功能，由详情页的 Astro 脚本导入并打包。
+- `src/scripts/article.ts` 初始化阅读进度、图片预览、表格、标题锚点和分享功能，由详情页的 Astro 脚本导入并打包。
 - `src/components/site/` 管理共享页头、页脚、搜索弹窗和浏览量组件。计数器自行延迟初始化 Supabase，页面只需向布局传入 `viewCounterSlug`。
 - `src/scripts/mermaid.ts` 从布局初始化图表，仅在存在未处理的图表代码块时加载 Mermaid；失败时保留源码。
 

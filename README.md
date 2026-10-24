@@ -179,12 +179,14 @@ signs as `\$` in prose. The sanitized PR body renderer supports the same syntax.
 
 Regular Markdown images receive lazy loading, captions from alt text, and click-to-zoom behavior through the article script. There is no separate image component to maintain; use standard Markdown image syntax in articles.
 
-Fenced code supports filename metadata, line numbers, highlighted lines, and explicit collapse. Blocks longer than 24 lines collapse automatically:
+Code blocks use Expressive Code with official line-number and collapsible-section plugins, configured in `ec.config.mjs`. Use `title`, `showLineNumbers`, `{2}`, and `collapse={3-4}` for titles, line numbers, highlighting, and folding. Blocks longer than 24 lines show the first 24 lines and collapse the rest automatically; explicit collapse ranges take priority:
 
 ````md
-```ts title="src/example.ts" lineNumbers {2,4-6} collapse
+```ts title="src/example.ts" showLineNumbers {2} collapse={3-4}
 const first = true;
 const highlighted = true;
+const setup = true;
+const example = true;
 ```
 ````
 
@@ -211,14 +213,14 @@ Components are grouped by their callers: `site/` for the shared layout, `blog/` 
 `src/config/`; stored snapshots belong in `src/data/`; DOM interactions belong
 in `src/scripts/`.
 
-| Module           | Responsibility and entry points                                                                                                                                                          |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `content/`       | `index.ts` queries Astro collections; `select.ts` owns pure visibility/sorting rules; `blog.ts` supplies article rules; `resume.ts` assembles resume data                                |
-| `markdown/`      | `plugins.mjs` shares GFM, math and callout extensions; `render.mjs` sanitizes external Markdown; `text.mjs` extracts search text; `remark-code-meta.mjs` preserves article code metadata |
-| `search/`        | `index.ts` implements Fuse search and excerpts; `metadata.ts` prepares build-time titles, descriptions and aliases without importing Fuse                                                |
-| `contributions/` | `index.ts` loads the snapshot and supplies repository summaries/dates; `select.ts` owns pure selection rules and record types                                                            |
-| `integrations/`  | `resolve.mjs` resolves settings and sync policy without Astro/browser dependencies; `index.ts` reads the environment; `supabase.ts` initializes the optional client                      |
-| `seo.ts`         | Builds canonical URLs and sharing metadata; remains a standalone module                                                                                                                  |
+| Module           | Responsibility and entry points                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content/`       | `index.ts` queries Astro collections; `select.ts` owns pure visibility/sorting rules; `blog.ts` supplies article rules; `resume.ts` assembles resume data           |
+| `markdown/`      | `plugins.mjs` shares GFM, math and callout extensions; `render.mjs` sanitizes external Markdown; `text.mjs` extracts search text                                    |
+| `search/`        | `index.ts` implements Fuse search and excerpts; `metadata.ts` prepares build-time titles, descriptions and aliases without importing Fuse                           |
+| `contributions/` | `index.ts` loads the snapshot and supplies repository summaries/dates; `select.ts` owns pure selection rules and record types                                       |
+| `integrations/`  | `resolve.mjs` resolves settings and sync policy without Astro/browser dependencies; `index.ts` reads the environment; `supabase.ts` initializes the optional client |
+| `seo.ts`         | Builds canonical URLs and sharing metadata; remains a standalone module                                                                                             |
 
 Use specific entry points instead of a global barrel that imports every module.
 Astro pages use `@lib/content`, `@lib/contributions`, and other scoped paths.
@@ -250,7 +252,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 - `tailwind.config.mjs` maps tokens to utility names and enables Typography defaults; site-specific prose overrides live in `src/styles/prose.css`.
 - `src/styles/global.css` owns site-wide base rules and the shared decorative background. Page and component layout stays in scoped Astro styles.
 - `src/styles/prose.css` owns long-form `.prose`, compact `.prose--compact`, and shared KaTeX, Mermaid, and callout styles. The two text formats keep their existing sizes and spacing.
-- `src/styles/article.css` owns blog-only code tools, image captions, table scrolling, and heading anchors, scoped to `.article-content`. The blog detail page imports it; other pages do not need these enhancements.
+- `src/styles/article.css` owns blog-only image captions, table scrolling, and heading anchors, scoped to `.article-content`. The blog detail page imports it; other pages do not need these enhancements.
 - Mermaid reads its palette and font from computed CSS tokens. Shiki and KaTeX retain their renderer-specific syntax colors and math fonts; the resume's print-oriented neutral shades and lightbox overlay remain local.
 
 ## Shared content queries
@@ -262,7 +264,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 - `getRecentPosts(limit)` uses the same article visibility rules.
 - `getFeaturedProjects(limit?)` always excludes archives, including in development, and supplies both the homepage and resume.
 - `src/lib/content/blog.ts` owns related-post ranking, reading time, and series navigation.
-- `src/scripts/article.ts` initializes article reading progress, code tools, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
+- `src/scripts/article.ts` initializes article reading progress, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
 - `src/components/site/` owns the shared header, footer, search dialog, and view counter. The counter handles its own delayed Supabase initialization, so pages only need to pass `viewCounterSlug` to the layout.
 - `src/scripts/mermaid.ts` initializes diagrams from the layout and loads the Mermaid renderer only when unprocessed diagram blocks are present. Failed diagrams retain their source.
 

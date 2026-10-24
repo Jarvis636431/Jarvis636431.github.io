@@ -1,14 +1,9 @@
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
 import test from "node:test";
-import config from "../astro.config.mjs";
+import { createArticleProcessor } from "./fixtures/markdown.mjs";
 import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
 
-const requireFromAstro = createRequire(import.meta.resolve("astro"));
-const { createMarkdownProcessor } = await import(
-  requireFromAstro.resolve("@astrojs/markdown-remark")
-);
-const processor = await createMarkdownProcessor(config.markdown);
+const processor = await createArticleProcessor();
 
 for (const [name, render] of [
   ["Astro", async (source) => (await processor.render(source)).code],

@@ -1,19 +1,14 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { createRequire } from "node:module";
 import test from "node:test";
 import { URL } from "node:url";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkMath from "remark-math";
 import katex from "katex";
-import config from "../astro.config.mjs";
+import { createArticleProcessor } from "./fixtures/markdown.mjs";
 import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
 
-const requireFromAstro = createRequire(import.meta.resolve("astro"));
-const { createMarkdownProcessor } = await import(
-  requireFromAstro.resolve("@astrojs/markdown-remark")
-);
 const sample = String.raw`Inline $p = \sigma(z)$.
 
 $$
@@ -29,7 +24,7 @@ for (const [name, render] of [
   [
     "Astro articles",
     async (source) => {
-      const processor = await createMarkdownProcessor(config.markdown);
+      const processor = await createArticleProcessor();
       return (await processor.render(source)).code;
     },
   ],
