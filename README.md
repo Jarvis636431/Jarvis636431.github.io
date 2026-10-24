@@ -216,7 +216,7 @@ in `src/scripts/`.
 | Module           | Responsibility and entry points                                                                                                                                     |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `content/`       | `index.ts` queries Astro collections; `select.ts` owns pure visibility/sorting rules; `blog.ts` supplies article rules; `resume.ts` assembles resume data           |
-| `markdown/`      | `plugins.mjs` shares GFM, math and callout extensions; `render.mjs` sanitizes external Markdown; `text.mjs` extracts search text                                    |
+| `markdown/`      | `plugins.mjs` shares GFM, math, callout and Mermaid extensions; `render.mjs` sanitizes external Markdown; `text.mjs` extracts search text                           |
 | `search/`        | `index.ts` implements Fuse search and excerpts; `metadata.ts` prepares build-time titles, descriptions and aliases without importing Fuse                           |
 | `contributions/` | `index.ts` loads the snapshot and supplies repository summaries/dates; `select.ts` owns pure selection rules and record types                                       |
 | `integrations/`  | `resolve.mjs` resolves settings and sync policy without Astro/browser dependencies; `index.ts` reads the environment; `supabase.ts` initializes the optional client |
@@ -266,7 +266,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 - `src/lib/content/blog.ts` owns related-post ranking, reading time, and series navigation.
 - `src/scripts/article.ts` initializes article reading progress, image previews, tables, headings, and sharing. The detail page imports it through an Astro script so it remains bundled.
 - `src/components/site/` owns the shared header, footer, search dialog, and view counter. The counter handles its own delayed Supabase initialization, so pages only need to pass `viewCounterSlug` to the layout.
-- `src/scripts/mermaid.ts` initializes diagrams from the layout and loads the Mermaid renderer only when unprocessed diagram blocks are present. Failed diagrams retain their source.
+- `src/scripts/mermaid.ts` initializes from the layout and renders containers created by `rehype-mermaid` (`pre-mermaid` strategy), independently of Expressive Code. It loads Mermaid only when unprocessed diagrams are present. Failed diagrams retain their source. The build-time plugin requires the Playwright package in Node, but this strategy does not launch a browser or require browser binaries.
 
 ## Profile and resume
 

@@ -63,7 +63,7 @@ for (const [name, render] of [
     assert.match(html, /href="https:\/\/example.com"/);
     assert.match(html, /class="katex"/);
     assert.match(html, /class="katex-display"/);
-    assert.match(html, /code class="language-mermaid"/);
+    assert.match(html, /pre class="mermaid"/);
     assert.doesNotMatch(html, /katex-error/);
   });
 }

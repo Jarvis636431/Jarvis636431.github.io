@@ -34,7 +34,10 @@ test("long code folds after 24 lines while explicit ranges take priority", async
 test("long diagrams preserve exact source without folding or copy controls", async () => {
   const source = `flowchart LR\n${Array.from({ length: 30 }, (_, i) => `A${i} --> A${i + 1}`).join("\n")}`;
   const { code } = await processor.render(`\`\`\`mermaid\n${source}\n\`\`\``);
-  assert.match(code, /<pre><code class="language-mermaid">flowchart LR\n/);
-  assert.doesNotMatch(code, /<details|data-code=/);
+  assert.match(code, /<pre class="mermaid">flowchart LR\n/);
+  assert.doesNotMatch(
+    code,
+    /<details|data-code=|expressive-code|_assets\/ec\./,
+  );
   assert.equal(code.match(/A\d+ --(?:&gt;|>) A\d+/g)?.length, 30);
 });

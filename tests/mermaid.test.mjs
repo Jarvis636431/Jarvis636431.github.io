@@ -18,7 +18,7 @@ for (const [name, render] of [
     const html = await render(
       '```mermaid\nflowchart LR\n A["Input"] --> B["Output"]\n```\n\n```js\nconst x = 1;\n```',
     );
-    assert.match(html, /<pre><code class="language-mermaid">flowchart LR/);
+    assert.match(html, /<pre class="mermaid">flowchart LR/);
     assert.match(html, /A\["Input"\] --> B\["Output"\]/);
     assert.match(html, name === "Astro" ? /expressive-code/ : /language-js/);
   });
@@ -29,6 +29,7 @@ function createBlock(source) {
   const pre = {
     dataset: {},
     innerHTML: "",
+    textContent: source,
     attrs: {},
     statuses: [],
     classList: { add: (value) => classes.add(value) },
@@ -42,7 +43,7 @@ function createBlock(source) {
       return { viewBox: { baseVal: { width: 800 } }, style: {} };
     },
   };
-  return { textContent: source, parentElement: pre };
+  return pre;
 }
 
 async function runClient(
@@ -83,7 +84,7 @@ async function runClient(
 test("pages without diagrams do not load Mermaid", async () => {
   assert.equal((await runClient([])).imports, 0);
   const processed = createBlock("done");
-  processed.parentElement.dataset.mermaidState = "rendered";
+  processed.dataset.mermaidState = "rendered";
   assert.equal((await runClient([processed])).imports, 0);
 });
 
@@ -98,13 +99,13 @@ test("a broken diagram keeps its source and does not block later diagrams", asyn
     "theme:--color-diagram-fill",
   );
   assert.equal(result.options.fontFamily, "theme:--font-prose");
-  assert.equal(broken.parentElement.dataset.mermaidState, "error");
+  assert.equal(broken.dataset.mermaidState, "error");
   assert.equal(broken.textContent, "invalid");
-  assert.equal(broken.parentElement.innerHTML, "");
-  assert.equal(broken.parentElement.statuses.length, 1);
-  assert.equal(valid.parentElement.dataset.mermaidState, "rendered");
-  assert.equal(valid.parentElement.innerHTML, "<svg></svg>");
-  assert.equal(valid.parentElement.tabIndex, 0);
+  assert.equal(broken.innerHTML, "");
+  assert.equal(broken.statuses.length, 1);
+  assert.equal(valid.dataset.mermaidState, "rendered");
+  assert.equal(valid.innerHTML, "<svg></svg>");
+  assert.equal(valid.tabIndex, 0);
   assert.notEqual(result.rendered[0].id, result.rendered[1].id);
 });
 
@@ -112,7 +113,7 @@ test("an unavailable renderer leaves every source block readable", async () => {
   const blocks = [createBlock("first"), createBlock("second")];
   await runClient(blocks, { failLoad: true });
   for (const block of blocks) {
-    assert.equal(block.parentElement.dataset.mermaidState, "error");
-    assert.equal(block.parentElement.innerHTML, "");
+    assert.equal(block.dataset.mermaidState, "error");
+    assert.equal(block.innerHTML, "");
   }
 });

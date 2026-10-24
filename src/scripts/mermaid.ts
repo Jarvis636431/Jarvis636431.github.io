@@ -4,16 +4,15 @@ export async function renderMermaid(
   loadMermaid = () => import("mermaid"),
 ) {
   const blocks = Array.from(
-    root.querySelectorAll<HTMLElement>(".prose pre > code.language-mermaid"),
-  ).filter((code) => !code.parentElement?.dataset.mermaidState);
+    root.querySelectorAll<HTMLElement>(".prose pre.mermaid"),
+  ).filter((pre) => !pre.dataset.mermaidState);
   if (!blocks.length) return;
 
-  for (const code of blocks) {
-    code.parentElement!.dataset.mermaidState = "loading";
+  for (const pre of blocks) {
+    pre.dataset.mermaidState = "loading";
   }
 
-  const showSource = (code: HTMLElement) => {
-    const pre = code.parentElement!;
+  const showSource = (pre: HTMLElement) => {
     pre.dataset.mermaidState = "error";
     const status = root.createElement("span");
     status.className = "mermaid-status";
@@ -45,12 +44,11 @@ export async function renderMermaid(
         background: token("--color-background"),
       },
     });
-    for (const [index, code] of blocks.entries()) {
-      const pre = code.parentElement!;
+    for (const [index, pre] of blocks.entries()) {
       try {
         const { svg } = await mermaid.render(
           `mermaid-diagram-${index}`,
-          code.textContent ?? "",
+          pre.textContent ?? "",
         );
         pre.innerHTML = svg;
         pre.classList.add("mermaid-diagram");
@@ -68,7 +66,7 @@ export async function renderMermaid(
           diagram.style.maxWidth = "none";
         }
       } catch {
-        showSource(code);
+        showSource(pre);
       }
     }
   } catch {

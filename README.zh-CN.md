@@ -179,7 +179,7 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 | 模块             | 职责与入口                                                                                                       |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `content/`       | `index.ts` 查询 Astro 内容集合；`select.ts` 放纯筛选与排序规则；`blog.ts` 放文章规则；`resume.ts` 组合简历数据   |
-| `markdown/`      | `plugins.mjs` 共享 GFM、公式和提示块扩展；`render.mjs` 安全渲染外部 Markdown；`text.mjs` 提取搜索文本            |
+| `markdown/`      | `plugins.mjs` 共享 GFM、公式、提示块和 Mermaid 扩展；`render.mjs` 安全渲染外部 Markdown；`text.mjs` 提取搜索文本 |
 | `search/`        | `index.ts` 实现 Fuse 搜索与摘要片段；`metadata.ts` 在构建时整理标题、简介和别名，不导入 Fuse                     |
 | `contributions/` | `index.ts` 读取快照并提供仓库汇总和日期；`select.ts` 放纯筛选规则与记录类型                                      |
 | `integrations/`  | `resolve.mjs` 解析设置和同步规则，不依赖 Astro 或浏览器；`index.ts` 读取环境变量；`supabase.ts` 初始化可选客户端 |
@@ -225,7 +225,7 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 - `src/lib/content/blog.ts` 管理相关文章排序、阅读时间和系列导航。
 - `src/scripts/article.ts` 初始化阅读进度、图片预览、表格、标题锚点和分享功能，由详情页的 Astro 脚本导入并打包。
 - `src/components/site/` 管理共享页头、页脚、搜索弹窗和浏览量组件。计数器自行延迟初始化 Supabase，页面只需向布局传入 `viewCounterSlug`。
-- `src/scripts/mermaid.ts` 从布局初始化图表，仅在存在未处理的图表代码块时加载 Mermaid；失败时保留源码。
+- `src/scripts/mermaid.ts` 渲染 `rehype-mermaid` 的 `pre-mermaid` 模式提前生成的图表容器，不依赖 Expressive Code，从布局初始化，仅在存在未处理的图表代码块时加载 Mermaid；失败时保留源码。构建插件在 Node 中需要 Playwright 包，但此模式不启动浏览器，也不需要安装浏览器程序。
 
 ## 个人资料与简历
 
