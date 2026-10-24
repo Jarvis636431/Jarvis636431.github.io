@@ -6,7 +6,7 @@ import {
 } from "@data/contributions";
 
 /** Build resume sections from the same public sources used by the site.
- * Personal and employment details remain explicitly maintained in data/resume.ts.
+ * Personal and employment details remain explicitly maintained in data/profile.mjs.
  * No network access or generated prose is required during a build.
  */
 export async function getResumeContent() {

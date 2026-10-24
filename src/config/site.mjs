@@ -1,19 +1,21 @@
+import { profile } from "../data/profile.mjs";
+
 /** Shared by Astro, browser-facing pages and Node automation; no runtime imports. */
 const name = "Jarvis Hub";
-const githubUsername = "Jarvis636431";
+const githubUsername = profile.githubUsername.trim();
 const logo = "/logo.png";
 
 export const siteConfig = {
   name,
   title: `${name} - Creative Developer`,
-  description:
-    "Personal website of Jarvis - crafting web experiences, writing, and sharing experiments in code.",
+  description: `Personal website of ${profile.name} - crafting web experiences, writing, and sharing experiments in code.`,
   url: "https://jarvis636431.github.io",
   language: "en",
-  email: "mengda636431@gmail.com",
+  timeZone: "Asia/Shanghai",
+  email: profile.email,
   github: {
     username: githubUsername,
-    url: `https://github.com/${githubUsername}`,
+    url: githubUsername ? `https://github.com/${githubUsername}` : undefined,
   },
   image: { src: logo, alt: `${name} logomark` },
   favicon: { src: logo, type: "image/png" },

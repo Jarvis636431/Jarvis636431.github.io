@@ -1,5 +1,7 @@
 ---
 import { siteConfig } from "@config/site.mjs";
+import { profile } from "@data/profile.mjs";
+import { integrationConfig } from "@config/integrations.mjs";
 import Layout from "@layouts/Layout.astro";
 import { getRecentPosts, getFeaturedProjects } from "@lib/content";
 import { getPostReadingTime } from "@lib/blog";
@@ -8,20 +10,27 @@ const [posts, projects] = await Promise.all([
   getRecentPosts(3),
   getFeaturedProjects(3),
 ]);
+const showHeatmap =
+  integrationConfig.contributions.enabled &&
+  integrationConfig.contributions.heatmap &&
+  Boolean(siteConfig.github.username);
 ---
 
 <Layout
-  title={`${siteConfig.name} | Software Engineer`}
-  description="Projects, open-source contributions, and engineering notes by Jarvis. Tianjin University → Joybuy."
+  title={`${siteConfig.name} | ${profile.role}`}
+  description={profile.home.description}
   lang="en"
   viewCounterSlug="home"
   decorativeBackground={false}
 >
   <div class="home">
-    <section class="intro" aria-labelledby="intro-title">
+    <section
+      class:list={["intro", !showHeatmap && "intro--single"]}
+      aria-labelledby="intro-title"
+    >
       <div class="intro-copy">
-        <h1 id="intro-title">Hi, I'm <span>Jarvis</span>.</h1>
-        <p class="intro-description">Tianjin University → Joybuy</p>
+        <h1 id="intro-title">Hi, I'm <span>{profile.name}</span>.</h1>
+        <p class="intro-description">{profile.home.introduction}</p>
         <nav class="intro-links" aria-label="Explore my work">
           <a href="#selected-projects">Projects ↘</a>
           <a href="#recent-writing">Writing ↘</a>
@@ -29,31 +38,37 @@ const [posts, projects] = await Promise.all([
         </nav>
       </div>
 
-      <div class="contributions" aria-labelledby="contributions-title">
-        <div class="contributions-heading">
-          <h2 id="contributions-title">Contributions</h2>
-          <a
-            href={siteConfig.github.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Visit Jarvis on GitHub">GitHub ↗</a
-          >
-        </div>
-        <div
-          id="contribution-scroll"
-          class="contribution-scroll"
-          role="region"
-          aria-label="GitHub contribution heatmap; scroll horizontally to explore"
-          tabindex="0"
-        >
-          <img
-            src={`https://ghchart.rshah.org/2f6f6d/${siteConfig.github.username}`}
-            alt={`${siteConfig.github.username}’s GitHub contributions over the past year`}
-            width="722"
-            height="112"
-          />
-        </div>
-      </div>
+      {
+        showHeatmap && (
+          <div class="contributions" aria-labelledby="contributions-title">
+            <div class="contributions-heading">
+              <h2 id="contributions-title">Contributions</h2>
+              <a
+                href={siteConfig.github.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ${profile.name} on GitHub`}
+              >
+                GitHub ↗
+              </a>
+            </div>
+            <div
+              id="contribution-scroll"
+              class="contribution-scroll"
+              role="region"
+              aria-label="GitHub contribution heatmap; scroll horizontally to explore"
+              tabindex="0"
+            >
+              <img
+                src={`https://ghchart.rshah.org/2f6f6d/${siteConfig.github.username}`}
+                alt={`${siteConfig.github.username}’s GitHub contributions over the past year`}
+                width="722"
+                height="112"
+              />
+            </div>
+          </div>
+        )
+      }
       <a
         class="scroll-down"
         href="#selected-projects"
@@ -74,6 +89,11 @@ const [posts, projects] = await Promise.all([
         <a href="/projects">All projects →</a>
       </div>
       <div class="project-list">
+        {
+          projects.length === 0 && (
+            <p class="empty-state">Projects will appear here soon.</p>
+          )
+        }
         {
           projects.map((project, index) => (
             <a class="project-row" href={`/projects/${project.slug}`}>
@@ -115,7 +135,7 @@ const [posts, projects] = await Promise.all([
                   year: "numeric",
                   month: "short",
                   day: "2-digit",
-                  timeZone: "Asia/Shanghai",
+                  timeZone: siteConfig.timeZone,
                 })}
               </time>
               <div class="writing-copy">
@@ -162,6 +182,9 @@ const [posts, projects] = await Promise.all([
     align-items: stretch;
     column-gap: 3rem;
     padding: 5rem 0;
+  }
+  .intro.intro--single {
+    grid-template-columns: minmax(0, 1fr);
   }
   .intro > * {
     min-width: 0;

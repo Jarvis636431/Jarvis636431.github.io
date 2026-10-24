@@ -20,12 +20,12 @@ jobs:
     permissions:
       contents: write
     outputs:
-      deploy: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
+      deploy: ${{ steps.settings.outputs.enabled == 'true' && (steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') }}
     steps:
-      - name: Checkout main
+      - name: Checkout default branch
         uses: actions/checkout@v7
         with:
-          ref: main
+          ref: ${{ github.event.repository.default_branch }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v6
@@ -36,38 +36,50 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - name: Read contribution settings
+        id: settings
+        run: |
+          node --input-type=module <<'JS'
+          import { appendFileSync } from "node:fs";
+          import { isContributionSyncEnabled } from "./src/config/integrations.mjs";
+          import { siteConfig } from "./src/config/site.mjs";
+          const enabled = isContributionSyncEnabled(siteConfig.github.username);
+          appendFileSync(process.env.GITHUB_OUTPUT, `enabled=${enabled}\n`);
+          JS
+
       - name: Install dependencies
+        if: steps.settings.outputs.enabled == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Sync merged PRs
+        if: steps.settings.outputs.enabled == 'true'
         id: sync
         run: pnpm sync:contributions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify updated site
-        if: steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        if: steps.settings.outputs.enabled == 'true' && (steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch')
         run: pnpm verify
         env:
           PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
-          PUBLIC_GISCUS_REPO: Jarvis636431/Jarvis636431.github.io
           PUBLIC_GISCUS_REPO_ID: ${{ vars.PUBLIC_GISCUS_REPO_ID }}
-          PUBLIC_GISCUS_CATEGORY: Announcements
           PUBLIC_GISCUS_CATEGORY_ID: ${{ vars.PUBLIC_GISCUS_CATEGORY_ID }}
-          PUBLIC_GISCUS_THEME: light
 
       - name: Commit updated snapshot
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         if: steps.sync.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/data/contributions.generated.json
           git commit -m "chore: sync merged PR contributions"
-          git push origin HEAD:main
+          git push origin "HEAD:$DEFAULT_BRANCH"
 
       - name: Upload verified site
-        if: steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        if: steps.settings.outputs.enabled == 'true' && (steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist

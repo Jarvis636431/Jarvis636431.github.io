@@ -1,5 +1,7 @@
 ---
 import { siteConfig } from "@config/site.mjs";
+import { profile } from "@data/profile.mjs";
+import { integrations } from "@lib/integrations";
 import Layout from "@layouts/Layout.astro";
 import Markdown from "@components/Markdown.astro";
 import "@styles/article.css";
@@ -31,6 +33,7 @@ const publishDate = new Date(post.data.publishDate).toLocaleDateString(
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
+    timeZone: siteConfig.timeZone,
   },
 );
 const readingTime = getPostReadingTime(post);
@@ -39,6 +42,7 @@ const updatedDate = post.data.updatedDate
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
+      timeZone: siteConfig.timeZone,
     })
   : undefined;
 const hasUpdatedDate =
@@ -62,7 +66,7 @@ const articleStructuredData: Record<string, unknown> = {
   dateModified: updatedDateIso ?? publishDateIso,
   author: {
     "@type": "Person",
-    name: siteConfig.name,
+    name: profile.name,
   },
   publisher: {
     "@type": "Organization",
@@ -84,12 +88,7 @@ const allPosts = await getPosts();
 const seriesPosts = getSeriesPosts(post, allPosts);
 const adjacentPosts = getAdjacentPosts(post, allPosts);
 const commentTerm = post.data.commentId ?? post.slug;
-const commentsConfigured = Boolean(
-  import.meta.env.PUBLIC_GISCUS_REPO &&
-  import.meta.env.PUBLIC_GISCUS_REPO_ID &&
-  import.meta.env.PUBLIC_GISCUS_CATEGORY &&
-  import.meta.env.PUBLIC_GISCUS_CATEGORY_ID,
-);
+const commentsConfigured = integrations.comments.configured;
 const titleLength = Array.from(post.data.title).length;
 const titleSize =
   titleLength > 30 ? "long" : titleLength > 18 ? "medium" : "short";
@@ -155,12 +154,13 @@ const relatedPosts = getRelatedPosts(post, allPosts);
           )
         }
         {
-          (commentsConfigured || import.meta.env.DEV) && (
-            <>
-              <span aria-hidden="true">·</span>
-              <a href="#comments">参与讨论</a>
-            </>
-          )
+          integrations.comments.enabled &&
+            (commentsConfigured || import.meta.env.DEV) && (
+              <>
+                <span aria-hidden="true">·</span>
+                <a href="#comments">参与讨论</a>
+              </>
+            )
         }
       </div>
 

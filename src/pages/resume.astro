@@ -1,46 +1,45 @@
 ---
 import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
-import {
-  resumeEducation,
-  resumeExperiences,
-  resumeProfile,
-  resumeSkills,
-} from "@data/resume";
+import { profile } from "@data/profile.mjs";
 import { getResumeContent } from "@lib/resume";
 
 const { projects, openSource, mergedPullRequestCount } =
   await getResumeContent();
 const siteOrigin = Astro.site?.origin ?? siteConfig.url;
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
-const websiteLabel = new URL(resumeProfile.website).hostname;
+const websiteLabel = new URL(siteConfig.url).hostname;
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  name: `${resumeProfile.name} Resume`,
+  name: `${profile.name} Resume`,
   url: canonicalUrl,
   inLanguage: "en",
   mainEntity: {
     "@type": "Person",
-    name: resumeProfile.name,
-    jobTitle: resumeExperiences[0]?.role,
-    email: `mailto:${resumeProfile.email}`,
-    url: resumeProfile.website,
-    worksFor: { "@type": "Organization", name: resumeProfile.organization },
-    alumniOf: {
-      "@type": "CollegeOrUniversity",
-      name: resumeEducation.institution,
-    },
-    knowsAbout: resumeSkills.flatMap((group) => group.items),
-    sameAs: [resumeProfile.github],
+    name: profile.name,
+    jobTitle: profile.experiences[0]?.role,
+    email: profile.email ? `mailto:${profile.email}` : undefined,
+    url: siteConfig.url,
+    worksFor: profile.organization
+      ? { "@type": "Organization", name: profile.organization }
+      : undefined,
+    alumniOf: profile.education.institution
+      ? {
+          "@type": "CollegeOrUniversity",
+          name: profile.education.institution,
+        }
+      : undefined,
+    knowsAbout: profile.skills.flatMap((group) => group.items),
+    sameAs: siteConfig.github.url ? [siteConfig.github.url] : [],
   },
 };
 ---
 
 <Layout
-  title="Resume - Jarvis"
+  title={`Resume - ${profile.name}`}
   lang="en"
-  description={resumeProfile.summary}
+  description={profile.summary}
   decorativeBackground={false}
   seo={{
     canonical: canonicalUrl,
@@ -51,48 +50,62 @@ const structuredData = {
 >
   <article class="resume" aria-labelledby="resume-title">
     <header class="resume-header">
-      <h1 id="resume-title">{resumeProfile.name}</h1>
-      <p class="headline">{resumeProfile.title}</p>
+      <h1 id="resume-title">{profile.name}</h1>
+      <p class="headline">{profile.title}</p>
       <address class="contact-list">
-        <span>{resumeProfile.location}</span>
-        <a href={`mailto:${resumeProfile.email}`}>{resumeProfile.email}</a>
-        <a href={resumeProfile.website}>{websiteLabel}</a>
-        <a href={resumeProfile.github} target="_blank" rel="noopener noreferrer"
-          >GitHub ↗</a
-        >
+        <span>{profile.location}</span>
+        {
+          profile.email && (
+            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          )
+        }
+        <a href={siteConfig.url}>{websiteLabel}</a>
+        {
+          siteConfig.github.url && (
+            <a
+              href={siteConfig.github.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub ↗
+            </a>
+          )
+        }
       </address>
     </header>
 
     <section class="resume-section" aria-labelledby="profile-heading">
       <h2 id="profile-heading">Profile</h2>
-      <p>{resumeProfile.summary}</p>
+      <p>{profile.summary}</p>
     </section>
 
-    <section class="resume-section" aria-labelledby="experience-heading">
-      <h2 id="experience-heading">Experience</h2>
-      <div class="entry-list">
-        {
-          resumeExperiences.map((experience) => (
-            <article class="resume-entry">
-              <div class="entry-heading">
-                <h3>{experience.organization}</h3>
-                <span class="entry-period">{experience.period}</span>
-              </div>
-              <p class="entry-role">
-                {experience.role}
-                {experience.location && <span> · {experience.location}</span>}
-              </p>
-              <p>{experience.summary}</p>
-              <ul class="highlights">
-                {experience.highlights.map((highlight) => (
-                  <li>{highlight}</li>
-                ))}
-              </ul>
-            </article>
-          ))
-        }
-      </div>
-    </section>
+    {
+      profile.experiences.length > 0 && (
+        <section class="resume-section" aria-labelledby="experience-heading">
+          <h2 id="experience-heading">Experience</h2>
+          <div class="entry-list">
+            {profile.experiences.map((experience) => (
+              <article class="resume-entry">
+                <div class="entry-heading">
+                  <h3>{experience.organization}</h3>
+                  <span class="entry-period">{experience.period}</span>
+                </div>
+                <p class="entry-role">
+                  {experience.role}
+                  {experience.location && <span> · {experience.location}</span>}
+                </p>
+                <p>{experience.summary}</p>
+                <ul class="highlights">
+                  {experience.highlights.map((highlight) => (
+                    <li>{highlight}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     {
       projects.length > 0 && (
@@ -115,27 +128,33 @@ const structuredData = {
       )
     }
 
-    <section class="resume-section" aria-labelledby="education-heading">
-      <h2 id="education-heading">Education</h2>
-      <div class="resume-entry">
-        <h3>{resumeEducation.institution}</h3>
-        <p>{resumeEducation.description}</p>
-      </div>
-    </section>
+    {
+      profile.education.institution && (
+        <section class="resume-section" aria-labelledby="education-heading">
+          <h2 id="education-heading">Education</h2>
+          <div class="resume-entry">
+            <h3>{profile.education.institution}</h3>
+            <p>{profile.education.description}</p>
+          </div>
+        </section>
+      )
+    }
 
-    <section class="resume-section" aria-labelledby="skills-heading">
-      <h2 id="skills-heading">Skills</h2>
-      <dl class="skill-groups">
-        {
-          resumeSkills.map((group) => (
-            <div>
-              <dt>{group.label}</dt>
-              <dd>{group.items.join(" · ")}</dd>
-            </div>
-          ))
-        }
-      </dl>
-    </section>
+    {
+      profile.skills.length > 0 && (
+        <section class="resume-section" aria-labelledby="skills-heading">
+          <h2 id="skills-heading">Skills</h2>
+          <dl class="skill-groups">
+            {profile.skills.map((group) => (
+              <div>
+                <dt>{group.label}</dt>
+                <dd>{group.items.join(" · ")}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )
+    }
 
     {
       openSource.length > 0 && (

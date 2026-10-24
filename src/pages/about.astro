@@ -2,15 +2,15 @@
 import { siteConfig } from "@config/site.mjs";
 import Layout from "@layouts/Layout.astro";
 import Contributions from "@components/contributions/Contributions.astro";
-import { resumeExperiences, resumeProfile } from "@data/resume";
+import { profile } from "@data/profile.mjs";
+import { integrationConfig } from "@config/integrations.mjs";
 import {
   contributionProjects,
   mergedPullRequestCount,
 } from "@data/contributions";
 
-const description =
-  "Software engineer at Joybuy, focused on AI applications, cross-platform engineering, and developer tools.";
-const experiences = resumeExperiences;
+const description = profile.about.description;
+const experiences = profile.experiences;
 
 const pageUrl = new URL("/about", Astro.site ?? siteConfig.url).toString();
 const structuredData = {
@@ -20,13 +20,20 @@ const structuredData = {
   inLanguage: "en",
   mainEntity: {
     "@type": "Person",
-    name: resumeProfile.name,
+    name: profile.name,
     description,
-    jobTitle: "Software Engineer",
-    email: `mailto:${resumeProfile.email}`,
-    worksFor: { "@type": "Organization", name: resumeProfile.organization },
-    alumniOf: { "@type": "CollegeOrUniversity", name: "Tianjin University" },
-    sameAs: [resumeProfile.github],
+    jobTitle: profile.role,
+    email: profile.email ? `mailto:${profile.email}` : undefined,
+    worksFor: profile.organization
+      ? { "@type": "Organization", name: profile.organization }
+      : undefined,
+    alumniOf: profile.education.institution
+      ? {
+          "@type": "CollegeOrUniversity",
+          name: profile.education.institution,
+        }
+      : undefined,
+    sameAs: siteConfig.github.url ? [siteConfig.github.url] : [],
   },
 };
 ---
@@ -39,56 +46,66 @@ const structuredData = {
 >
   <article class="about-page">
     <header class="about-intro">
-      <h1>I'm Jarvis.</h1>
-      <p class="about-lead">Software engineer at Joybuy, based in Beijing.</p>
-      <p>
-        I studied at Tianjin University and built campus apps and full-stack
-        products. Today, I focus on AI applications, cross-platform engineering,
-        and developer tools, and contribute to open source.
-      </p>
-      <p>Outside of work, I explore new product ideas and play Apex Legends.</p>
+      <h1>I'm {profile.name}.</h1>
+      <p class="about-lead">{profile.about.lead}</p>
+      {profile.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
       <nav class="about-links" aria-label="Profile and contact links">
         <a href="/resume">View resume</a>
-        <a href={resumeProfile.github} target="_blank" rel="noopener noreferrer"
-          >GitHub</a
-        >
-        <a href={`mailto:${resumeProfile.email}`}>Get in touch</a>
+        {
+          siteConfig.github.url && (
+            <a
+              href={siteConfig.github.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+          )
+        }
+        {profile.email && <a href={`mailto:${profile.email}`}>Get in touch</a>}
       </nav>
     </header>
 
-    <section class="about-section" aria-labelledby="experience-title">
-      <h2 id="experience-title">Experience</h2>
-      <dl class="experience-list">
-        {
-          experiences.map((experience) => (
-            <div>
-              <dt>{experience.period}</dt>
-              <dd>
-                <h3>{experience.organization}</h3>
-                <p>{experience.role}</p>
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </section>
+    {
+      experiences.length > 0 && (
+        <section class="about-section" aria-labelledby="experience-title">
+          <h2 id="experience-title">Experience</h2>
+          <dl class="experience-list">
+            {experiences.map((experience) => (
+              <div>
+                <dt>{experience.period}</dt>
+                <dd>
+                  <h3>{experience.organization}</h3>
+                  <p>{experience.role}</p>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )
+    }
 
-    <section
-      id="open-source"
-      class="about-section"
-      aria-labelledby="contributions-title"
-    >
-      <div class="contributions-heading">
-        <h2 id="contributions-title">Open-source contributions</h2>
-        <a class="all-contributions" href="/contributions">
-          View all contributions
-        </a>
-      </div>
-      <p class="contribution-summary">
-        {mergedPullRequestCount} merged PRs across {contributionProjects.length} repositories
-      </p>
-      <Contributions compact />
-    </section>
+    {
+      integrationConfig.contributions.enabled && siteConfig.github.username && (
+        <section
+          id="open-source"
+          class="about-section"
+          aria-labelledby="contributions-title"
+        >
+          <div class="contributions-heading">
+            <h2 id="contributions-title">Open-source contributions</h2>
+            <a class="all-contributions" href="/contributions">
+              View all contributions
+            </a>
+          </div>
+          <p class="contribution-summary">
+            {mergedPullRequestCount} merged PRs across{" "}
+            {contributionProjects.length} repositories
+          </p>
+          <Contributions compact />
+        </section>
+      )
+    }
   </article>
 </Layout>
 

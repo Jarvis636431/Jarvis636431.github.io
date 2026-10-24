@@ -1,13 +1,13 @@
 ---
 import { siteConfig } from "@config/site.mjs";
+import { profile } from "@data/profile.mjs";
 import Layout from "@layouts/Layout.astro";
 import Contributions from "@components/contributions/Contributions.astro";
 import {
   contributionProjects,
   mergedPullRequestCount,
 } from "@data/contributions";
-const description =
-  "Merged open-source pull requests by Jarvis. Explore merged bug fixes, features and documentation across open-source repositories.";
+const description = `Merged open-source pull requests by ${profile.name}. Explore merged bug fixes, features and documentation across open-source repositories.`;
 const pageUrl = new URL(
   "/contributions",
   Astro.site ?? siteConfig.url,
@@ -23,7 +23,7 @@ const pageUrl = new URL(
     structuredData: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      name: "Jarvis open-source contributions",
+      name: `${profile.name} open-source contributions`,
       description,
       url: pageUrl,
       inLanguage: "en",

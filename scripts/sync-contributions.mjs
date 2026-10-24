@@ -1,15 +1,21 @@
 import { siteConfig } from "../src/config/site.mjs";
+import { isContributionSyncEnabled } from "../src/config/integrations.mjs";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL, URL } from "node:url";
 import { format } from "prettier";
 
-const author = siteConfig.github.username;
 const snapshotPath = fileURLToPath(
   new URL("../src/data/contributions.generated.json", import.meta.url),
 );
-const query = `author:${author} is:pr is:merged is:public -user:${author}`;
-
-export async function fetchContributions(request) {
+export async function fetchContributions(
+  request,
+  author = siteConfig.github.username,
+) {
+  if (!author)
+    throw new Error(
+      "Configure a GitHub username before syncing contributions.",
+    );
+  const query = `author:${author} is:pr is:merged is:public -user:${author}`;
   const records = new Map();
   let page = 1;
   let total;
@@ -99,10 +105,17 @@ export async function fetchContributions(request) {
   return [...records.values()];
 }
 
-export function mergeSnapshot(previous, incoming) {
+export function mergeSnapshot(
+  previous,
+  incoming,
+  author = siteConfig.github.username,
+) {
   // Retain known contributions if GitHub's search index temporarily omits them.
   const records = new Map(
-    previous.pullRequests.map((pr) => [`${pr.repository}#${pr.number}`, pr]),
+    (previous.author.toLowerCase() === author.toLowerCase()
+      ? previous.pullRequests
+      : []
+    ).map((pr) => [`${pr.repository}#${pr.number}`, pr]),
   );
   for (const pr of incoming) records.set(`${pr.repository}#${pr.number}`, pr);
   const sort = (a, b) =>
@@ -111,18 +124,30 @@ export function mergeSnapshot(previous, incoming) {
     b.number - a.number;
   const pullRequests = [...records.values()].sort(sort);
   const changed =
-    Object.keys(previous).some((key) => key !== "pullRequests") ||
+    previous.author !== author ||
     JSON.stringify(pullRequests) !==
       JSON.stringify(previous.pullRequests.slice().sort(sort));
   return {
     changed,
     snapshot: {
+      author,
       pullRequests,
     },
   };
 }
 
 async function sync() {
+  if (!isContributionSyncEnabled(siteConfig.github.username)) {
+    if (process.env.GITHUB_OUTPUT) {
+      await writeFile(process.env.GITHUB_OUTPUT, "changed=false\n", {
+        flag: "a",
+      });
+    }
+    console.log(
+      "Contribution sync is disabled or no GitHub username is configured.",
+    );
+    return;
+  }
   const previous = JSON.parse(await readFile(snapshotPath, "utf8"));
   const token = process.env.GH_TOKEN;
   const request = async (path) => {

@@ -1,5 +1,7 @@
 # Jarvis Hub
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 A personal portfolio and technical writing archive built with Astro 5, TypeScript, and Tailwind CSS. The interface uses restrained typography, structured lists, and responsive layouts; see [DESIGN.md](DESIGN.md) for the visual guidelines.
 
 ## Features
@@ -14,6 +16,14 @@ A personal portfolio and technical writing archive built with Astro 5, TypeScrip
 - Static RSS, sitemap, robots.txt, and page-specific SEO metadata.
 - GitHub Actions verification, Pages deployment, and contribution snapshot synchronization every four hours.
 
+## Personalization
+
+Start with [the configuration guide](docs/personalization.md). Personal data lives
+in `src/data/profile.mjs`, site settings in `src/config/site.mjs`, optional
+capabilities in `src/config/integrations.mjs`, and content in `src/content/`.
+These are the intended differences between a personal site and a future template;
+pages, components, scripts, and workflows share the same implementation.
+
 ## Development
 
 CI uses Node.js 22 and pnpm 10.14.0. Use the same versions locally for consistent results.
@@ -26,12 +36,14 @@ pnpm dev
 
 Open `http://localhost:4321`. Environment values are optional for local development:
 
-| Variable                                              | Purpose                                                          |
-| :---------------------------------------------------- | :--------------------------------------------------------------- |
-| `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`     | Enable the home-page counter using the `increment_page_view` RPC |
-| `PUBLIC_GISCUS_REPO`, `PUBLIC_GISCUS_REPO_ID`         | Identify the GitHub repository for comments                      |
-| `PUBLIC_GISCUS_CATEGORY`, `PUBLIC_GISCUS_CATEGORY_ID` | Identify the Discussions category                                |
-| `PUBLIC_GISCUS_THEME`                                 | Comment theme; defaults to `light`                               |
+| Variable                                             | Purpose                                                        |
+| ---------------------------------------------------- | -------------------------------------------------------------- |
+| `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`    | Optional home-page counter using the `increment_page_view` RPC |
+| `PUBLIC_GISCUS_REPO_ID`, `PUBLIC_GISCUS_CATEGORY_ID` | IDs for the comment repository and category                    |
+
+Feature switches and Giscus repository, category, theme, and language live in
+`src/config/integrations.mjs`. Only enabled services with complete configuration
+render their integration. No environment variables are required to build the site.
 
 Get Giscus IDs from [giscus.app](https://giscus.app) after enabling Discussions and installing its GitHub App. Production values are configured in GitHub Actions repository variables and supplied by both `.github/workflows/deploy.yml` and `.github/workflows/sync-contributions.yml`.
 
@@ -170,7 +182,7 @@ Astro reads aliases directly from `tsconfig.json`; do not duplicate these mappin
 
 ```ts
 import { getPosts } from "@lib/content";
-import { resumeProfile } from "@data/resume";
+import { profile } from "@data/profile.mjs";
 ```
 
 Node-run configuration files, automation scripts, and tests keep explicit relative paths (with extensions where required). Native Node does not resolve TypeScript `paths` aliases. Leaf modules imported directly by Node tests (such as `src/scripts/search.ts` and `src/lib/seo.ts`) also use explicit relative imports for their dependencies.
@@ -179,7 +191,7 @@ Node-run configuration files, automation scripts, and tests keep explicit relati
 
 Components are grouped by their callers: `site/` for the shared layout, `blog/` for article details, and `contributions/` for full and compact contribution views. Keep page-specific layout in `src/pages/` rather than adding wrappers without a separate responsibility.
 
-`contributions/PullRequestBody.astro` renders external GitHub descriptions through the sanitized Markdown pipeline. It deliberately remains separate from the trusted Markdown / MDX article renderer. The unused `ArticleImage` component has been removed; article images use standard Markdown syntax and the existing client enhancement script.
+`Markdown.astro` owns shared prose presentation. Pass a raw `content` string for sanitized external Markdown, or compiled Astro content through its slot. PR descriptions use compact typography; blogs and project details use the same component with standard typography. Shared presentation does not bypass HTML sanitization for external content. The unused `ArticleImage` component has been removed; article images use standard Markdown syntax and the existing client enhancement script.
 
 ## Site configuration and page metadata
 
@@ -198,7 +210,7 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 - `src/styles/tokens.css` is the source of site colors and font stacks. Use `var(--color-accent)` in CSS and RGB channels such as `rgb(var(--color-accent-rgb) / 0.1)` for transparency. Tailwind colors read these same channels, including opacity modifiers such as `bg-accent-cyan/10`.
 - `tailwind.config.mjs` maps tokens to utility names and enables Typography defaults; site-specific prose overrides live in `src/styles/prose.css`.
 - `src/styles/global.css` owns site-wide base rules and the shared decorative background. Page and component layout stays in scoped Astro styles.
-- `src/styles/prose.css` owns long-form `.prose`, compact external `.markdown-body`, and shared KaTeX, Mermaid, and callout styles. The two text formats keep their existing sizes and spacing.
+- `src/styles/prose.css` owns long-form `.prose`, compact `.prose--compact`, and shared KaTeX, Mermaid, and callout styles. The two text formats keep their existing sizes and spacing.
 - `src/styles/article.css` owns blog-only code tools, image captions, table scrolling, and heading anchors, scoped to `.article-content`. The blog detail page imports it; other pages do not need these enhancements.
 - Mermaid reads its palette and font from computed CSS tokens. Shiki and KaTeX retain their renderer-specific syntax colors and math fonts; the resume's print-oriented neutral shades and lightbox overlay remain local.
 
@@ -219,11 +231,11 @@ The mobile menu is inert while closed. Opening enables its links and moves focus
 
 The resume uses a compact, single-column layout inspired by [YAMLResume Calm](https://yamlresume.dev/docs/layouts/html/templates/calm). The print / Save PDF action is at the bottom of the document and is hidden when printing. This is an Astro implementation, not a YAMLResume CLI integration.
 
-- Maintain personal profile, employment history, education, and skills in `src/data/resume.ts`. These facts are explicitly authored, not inferred from GitHub activity.
+- Maintain personal profile, homepage/About copy, employment history, education, and skills in `src/data/profile.mjs`. These facts are explicitly authored, not inferred from GitHub activity.
 - `src/lib/resume.ts` builds selected projects from featured, non-archived project content. Names and descriptions prefer English metadata, with the original text as fallback; technologies and links come from the same entries used by project pages.
 - Open-source sections are generated from the contribution snapshot: all repositories, merged-PR counts, and each repository's most recent merged PR title and link. There is no separate manually maintained contribution summary.
 - The contribution sync (every four hours) updates the snapshot and rebuilds the site when metadata changes, so the resume follows the same update cycle. Builds require no GitHub API access. Deployment remains conditional on the full verification gate.
-- Keep homepage and About copy consistent when changing personal information. About already reuses the resume's experience data.
+- Homepage, About, resume, contact links, and person metadata read the same profile data. Site branding, origin, navigation, and timezone remain in `src/config/site.mjs`.
 
 ## Contribution synchronization
 
@@ -237,25 +249,27 @@ the complete archive. `/contributions` contains the full archive in reverse chro
 order, with repository filters, six PRs per page, and expandable PR descriptions rendered
 as sanitized GitHub-flavored Markdown (including tables, task lists and code blocks).
 The selected repository and page are preserved in the URL; switching repositories
-returns to the first page. Dates use `Asia/Shanghai`. The snapshot contains only PR records; no sync
-timestamp is stored.
+returns to the first page. Dates use `siteConfig.timeZone` (`Asia/Shanghai` here). The snapshot contains an `author` and PR records; no sync timestamp is stored. Data is displayed only when the author matches the configured GitHub account. Switching accounts starts a separate snapshot on the next sync; records omitted temporarily are retained only for the same account.
 
 `Sync merged PR contributions` runs every four hours (00:00, 04:00, 08:00,
 12:00, 16:00, and 20:00 in Asia/Shanghai), and can also be triggered manually
-from the Actions tab. It queries
-PRs authored by `Jarvis636431`, excludes their own repositories, verifies actual
+from the Actions tab. Both CLI and workflow read `contributions.enabled` and
+`contributions.sync` from `src/config/integrations.mjs`; disabled sync or an empty
+GitHub username skips API requests. The workflow also skips installation,
+verification, commit, and deployment when sync is disabled. It queries
+PRs authored by `profile.githubUsername`, excludes their own repositories, verifies actual
 merge times, and keeps existing records if search results temporarily omit them.
 API errors or incomplete results fail the run without changing the snapshot.
 
 When metadata changes, the workflow runs `pnpm verify` once with production
-configuration, commits only the generated JSON to `main`, and uploads the verified
+configuration, commits only the generated JSON to the default branch, and uploads the verified
 `dist/` as a Pages artifact. It then calls the deployment workflow in
 `artifact-only` mode to deploy that same artifact without rebuilding or checking
 out `main` again. Manual runs also verify, build, and redeploy unchanged data,
 allowing a failed deployment to be retried. Scheduled runs with unchanged data
 skip verification, artifact upload, and deployment. It uses
 the built-in `GITHUB_TOKEN`; no personal token is needed. Repository rules must
-allow the bot to push to `main`. The workflow must be on the default branch to
+allow the bot to push to the default branch. The workflow must be on the default branch to
 run on a schedule; GitHub may delay scheduled runs or disable them after 60 days
 of inactivity in a public repository.
 
@@ -273,9 +287,10 @@ src/
   components/
     site/            # Header, Footer, Search, ViewCounter
     blog/            # Toc, Comments
-    contributions/   # Contributions, PullRequestBody
+    contributions/   # Full and compact contribution views
   content/           # Blog and project Markdown / MDX
-  data/              # Resume and generated contribution snapshot
+  config/            # Site identity and optional integrations
+  data/              # Shared personal profile and generated contribution snapshot
   layouts/           # Shared page shell and metadata
   lib/               # Reading helpers, Markdown pipeline, Supabase client
   pages/             # Static routes, RSS, search index
@@ -299,7 +314,7 @@ src/
 | `pnpm new:post` / `pnpm new:project` | Scaffold content                                 |
 | `pnpm sync:contributions`            | Refresh the merged-PR snapshot                   |
 
-Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-16 using Node.js 26.8.1 and pnpm 10.14.0, including content regression tests, Astro check, ESLint, formatting, and production build. CI uses Node.js 22; that environment must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-24 using Node.js 22.18.0 and pnpm 10.14.0, including 57 tests, Astro check, ESLint, formatting, and production build. A separate template scenario with a public article, empty projects/profile sections, and disabled integrations also builds successfully. Remote CI execution must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. See [TODO.md](TODO.md) for remaining work. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
 
 ## Nested blog folders
 

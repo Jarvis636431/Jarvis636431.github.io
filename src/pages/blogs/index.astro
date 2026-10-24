@@ -21,7 +21,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
   day: "2-digit",
-  timeZone: "Asia/Shanghai",
+  timeZone: siteConfig.timeZone,
 });
 // Prefix folder keys so names such as "all" cannot collide with filter controls.
 const categoryKey = (category: string | null) =>

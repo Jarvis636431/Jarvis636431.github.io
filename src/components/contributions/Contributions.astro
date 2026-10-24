@@ -1,4 +1,5 @@
 ---
+import { integrationConfig } from "@config/integrations.mjs";
 import Markdown from "@components/Markdown.astro";
 import {
   contributionProjects,
@@ -16,7 +17,9 @@ const { compact = false } = Astro.props;
 <div
   class:list={["contributions", compact && "contributions--compact"]}
   data-contributions={compact ? undefined : true}
-  data-page-size={compact ? undefined : 6}
+  data-page-size={compact
+    ? undefined
+    : integrationConfig.contributions.pageSize}
 >
   {
     !compact && (
@@ -62,9 +65,11 @@ const { compact = false } = Astro.props;
     tabindex="-1"
   >
     {
-      compact
-        ? `Latest ${Math.min(6, mergedPullRequests.length)} merged PRs`
-        : `${mergedPullRequests.length} merged PRs`
+      mergedPullRequests.length === 0
+        ? "No contributions yet"
+        : compact
+          ? `Latest ${Math.min(6, mergedPullRequests.length)} merged PRs`
+          : `${mergedPullRequests.length} merged PRs`
     }
   </p>
 
@@ -187,13 +192,15 @@ const { compact = false } = Astro.props;
   {
     !compact && (
       <footer class="contributions-footer">
-        <a
-          href={contributionSearchUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View merged PRs on GitHub
-        </a>
+        {contributionSearchUrl && (
+          <a
+            href={contributionSearchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View merged PRs on GitHub
+          </a>
+        )}
         <nav
           class="pagination"
           aria-label="Contribution pages"

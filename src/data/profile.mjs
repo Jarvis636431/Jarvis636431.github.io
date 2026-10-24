@@ -1,22 +1,11 @@
-import { siteConfig } from "@config/site.mjs";
-export interface ResumeExperience {
-  period: string;
-  role: string;
-  organization: string;
-  location?: string;
-  summary: string;
-  highlights: string[];
-  stack: string[];
-}
-
-export const resumeProfile = {
+const person = {
   name: "Jarvis",
   title: "Software Engineer at Joybuy",
   organization: "Joybuy",
   location: "Beijing, China",
-  email: siteConfig.email,
-  website: new URL("/", siteConfig.url).toString(),
-  github: siteConfig.github.url,
+  role: "Software Engineer",
+  email: "mengda636431@gmail.com",
+  githubUsername: "Jarvis636431",
   summary:
     "Software engineer at Joybuy with a background at Tianjin University and campus technology teams. Focused on AI applications, cross-platform systems, and developer tools, bringing product interactions to life through frontend and full-stack engineering.",
   focus: [
@@ -26,7 +15,7 @@ export const resumeProfile = {
   ],
 };
 
-export const resumeExperiences: ResumeExperience[] = [
+const experiences = [
   {
     period: "2026 — Present",
     role: "Software Engineer",
@@ -78,7 +67,7 @@ export const resumeExperiences: ResumeExperience[] = [
   },
 ];
 
-export const resumeSkills = [
+const skills = [
   {
     label: "Frontend",
     items: ["TypeScript", "React", "Vue", "Next.js", "Astro", "Tailwind CSS"],
@@ -97,8 +86,30 @@ export const resumeSkills = [
   },
 ];
 
-export const resumeEducation = {
+const education = {
   institution: "Tianjin University",
   description:
     "Academic experience and hands-on work with campus technology teams.",
+};
+
+/** Author-maintained personal data. Pages and automation read from this entry point. */
+export const profile = {
+  ...person,
+  home: {
+    introduction: "Tianjin University → Joybuy",
+    description:
+      "Projects, open-source contributions, and engineering notes by Jarvis. Tianjin University → Joybuy.",
+  },
+  about: {
+    description:
+      "Software engineer at Joybuy, focused on AI applications, cross-platform engineering, and developer tools.",
+    lead: "Software engineer at Joybuy, based in Beijing.",
+    paragraphs: [
+      "I studied at Tianjin University and built campus apps and full-stack products. Today, I focus on AI applications, cross-platform engineering, and developer tools, and contribute to open source.",
+      "Outside of work, I explore new product ideas and play Apex Legends.",
+    ],
+  },
+  experiences,
+  skills,
+  education,
 };
