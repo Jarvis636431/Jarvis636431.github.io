@@ -16,6 +16,8 @@
     "new:post": "node scripts/new-content.mjs post",
     "new:project": "node scripts/new-content.mjs project",
     "sync:contributions": "node scripts/sync-contributions.mjs",
+    "template:build": "node scripts/build-template.mjs",
+    "template:verify": "pnpm template:build && pnpm --dir template install --frozen-lockfile && pnpm --dir template verify",
     "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {

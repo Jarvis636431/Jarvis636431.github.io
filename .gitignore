@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# Generated starter; it may have its own independent Git repository.
+/template/
+
 # generated types
 .astro/
 

@@ -4,8 +4,7 @@ English | [简体中文](personalization.zh-CN.md)
 
 The personal site and a future template use the same rendering, interactions,
 content queries, and automation. Customize data and settings instead of editing
-pages or maintaining a second implementation. The current configuration keeps
-this site's integrations enabled; no personal content has been replaced.
+pages or maintaining a second implementation. Feature defaults are project-specific; generated starters disable all external integrations.
 
 ## Configuration entry points
 
@@ -112,14 +111,12 @@ branch, update that trigger in `.github/workflows/deploy.yml`. Root-domain hosti
 is the supported configuration in this version; changing Astro's `base` alone
 does not make all internal links work under a subdirectory.
 
-## Extracting a template later
+## Generated template projects
 
-Copy the common code into a new repository, replace the profile, site settings,
-content, and branded assets, and start with optional integrations disabled. Supply
-an empty snapshot with the new username and `pullRequests: []`. Keep author-owned
-articles, real employment history, and generated personal data out of template
-examples. Choose and document licenses for code and example assets before release.
+Generated projects use the same configuration shape, with a placeholder profile,
+empty article/project folders, and optional integrations disabled. Edit the
+settings and use content-creation commands to add your own work.
 
-Run `pnpm verify` without `.env`, then verify enabled integrations separately.
-Test public article fixtures as well as empty content, because a production build
-that excludes every draft does not exercise article page rendering.
+The maintainer repository's README documents template generation, independent
+Git history, and publication. Generated projects do not include the generator or
+`template:*` commands. Code and asset licenses must still be chosen before release.

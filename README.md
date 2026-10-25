@@ -24,6 +24,19 @@ capabilities in `src/config/integrations.mjs`, and content in `src/content/`.
 These are the intended differences between a personal site and a future template;
 pages, components, scripts, and workflows share the same implementation.
 
+## Generate a standalone template
+
+Run `pnpm template:build` to generate complete project source in `template/`.
+Defaults are embedded in the script: placeholder profile, empty content and
+contributions, a generic logo, and disabled integrations. There is no sample-data
+directory. The parent ignores the output, which can have its own `.git` and remote.
+Generation preserves that Git history and local files while updating managed code.
+
+`pnpm template:verify` regenerates, installs independent dependencies, and runs
+the generated project's full verification. See the [step-by-step Git and publishing
+guide](docs/template-workflow.md) ([简体中文](docs/template-workflow.zh-CN.md)) for
+first initialization and later updates. These commands do not commit or push.
+
 ## Development
 
 CI uses Node.js 22 and pnpm 10.14.0. Use the same versions locally for consistent results.
@@ -234,6 +247,11 @@ Astro compiles authored Markdown/MDX with syntax highlighting; string content us
 `renderExternalMarkdown()` and sanitizes author HTML before trusted extensions
 produce math and callout markup. Search text extraction never renders HTML.
 
+Maintenance note (2026-10-25): Keep the current Expressive Code and
+`rehype-mermaid` implementation, including the existing JSDoc tuple annotation.
+Further Markdown pipeline and typing changes are deferred for later investigation.
+Do not add a wrapper function solely to hide that annotation.
+
 ## Site configuration and page metadata
 
 `src/config/site.mjs` owns the site name, origin, navigation, contact links, GitHub identity, default share image, favicon, and RSS defaults. Astro configuration, page metadata, profile data, and contribution automation use the same values. The module has no Astro or browser dependencies.
@@ -320,8 +338,9 @@ Unchanged metadata does not produce a commit.
 ## Maintenance scripts
 
 The root `scripts/` contains only ongoing Node maintenance commands:
-`new-content.mjs` creates posts and projects, and `sync-contributions.mjs` updates
-the account-owned contribution snapshot. The one-time `fix-mdx-*` migration
+`new-content.mjs` creates posts and projects, `sync-contributions.mjs` updates
+the account-owned contribution snapshot, and `build-template.mjs` generates the
+independent starter project. The one-time `fix-mdx-*` migration
 scripts have been removed. Browser interactions remain in `src/scripts/` and do
 not run as repository maintenance commands.
 
@@ -330,8 +349,9 @@ not run as repository maintenance commands.
 ```text
 .github/workflows/    # Verification, Pages deployment, contribution sync
 public/              # Static images and favicon
-scripts/             # Content scaffolding and contribution sync
-tests/               # Content visibility, recommendations, and navigation regression tests
+scripts/             # Content creation, contribution sync and template generation
+template/            # Generated standalone project, ignored by the parent
+tests/               # Content, interactions and generation regression tests
 src/
   components/
     site/            # Header, Footer, Search, ViewCounter
@@ -355,21 +375,23 @@ src/
 
 ## Commands and validation
 
-| Command                              | Purpose                                          |
-| :----------------------------------- | :----------------------------------------------- |
-| `pnpm dev`                           | Start local development                          |
-| `pnpm test`                          | Run content regression tests with Node.js 22.6+  |
-| `pnpm check`                         | Astro and TypeScript diagnostics                 |
-| `pnpm lint`                          | ESLint                                           |
-| `pnpm format:check`                  | Check formatting without writing                 |
-| `pnpm format`                        | Format files in place                            |
-| `pnpm build`                         | Build production files into `dist/`              |
-| `pnpm verify`                        | Run tests, check, lint, format check, then build |
-| `pnpm preview`                       | Preview the production build                     |
-| `pnpm new:post` / `pnpm new:project` | Scaffold content                                 |
-| `pnpm sync:contributions`            | Refresh the merged-PR snapshot                   |
+| Command                              | Purpose                                               |
+| :----------------------------------- | :---------------------------------------------------- |
+| `pnpm dev`                           | Start local development                               |
+| `pnpm test`                          | Run content regression tests with Node.js 22.6+       |
+| `pnpm check`                         | Astro and TypeScript diagnostics                      |
+| `pnpm lint`                          | ESLint                                                |
+| `pnpm format:check`                  | Check formatting without writing                      |
+| `pnpm format`                        | Format files in place                                 |
+| `pnpm build`                         | Build production files into `dist/`                   |
+| `pnpm verify`                        | Run tests, check, lint, format check, then build      |
+| `pnpm preview`                       | Preview the production build                          |
+| `pnpm new:post` / `pnpm new:project` | Scaffold content                                      |
+| `pnpm template:build`                | Generate standalone source in `template/`             |
+| `pnpm template:verify`               | Generate, install, and verify the standalone template |
+| `pnpm sync:contributions`            | Refresh the merged-PR snapshot                        |
 
-Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-24 using Node.js 22.18.0 and pnpm 10.14.0, including 69 tests, Astro check, ESLint, formatting, and production build. A separate template scenario with a public article, empty projects/profile sections, and disabled integrations also builds successfully. Remote CI execution must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
+Pull requests and manual verification runs use `verify.yml`; pushes to `main` and manual deployments use `deploy.yml`. Each path runs `pnpm verify` once. Contribution synchronization verifies before committing and deploys its existing artifact through the reusable deployment workflow. The `artifact-only` input is reserved for callers that have already uploaded a `github-pages` artifact in the same workflow run; it does not retrieve artifacts from other runs. A failed verification prevents deployment. Pushes made by the sync workflow using `GITHUB_TOKEN` do not trigger a second push workflow. The full `pnpm verify` gate passed locally on 2026-10-25 using Node.js 22.18.0 and pnpm 10.14.0, including 77 tests, Astro check, ESLint, formatting, and production build. The generated empty starter also passes its own 72 tests and full verification after an independent dependency installation. Remote CI execution must still be confirmed by its workflow. Astro frontmatter and client scripts explicitly use the parser exported by `typescript-eslint`. There is currently no automated interaction test suite or dedicated sensitive-content scanner.
 
 ## Nested blog folders
 

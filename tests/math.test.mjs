@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { URL } from "node:url";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
-import remarkMath from "remark-math";
+import { remarkPlugins } from "../src/lib/markdown/plugins.mjs";
 import katex from "katex";
 import { createArticleProcessor } from "./fixtures/markdown.mjs";
 import { renderExternalMarkdown } from "../src/lib/markdown/render.mjs";
+import { articlesIn } from "./fixtures/articles.mjs";
 
 const sample = String.raw`Inline $p = \sigma(z)$.
 
@@ -49,30 +50,24 @@ $\href{javascript:alert(1)}{x}$`);
   assert.doesNotMatch(html, /<script|onerror=|href="javascript:/);
 });
 
-test("every math expression in the recommendation series is valid KaTeX", () => {
-  const directory = new URL("../src/content/blog/rec/", import.meta.url);
-  const parser = unified().use(remarkParse).use(remarkMath);
-  let blockCount = 0;
-  let inlineCount = 0;
-  for (const name of readdirSync(directory).filter((name) =>
-    name.endsWith(".md"),
-  )) {
-    const source = readFileSync(new URL(name, directory), "utf8");
+test("math expressions in all authored articles are valid KaTeX", async () => {
+  const articles = await articlesIn(
+    new URL("../src/content/blog/", import.meta.url),
+  );
+  const parser = unified().use(remarkParse).use(remarkPlugins);
+  for (const article of articles) {
+    const source = await readFile(article, "utf8");
     // Frontmatter has no math; start at the body to avoid interpreting YAML.
     const body = source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "");
     const visit = (node) => {
       if (node.type === "math" || node.type === "inlineMath") {
         assert.doesNotThrow(
           () => katex.renderToString(node.value, { throwOnError: true }),
-          `${name}:${node.position.start.line}: ${node.value}`,
+          `${article.pathname}:${node.position.start.line}: ${node.value}`,
         );
-        if (node.type === "math") blockCount += 1;
-        else inlineCount += 1;
       }
       node.children?.forEach(visit);
     };
     visit(parser.parse(body));
   }
-  assert.ok(blockCount >= 59, "reviewed formula blocks should parse as math");
-  assert.ok(inlineCount > 0, "prose variables should parse as inline math");
 });

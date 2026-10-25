@@ -32,6 +32,7 @@ export default [
       ".sites-deploy/",
       "dist/",
       "node_modules/",
+      "template/",
       "package-lock.json",
       "pnpm-lock.yaml",
     ],

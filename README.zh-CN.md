@@ -22,6 +22,14 @@
 
 这些配置与数据是个人站点和未来模板之间的主要差异；页面、组件、脚本和工作流共用同一套实现。
 
+## 生成独立模板
+
+执行 `pnpm template:build`，在当前仓库下生成完整的 `template/` 项目源码。默认资料直接写在脚本中：占位姓名、空文章/项目/贡献、通用图标和关闭的外部集成，不需要单独的示例数据目录。
+
+主仓库忽略生成目录，它可以使用自己的 `.git` 和远端。生成时保留该 Git 历史及本地文件，只更新生成器管理的代码。执行 `pnpm template:verify` 会重新生成、独立安装依赖并验证模板。
+
+首次初始化和后续更新的完整步骤见[模板生成与 Git 管理方案](docs/template-workflow.zh-CN.md)（[English](docs/template-workflow.md)）。生成和验证命令均不会自动提交或推送。
+
 ## 本地开发
 
 CI 使用 Node.js 22 和 pnpm 10.14.0。建议本地使用相同版本，保持执行结果一致。
@@ -191,6 +199,8 @@ Node 直接执行的配置文件、自动化脚本和测试继续使用带扩展
 
 两条 Markdown 渲染管线共享语法插件，但保留各自的信任边界：作者编写的 Markdown/MDX 由 Astro 编译并进行代码高亮；字符串内容调用 `renderExternalMarkdown()`，先清理作者 HTML，再由可信扩展生成公式和提示块。搜索文本提取不渲染 HTML。
 
+维护记录（2026-10-25）：暂时保留当前 Expressive Code、`rehype-mermaid` 实现及现有 JSDoc 元组类型标注。Markdown 渲染管线和类型写法的进一步调整留待后续研究；不为隐藏类型标注而额外增加包装函数。
+
 ## 站点配置与页面元数据
 
 `src/config/site.mjs` 管理站点名称、地址、导航、默认分享图片、网站图标和 RSS 默认值，并从个人资料派生邮箱与 GitHub 地址。Astro 配置、页面元数据和贡献自动化读取同一份设置；该模块不依赖 Astro 运行时或浏览器。
@@ -257,7 +267,7 @@ CLI 和工作流都读取 `src/config/integrations.mjs` 的 `contributions.enabl
 
 ## 维护脚本
 
-根目录 `scripts/` 只保留日常维护用的 Node 命令：`new-content.mjs` 创建文章和项目，`sync-contributions.mjs` 更新对应账号的贡献快照。一次性的 `fix-mdx-*` 迁移脚本已删除。浏览器交互仍放在 `src/scripts/`，不作为仓库维护命令运行。
+根目录 `scripts/` 只保留日常维护用的 Node 命令：`new-content.mjs` 创建文章和项目，`sync-contributions.mjs` 更新对应账号的贡献快照，`build-template.mjs` 生成独立模板项目。一次性的 `fix-mdx-*` 迁移脚本已删除。浏览器交互仍放在 `src/scripts/`，不作为仓库维护命令运行。
 
 ## 项目结构
 
@@ -265,8 +275,9 @@ CLI 和工作流都读取 `src/config/integrations.mjs` 的 `contributions.enabl
 .github/workflows/    # 检查、Pages 部署、贡献同步
 docs/                # 配置与使用指南
 public/              # 静态图片和网站图标
-scripts/             # 内容生成与贡献同步
-tests/               # 内容规则、可选功能、同步和交互逻辑回归测试
+scripts/             # 内容创建、贡献同步与模板生成
+template/            # 生成的独立项目，由主仓库忽略
+tests/               # 内容、交互、同步与生成器回归测试
 src/
   components/
     site/            # Header、Footer、Search、ViewCounter
@@ -302,13 +313,15 @@ src/
 | `pnpm verify`                        | 依次执行测试、类型检查、Lint、格式检查和构建 |
 | `pnpm preview`                       | 预览生产构建                                 |
 | `pnpm new:post` / `pnpm new:project` | 创建内容文件                                 |
+| `pnpm template:build`                | 在 `template/` 生成完整模板源码              |
+| `pnpm template:verify`               | 生成、独立安装依赖并验证模板                 |
 | `pnpm sync:contributions`            | 刷新合并 PR 快照                             |
 
 PR 和手动检查使用 `verify.yml`；向 `main` 推送和手动部署使用 `deploy.yml`。每条路径只执行一次 `pnpm verify`。贡献同步在提交之前验证，再通过可复用部署工作流部署已有产物。
 
 `artifact-only` 仅供已经在同一次工作流运行中上传了 `github-pages` 产物的调用方使用，不会读取其他运行中的产物。验证失败会阻止部署。同步工作流使用 `GITHUB_TOKEN` 推送时，不会再触发第二次 push 工作流。
 
-2026-10-24，本地使用 Node.js 22.18.0 和 pnpm 10.14.0 通过完整 `pnpm verify`，包括 69 项测试、Astro 检查、ESLint、格式检查和生产构建。包含公开文章、空项目/履历和关闭集成的独立模板场景也已构建通过。远程 CI 结果仍需在工作流中确认。
+2026-10-25，本地使用 Node.js 22.18.0 和 pnpm 10.14.0 通过完整 `pnpm verify`，包括 77 项测试、Astro 检查、ESLint、格式检查和生产构建。生成的空内容模板在独立安装依赖后，也通过了自身的 72 项测试和完整验证。远程 CI 结果仍需在工作流中确认。
 
 Astro frontmatter 与客户端脚本显式使用 `typescript-eslint` 导出的解析器。目前没有自动化浏览器交互测试套件或专门的敏感内容扫描器。
 
