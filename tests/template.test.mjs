@@ -79,6 +79,11 @@ test("the template uses shared implementation, empty content, defaults and safe 
   );
   const pkg = JSON.parse(await fs.readFile(path.join(output, "package.json")));
   assert.equal(pkg.name, "astro-template");
+  assert.equal(pkg.license, "MIT");
+  assert.equal(
+    await fs.readFile(path.join(output, "LICENSE"), "utf8"),
+    await fs.readFile(path.join(root, "LICENSE"), "utf8"),
+  );
   assert.equal(pkg.scripts["template:build"], undefined);
   for (const file of [
     ".git",

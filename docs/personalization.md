@@ -119,4 +119,5 @@ settings and use content-creation commands to add your own work.
 
 The maintainer repository's README documents template generation, independent
 Git history, and publication. Generated projects do not include the generator or
-`template:*` commands. Code and asset licenses must still be chosen before release.
+`template:*` commands. The project uses the MIT license in the root `LICENSE` file.
+Respect the respective licenses of any third-party code or assets you add.

@@ -6,6 +6,7 @@ import { format } from "prettier";
 const repositoryRoot = fileURLToPath(new URL("../", import.meta.url));
 const manifestName = ".template-manifest.json";
 const sharedFiles = [
+  "LICENSE",
   "astro.config.mjs",
   "ec.config.mjs",
   "tailwind.config.mjs",
@@ -149,7 +150,7 @@ GitHub Actions 自动执行检查。Pages 部署仅支持手动触发：先设�
 
 ## 发布说明
 
-请替换默认资料并检查所有链接。发布模板前还需要明确代码和素材的许可证；当前生成器不会替作者选择或声明许可证。
+请替换默认资料并检查所有链接。本项目采用 [MIT 许可证](LICENSE)。添加第三方代码或素材时，请遵守其各自的许可证。
 `
     : `# Developer Hub
 
@@ -188,7 +189,7 @@ Manage this source, configuration, and content with Git normally. The maintainer
 
 ## Publishing
 
-Replace defaults and review links. A code and asset license must still be chosen before distributing a template; the generator does not choose or declare one on the author's behalf.
+Replace defaults and review links. This project is licensed under the [MIT License](LICENSE). Respect the respective licenses of any third-party code or assets you add.
 `;
 }
 

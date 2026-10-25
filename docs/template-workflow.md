@@ -47,8 +47,9 @@ projects, employment data, images, contribution records, environment files, and
 the parent's `.git`.
 
 New files within shared directories are included automatically. When adding a new
-top-level shared directory, config file, or selected license, update the copy list
-and run independent verification.
+top-level shared directory or config file, update the copy list and run independent
+verification. The root MIT `LICENSE` is copied into the starter, along with the
+package's license declaration.
 
 The starter has a placeholder name, empty contacts and resume sections, empty
 blog/project folders, an empty contribution snapshot, and a generic SVG logo.
@@ -117,6 +118,34 @@ Generation never initializes Git, commits, or pushes. It preserves the child's
 `.git`, local `.env`, dependencies, and build caches. Both Git histories remain
 independent.
 
+## Continue on another computer
+
+Cloning the parent does not restore the ignored `template/` directory or its
+independent `.git`. Install Node.js 22 and pnpm 10.14.0, then run from the cloned
+personal repository root:
+
+```bash
+pnpm install --frozen-lockfile
+git clone https://github.com/Jarvis636431/astro-template.git template
+pnpm template:verify
+git -C template diff
+git -C template add .
+git -C template commit -m "Update template"
+git -C template push
+```
+
+Commit only when changes exist. Cloning restores the template history and origin;
+configure your Git author identity and GitHub push credentials on the new computer.
+Clone once per computer; subsequent generation preserves the template's `.git`.
+
+If generation has already created `template/` without its own `.git`, move that
+directory elsewhere for safekeeping, clone the template repository, and regenerate.
+Do not initialize a new history and force-push over the existing template history.
+
+Before continuing work on another computer, run `git pull --ff-only` in the parent
+and `git -C template pull --ff-only`, then regenerate after both updates succeed.
+Handle any uncommitted changes in either repository before pulling.
+
 ## Update and cleanup boundaries
 
 - Commit `.template-manifest.json` alongside generated source. It lists managed files.
@@ -140,6 +169,6 @@ or scheduled writes deliberately in the published repository if needed.
 Replace the starter's `https://example.com` with your real domain before publishing.
 Domain-root hosting is supported; subdirectory hosting is not yet supported.
 
-Licensing, a demo site, and Astro theme-directory submission are separate release
-tasks. The generator does not choose a license, create GitHub repositories, or
-submit themes.
+The starter uses the parent's MIT license. A demo site and Astro theme-directory
+submission remain separate release tasks. The generator does not create GitHub
+repositories or submit themes.

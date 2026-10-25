@@ -1,5 +1,6 @@
 {
   "name": "hub",
+  "license": "MIT",
   "type": "module",
   "version": "0.0.1",
   "packageManager": "pnpm@10.14.0",
