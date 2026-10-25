@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "xerj-org/xerj",
+      "number": 2414,
+      "title": "fix(server): report effective data directory provenance at startup",
+      "url": "https://github.com/xerj-org/xerj/pull/2414",
+      "body": "Written by an AI coding agent (OpenAI Codex), operated by @Jarvis636431.\n\nA bare/default-directory launch can look like lost indices or a reset owner\naccount when an earlier launch selected another config. The old banner showed\nonly the requested path spelling; config-source logging ran before tracing\nwas initialized. Report the actual final directory, provenance and creation\nstatus in the banner and structured startup logs before admin/TLS state.\n\n### Relationship and scope\n\n- **Refs #2409**: covers startup observability and explicit-path recovery.\n  Automatic comparison of other known directories and console empty-state\n  changes remain separate suggestions; this PR does not claim them complete.\n- Independent from upstream `9cf3f29c`, with no dependency on #2412's catalog\n  discovery work, #2413's Codex importer or #2384's batch benchmark. No stacked\n  or duplicated prerequisite commits. The two diagnostics branches compose\n  without conflicts (`git merge-tree --write-tree`).\n- Preserve path selection, flag/config/env precedence, auto-port relocation,\n  existing/symlink/nested directories and existing index/account files. No\n  previous directory is scanned, selected, moved or deleted.\n\nConfiguration and explicit key presence use the same file bytes, so a selected\nfile omitting `server.data_dir` correctly reports the default. Leaf `create_dir`\ndistinguishes creation by this process from an already existing/concurrently\nsupplied directory. Display canonicalization is best effort and cannot become\na new startup dependency. Control characters are escaped. The only dependency\nchange is a direct reference to the already locked workspace TOML version.\n\n### Verified locally\n\nmacOS arm64 / Rust 1.97.1; commands and receipts in\n[`tools/startup-diagnostics/VERIFICATION.md`](https://github.com/Jarvis636431/xerj/blob/fix/data-directory-diagnostics/tools/startup-diagnostics/VERIFICATION.md).\n\n- Real CLI regression failed before the fix because `Data source` was absent.\n- **123 main tests and 1 startup integration test passed**. Covers selected\n  config, `XERJ_CONFIG`, flag override, omitted-key default and restart, plus\n  helper checks for nested/symlink paths, file refusal/recovery and escaping.\n- Scoped release build, formatting, scoped strict Clippy, Python compilation,\n  whitespace and workflow-timeout guard passed.\n- Private-copy creation-status mutation failed exactly 2 helper regressions;\n  the unmodified copy passed all 4. Production source was not mutated.\n- Private release-node lifecycle passed: directory creation, one durable\n  document, graceful exit, existing-directory restart and the same document.\n  Banner and JSON tracing both report the selected config and effective path.\n- Separate fresh-node ES-YAML: **1,447 passed, 0 failed, 10 skipped** across\n  230 files, unchanged 75 catch-lenient cases; runner and node exit 0.\n\n### Audit and untested scope\n\nAudited against `docs/CONTRIBUTION_REVIEW.md`. Existing-file refusal preserves\nbytes and new-path recovery works; observability introduces no mapping,\njournal, storage format, auth-policy or directory migration. This is not a\nperformance change. Distributed writes, model execution and optional\naccelerators are not applicable.\n\nNot run: every other server integration target/workspace crate, Linux/Windows\nexecution, real production directories or owner-account state, other-directory\ncomparison and console changes. No landing files change, so website generators\nwere not run. Hosted merge-ref CI is separate from local receipts.\n",
+      "labels": ["cla-signed"],
+      "createdAt": "2026-10-25T16:41:29Z",
+      "mergedAt": "2026-10-25T20:08:24Z",
+      "additions": 577,
+      "deletions": 15,
+      "changedFiles": 10,
+      "commits": 4,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "xerj-org"
+    },
+    {
+      "repository": "xerj-org/xerj",
       "number": 2406,
       "title": "feat(cli): prepare Claude Code session text for autoindex",
       "url": "https://github.com/xerj-org/xerj/pull/2406",
