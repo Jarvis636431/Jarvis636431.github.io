@@ -298,7 +298,7 @@ export async function buildTemplate({ root = repositoryRoot } = {}) {
     files.set(file, Buffer.from(source));
 
   const pkg = JSON.parse(files.get("package.json").toString());
-  pkg.name = "astro-developer-hub";
+  pkg.name = "astro-template";
   pkg.version = "0.1.0";
   pkg.private = true;
   pkg.description = "An Astro portfolio, blog, and printable resume starter.";
