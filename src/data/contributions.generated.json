@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "xerj-org/xerj",
+      "number": 2385,
+      "title": "docs(feedback): real-pack batch retrieval evaluation",
+      "url": "https://github.com/xerj-org/xerj/pull/2385",
+      "body": "Written by an AI coding agent (OpenAI Codex), operated by @Jarvis636431.\n\nSingle-file field report required by AGENTS.md after running the real rust-vulns retrieval evaluation in #2384. Describes the private node, explicit mappings, observed outcomes and the small output-token reduction; no generated-answer or billed-model-cost claim.\n\nRelationships: #2384 contains the harness, fixed workload, raw five-repeat receipts and full verification. It follows merged implementation #2333 and refs #1801 without closing the broader proposal. This report has no unmerged dependency and is independently based on upstream main; #2334 was the earlier synthetic implementation-fixture report, while this one records the new real-pack evaluation.\n\nVerified: 13 lines, existing Markdown re-include applies, diff is exactly this one added file, whitespace check passed. Numbers come from the committed receipts in #2384. No runtime, workflow or schema changes; engine/build/conformance gates do not apply to this report-only PR.\n",
+      "labels": ["cla-signed"],
+      "createdAt": "2026-10-25T02:36:52Z",
+      "mergedAt": "2026-10-25T03:02:11Z",
+      "additions": 13,
+      "deletions": 0,
+      "changedFiles": 1,
+      "commits": 1,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "xerj-org"
+    },
+    {
+      "repository": "xerj-org/xerj",
       "number": 2333,
       "title": "feat(mcp): add ordered batch retrieval to CLI and MCP",
       "url": "https://github.com/xerj-org/xerj/pull/2333",
