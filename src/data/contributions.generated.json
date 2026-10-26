@@ -2,6 +2,23 @@
   "author": "Jarvis636431",
   "pullRequests": [
     {
+      "repository": "NervJS/taro",
+      "number": 19563,
+      "title": "fix(h5): handle asynchronous storage failures",
+      "url": "https://github.com/NervJS/taro/pull/19563",
+      "body": "**这个 PR 做了什么？**\n\nH5 异步存储 API 在浏览器拒绝存储访问、写入配额不足或序列化失败时会同步抛错，导致调用方拿不到 Promise，fail/complete 也不执行。\n\n捕获 setStorage、removeStorage、clearStorage 和 getStorageInfo 内部的存储操作异常，交给已有 MethodHandler.fail 结算。保持同步 API 的异常行为，以及提供 fail/complete 时的现有 Promise 语义。success 回调位于捕获范围之外，避免把用户回调异常误报成存储失败。\n\nCloses #19562\n\n**这个 PR 是什么类型？**\n\n- [x] 错误修复 (Bugfix)\n\n**这个 PR 涉及以下平台：**\n\n- [x] Web 端（H5）\n\n**验证**\n\n- 新增 23 个回归测试；原实现 18 个失败、5 个通过，修复后全部通过。\n- 覆盖四个 API 的访问受限、Promise 与 fail/complete 组合、写入配额、循环引用序列化、同步 API 保持抛错，以及 success 回调异常不被吞掉。\n- 存储相关测试：2 个套件 / 52 个测试通过。\n- `pnpm --filter @tarojs/taro-h5 test:ci --watchman=false`：28 个套件 / 232 个测试通过。\n- 修改文件 ESLint、git diff --check 和 H5 包构建通过。\n- 环境：Node.js 22.18.0 / pnpm 10.0.0。构建存在未修改的 previewImage/Swiper 类型告警及 Sass legacy API 弃用告警。\n- 未运行全仓库构建或真实浏览器/真机矩阵验证；没有修改依赖或锁文件。\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n* **问题修复**\n  * 浏览器存储操作失败时，相关存储接口现在会将错误返回给失败处理，而不是让异常直接中断操作。\n  * 错误信息会优先采用异常提供的内容；若没有，则返回异常的字符串形式。\n  * 存储操作成功时仍按原有方式处理；成功回调抛出异常时，不会触发失败回调。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-10-25T09:03:29Z",
+      "mergedAt": "2026-10-26T02:54:36Z",
+      "additions": 118,
+      "deletions": 4,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
       "repository": "xerj-org/xerj",
       "number": 2414,
       "title": "fix(server): report effective data directory provenance at startup",
