@@ -2,6 +2,23 @@
   "author": "Jarvis636431",
   "pullRequests": [
     {
+      "repository": "NervJS/taro",
+      "number": 19567,
+      "title": "fix(runtime): preserve insertAdjacentHTML node order",
+      "url": "https://github.com/NervJS/taro/pull/19567",
+      "body": "**这个 PR 做了什么？**\n\n修复 Taro runtime `insertAdjacentHTML` 的节点插入顺序：`afterbegin` 插入多个节点时会反转顺序；`afterend` 会把内容追加到父容器末尾，越过目标后方已有的兄弟节点。\n\n在循环前保存原始 `firstChild` 和 `nextSibling`，通过现有 `insertBefore` 路径按解析顺序插入。没有锚点时沿用尾部追加行为。\n\nCloses #19566\n\n**这个 PR 是什么类型？**\n\n- [x] 错误修复 (Bugfix)\n\n**这个 PR 涉及以下平台：**\n\n- [x] 所有小程序（使用 Taro runtime DOM 的路径）\n\n**验证**\n\n- 新增 28 个回归用例，原实现 10 个失败、18 个通过；修复后全部通过。\n- 覆盖四种插入位置、多元素及文本/元素混合、空/非空目标、末尾插入、空 HTML、脱离父节点的既有行为，以及父子和相邻节点关系。\n- 挂载用例使用真实 runtime 根节点和更新队列，通过模拟页面 `setData` 检查最终渲染数据的节点顺序。\n- `pnpm --filter @tarojs/runtime run test:ci --maxWorkers=2`：17 个测试文件通过，225 个用例通过、1 个跳过。首次默认并发运行时环境加载用例超过默认 5 秒，降低并发重跑通过，未修改测试超时或相关源码。\n- 修改文件 ESLint 和 `git diff --check` 通过。\n- 全工作区 `pnpm build`（包含 runtime 构建）：Node.js v22.14.0 / pnpm 10.0.0，退出码 0。未修改文件中仍有类型、组件及外部依赖解析等构建告警。\n\n未进行 Vue 应用、小程序开发者工具或真机测试；没有调整解析器、特性开关或依赖。\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n* **问题修复**\n  * 修正 HTML 片段插入位置：使用 `afterbegin` 时，内容会插入到原有首个子节点之前；使用 `afterend` 时，会插入到目标节点的下一个兄弟节点之前。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-10-26T04:01:18Z",
+      "mergedAt": "2026-10-27T02:53:55Z",
+      "additions": 125,
+      "deletions": 6,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
       "repository": "Tencent/WeKnora",
       "number": 4324,
       "title": "fix(frontend): tolerate malformed EPUB paths and clean up failed previews",
