@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19601,
+      "title": "fix(router): correct framework param type of createRouter/createMultiRouter",
+      "url": "https://github.com/NervJS/taro/pull/19601",
+      "body": "Closes #18651\n\n### 问题\n\n`createRouter`（`packages/taro-router/src/router/spa.ts`）和 `createMultiRouter`（`mpa.ts`）把第 4 个参数声明为 `framework?: string`，但编译产物注入的是**框架运行时对象**，不是字符串。\n\n`taro-loader/src/h5.ts:150` 和 `taro-vite-runner/src/h5/entry.ts:168` 把 `loaderMeta.importFrameworkName` 作为**标识符**插值进生成代码：\n\n```js\n`${routerCreator}(history, inst, config, ${importFrameworkName})`\n```\n\n配合各框架的 `importFrameworkStatement`，实际传入的是：\n\n| 框架 | `importFrameworkName` | import | 实参 |\n| --- | --- | --- | --- |\n| React | `'React'` | `import * as React from 'react'` | react 命名空间对象 |\n| Vue 3 | `'h'` | `import { h, createApp } from 'vue'` | `createElement` |\n| Solid | `''` | — | 省略，即 `undefined` |\n\n`framework` 在两个文件里只被转发给 `createPullDownComponent` hook（`spa.ts:204`、`mpa.ts:85`），而该 hook 的实现确实需要对象：`taro-framework-react/src/runtime/connect.ts:57` 以 `R: typeof React` 接收后调用 `isClassComponent(R, el)` 与 `R.forwardRef(...)`；`taro-framework-vue3/src/runtime/connect.ts:24` 以 `h: typeof createElement` 接收后直接构造 VNode。Solid 在 `connect.ts:54` 标注了暂不支持该 hook，与它传 `undefined` 自洽。\n\n所以**运行时行为是正确的，只有类型声明是错的**。按字面把 loader 改成传字符串会破坏 H5 下拉刷新。\n\n这个声明在 `@tarojs/router` 的已发布 `.d.ts` 中对用户可见：\n\n```ts\nexport declare function createRouter(history: History, app: AppInstance, config: SpaRouterConfig, framework?: string): () => void;\n```\n\n即任何手写 TypeScript、按 Taro 自身代码生成的方式调用 `createRouter` 的人都会被编译器拦下，而类型允许的字符串形态又会在运行时破坏下拉刷新。`git blame` 显示该声明自 `8cac7f10701`（2022-02-25）起即如此。\n\n### 改动\n\n`spa.ts` 与 `mpa.ts` 的 `framework?: string` 改为 `framework?: any`，并补上 JSDoc 说明它实际是什么、以及为什么不收窄：React 命名空间、Vue 3 的 `createElement`、`undefined` 之间没有公共窄类型，而 `@tarojs/router` 既不能依赖 react / vue 的类型，也不消费这个值。\n\n运行时逻辑零改动。`any` 严格比 `string` 更宽松，不会破坏任何既有调用方。\n\n### 验证\n\n由于这是纯类型修复，且 `packages/taro-router/jest.config.ts` 中 ts-jest 设置了 `diagnostics: false`（jest 不做类型检查，`__tests__/router-test.tsx` 整个套件也是 `describe.skip`），无法用「修复前失败的 jest 用例」来证明，改用 `tsc --noEmit` 对已构建的 `.d.ts` 做类型断言。\n\n断言内容为「把编译产物实际注入的值赋给 `Parameters<typeof createRouter>[3]`」：\n\n修复前（`framework?: string`）\n```\nerror TS2322: Type 'typeof React' is not assignable to type 'string'.\nerror TS2322: Type 'typeof React' is not assignable to type 'string'.   // createMultiRouter\nerror TS2322: Type '{ <K extends keyof HTMLElementTagNameMap>(...): VNode<...>; ... }' is not assignable to type 'string'.   // Vue 3 的 h\n```\n\n修复后（`framework?: any`）：React 侧与 Vue 3 侧均无输出，通过。省略该参数（Solid 的情形）同样通过。\n\n其他检查：\n\n- `packages/taro-router` 全量测试：2 套件通过、2 套件跳过（13 用例通过、7 跳过），跳过项是仓库既有的 `describe.skip` / `xit`，与本次改动无关。\n- ESLint `--no-ignore` 通过。\n- 全工作区 `pnpm build` 退出码 0；确认重新生成的 `.d.ts` 中签名仍为单行（JSDoc 置于函数级而非参数级）。\n- 环境：Node 22.14.0、pnpm 10.0.0。未修改测试配置或依赖。\n\n### 备注\n\n`createPullDownComponent` 的 hook 声明（`packages/shared/src/runtime-hooks.ts:208`）还有两个独立的类型问题：`el` 与 `framework` 为隐式 `any`（这正是上述错误声明在仓库内部从未被编译器发现的原因），且返回类型写作 `void` 而 React / Vue 3 的实现都返回了组件（因 `createPageConfig(component: any)` 吸收而未暴露）。这两点超出本 issue 范围，未包含在此 PR 中。\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n* **改进**\n  * 路由配置中的框架参数现支持字符串以外的值，并会传递给下拉刷新组件相关扩展点。跨框架集成时，调用方可传入各框架所需的参数类型。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-11-03T09:02:13Z",
+      "mergedAt": "2026-11-04T12:33:57Z",
+      "additions": 13,
+      "deletions": 2,
+      "changedFiles": 2,
+      "commits": 3,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "ZakaryCode"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19603,
       "title": "fix(shared): correct return type of createPullDownComponent hook",
       "url": "https://github.com/NervJS/taro/pull/19603",
