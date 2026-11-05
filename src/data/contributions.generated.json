@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19607,
+      "title": "fix(h5): report a meaningful errMsg when previewImage fails to load an image",
+      "url": "https://github.com/NervJS/taro/pull/19607",
+      "body": "**这个 PR 做了什么？** (简要描述所做更改)\n\n修复 H5 `Taro.previewImage` 在图片加载失败时 `fail` 回调拿到 `{ errMsg: undefined }` 的问题。\n\n`packages/taro-h5/src/api/media/image/previewImage.ts` 的 `loadImage` 原本这样上报失败：\n\n```ts\nimage.addEventListener('error', (err) => {\n  loadFail({ errMsg: err.message })\n})\n```\n\n浏览器在 `<img>` 加载失败时派发的是**普通 `Event`** 而非 `ErrorEvent`，`Event` 上没有 `message` 字段，所以 `err.message` 恒为 `undefined`。同时这里直接调用了用户传入的原始 `fail`，绕过了本文件其它分支统一使用的 `MethodHandler`，导致 errMsg 缺少 `previewImage:fail ` 前缀，与 Taro 其它 API 的错误约定不一致。\n\n改动：\n\n- 用出错的 `url` 描述失败原因，并补齐 `previewImage:fail ` 前缀，使调用方能明确知道是哪张图片失败\n- 监听器改为 `{ once: true }`，同一个 `<img>` 重复派发 `error` 时不会重复触发 `fail`\n- 补充注释说明此处为何不走 `MethodHandler`：该失败发生在预览框已打开、`handle.success()` 已执行之后，若再走 handler 会导致 `complete` 被触发两次\n\n此路径刻意保持「先 `success` 打开预览，单张图片后续失败再单独 `fail`」的既有语义，不改变轮播的加载时序（原注释 `等待图片加载完后返回，会导致轮播被卡住` 所描述的行为保持不变）。\n\n**测试**\n\n新增 `packages/taro-h5/__tests__/media/previewImage.test.ts`（该 API 此前没有测试覆盖），4 个用例：\n\n- 加载成功时回调 `previewImage:ok` 并挂载预览容器（回归保护）\n- 加载失败时 `errMsg` 为字符串、带 `previewImage:fail` 前缀、且包含失败的 url\n- 同一张图片重复派发 `error` 时只回调一次 `fail`\n- 多张图片中某一张失败时，上报的是它自己的 url\n\n修复前这 4 个用例中有 3 个失败（`errMsg` 为 `undefined`、`fail` 被调用 2 次），修复后全部通过。\n本地已跑 `packages/taro-h5` 全量单测：36 suites / 363 tests 全部通过（Node 22）；全工作区 `pnpm build` 退出码 0；ESLint 对改动文件无告警。\n\n**这个 PR 是什么类型？** (至少选择一个)\n\n- [x] 错误修复 (Bugfix) issue: fix #19606\n- [ ] 新功能 (Feature)\n- [ ] 代码重构 (Refactor)\n- [ ] TypeScript 类型定义修改 (Types)\n- [ ] 文档修改 (Docs)\n- [ ] 代码风格更新 (Code style update)\n- [ ] 构建优化 (Chore)\n- [ ] 其他，请描述 (Other, please describe):\n\n**这个 PR 涉及以下平台：**\n\n- [ ] 所有平台\n- [x] Web 端（H5）\n- [ ] 移动端（React-Native）\n- [ ] 鸿蒙（Harmony）\n- [ ] 鸿蒙容器（Harmony Hybrid）\n- [ ] ASCF 元服务\n- [ ] 快应用（QuickApp）\n- [ ] 所有小程序\n- [ ] 微信小程序\n- [ ] 企业微信小程序\n- [ ] 京东小程序\n- [ ] 百度小程序\n- [ ] 支付宝小程序\n- [ ] 支付宝 IOT 小程序\n- [ ] 钉钉小程序\n- [ ] QQ 小程序\n- [ ] 飞书小程序\n- [ ] 快手小程序\n- [ ] 头条小程序\n\nCloses #19606\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n* **Bug 修复**\n  * 图片加载失败时，错误信息现在包含失败图片的 URL。\n  * 同一图片重复触发加载失败事件时，只报告一次失败。\n  * 加载成功时仍会挂载预览容器并触发成功和完成回调。\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-11-05T08:01:10Z",
+      "mergedAt": "2026-11-05T09:39:39Z",
+      "additions": 105,
+      "deletions": 3,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "ZakaryCode"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19601,
       "title": "fix(router): correct framework param type of createRouter/createMultiRouter",
       "url": "https://github.com/NervJS/taro/pull/19601",
