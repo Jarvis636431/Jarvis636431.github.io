@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19609,
+      "title": "fix(h5): stop leaking transitionend listeners and breaking animation steps",
+      "url": "https://github.com/NervJS/taro/pull/19609",
+      "body": "**这个 PR 做了什么？** (简要描述所做更改)\n\n修复 H5 `Taro.createAnimation` 的两个问题，根因都在 `packages/taro-h5/src/api/ui/animation/index.ts` 的 `Animation` 构造函数里那个 per-instance 的 `transitionend` 监听器。\n\n**问题 1：动画会被无关元素的 transitionend 永久卡住（功能问题）**\n\n原实现把属性名缓存在监听器闭包里：\n\n```ts\nlet animAttr = 'animation'\ndocument.body.addEventListener(TRANSITION_END, (e) => {\n  const target = e.target as HTMLElement\n  if (target.getAttribute(animAttr) === null) {\n    animAttr = 'data-animation'\n  }\n  const animData = target.getAttribute(animAttr)\n  if (animData === null) return\n  ...\n})\n```\n\n`transitionend` 会冒泡到 `document.body`，页面上**任意**一个不带 `animation` 属性的元素结束 transition，都会把 `animAttr` 永久改写成 `data-animation`。此后该实例读错属性，`animData` 恒为 `null` 直接 return，动画只播第一帧就静默停住，且不报错。\n\n**问题 2：`document.body` 上的监听器无限累积（内存问题）**\n\n每个 `new Animation()` 都挂一个新的匿名监听器，全文件没有任何 `removeEventListener`，也没有销毁入口。`createAnimation` 一般在渲染函数或事件回调里反复调用，监听器数量线性增长，且闭包捕获了 `this`，导致实例与其动画数据被 `document.body` 永久持有、无法 GC。\n\n**改动方式**\n\n改成**全局只注册一次**的共享监听器：\n\n- 把「动画标识 → 关键帧总数」的映射从实例字段 `this.animationMap` 提到模块级 `animationStepsMap`。动画标识形如 `taro-h5-poly-fill/${id}/create-animation__${n}`，**已经包含各实例唯一的 id**，所以合并到一张表不会互相覆盖\n- 监听器内不再按 `this.id` 过滤，改为直接查表；查不到即非 Taro 动画，提前返回\n- 属性名改为**按每次事件的目标元素判断**，不再缓存成状态，从根上消除问题 1\n- 构造函数里用 `isTransitionEndListened` 守卫，保持「首次使用时才注册」的惰性行为\n- 补上 `animPath` 为空时的保护，避免形如 `foo` 这种无 `__` 的属性值走到 `split` 抛错\n\n**没有新增或改变任何公开 API**，`createAnimation` / `Animation` 的对外行为保持不变；原来注释里「动画 map ----- 永久保留」的语义也保留（表内容仍然常驻，只是挪到了模块级）。\n\n**测试**\n\n扩充 `packages/taro-h5/__tests__/ui/animation.test.ts`（原本只有一个 `test unit` 冒烟用例），新增 6 个：\n\n- 多次调用 `createAnimation` 不应累积 `transitionend` 监听器（50 次调用）\n- `transitionend` 应逐帧推进动画，并在最后一帧后停止\n- 多个 `Animation` 实例的动画互不干扰，各自推进（验证共享监听器按标识正确路由）\n- 使用 `data-animation` 的环境下应同时写回 `animation` 属性\n- 无关元素的 `transitionend` 不应影响后续动画的推进\n- 非 Taro 动画的元素不应被改写\n\n修复前：监听器用例实测为 50（期望 ≤ 1），无关元素用例实测动画停在 `__0`（期望 `__0--1`），共 2 个失败；修复后 7/7 通过。\n\n本地已跑 `packages/taro-h5` 全量单测：**36 suites / 369 tests 全部通过**（Node 22），`src/api/ui/animation` 行覆盖率由 33.87% 提升到 62.5%。全工作区 `pnpm build` 退出码 0；ESLint 对改动文件无告警。\n\n**这个 PR 是什么类型？** (至少选择一个)\n\n- [x] 错误修复 (Bugfix) issue: fix #19608\n- [ ] 新功能 (Feature)\n- [ ] 代码重构 (Refactor)\n- [ ] TypeScript 类型定义修改 (Types)\n- [ ] 文档修改 (Docs)\n- [ ] 代码风格更新 (Code style update)\n- [ ] 构建优化 (Chore)\n- [ ] 其他，请描述 (Other, please describe):\n\n**这个 PR 涉及以下平台：**\n\n- [ ] 所有平台\n- [x] Web 端（H5）\n- [ ] 移动端（React-Native）\n- [ ] 鸿蒙（Harmony）\n- [ ] 鸿蒙容器（Harmony Hybrid）\n- [ ] ASCF 元服务\n- [ ] 快应用（QuickApp）\n- [ ] 所有小程序\n- [ ] 微信小程序\n- [ ] 企业微信小程序\n- [ ] 京东小程序\n- [ ] 百度小程序\n- [ ] 支付宝小程序\n- [ ] 支付宝 IOT 小程序\n- [ ] 钉钉小程序\n- [ ] QQ 小程序\n- [ ] 飞书小程序\n- [ ] 快手小程序\n- [ ] 头条小程序\n\nCloses #19608\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n* **Bug 修复**\n  * 修复动画事件监听可能重复注册的问题。\n  * 修复动画帧推进与结束行为，确保多个动画实例互不干扰。\n  * 使用 `data-animation` 时同步更新动画属性；无关元素触发事件时不再导致异常或属性改写。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-11-05T10:27:18Z",
+      "mergedAt": "2026-11-09T09:24:56Z",
+      "additions": 173,
+      "deletions": 33,
+      "changedFiles": 2,
+      "commits": 2,
+      "comments": 5,
+      "reviewComments": 1,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19607,
       "title": "fix(h5): report a meaningful errMsg when previewImage fails to load an image",
       "url": "https://github.com/NervJS/taro/pull/19607",
