@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19622,
+      "title": "fix(h5): prefer scrollTop in pageScrollTo",
+      "url": "https://github.com/NervJS/taro/pull/19622",
+      "body": "Closes #19621\n\n**这个 PR 做了什么？**\n\n同时传入数值 `scrollTop` 和 `selector` 时，按现有提示优先使用 `scrollTop`。数值 0 也参与此判断。仅通过选择器定位时计算 `offsetTop`。\n\n**这个 PR 是什么类型？**\n\n- [x] 错误修复 (Bugfix)\n\n**这个 PR 涉及以下平台？**\n\n- [x] Web 端（H5）\n\n**验证**\n\n- 在页面容器和 Window 两种滚动模式中覆盖 `scrollTop: 0` 与正数，共 4 个回归用例，原实现均失败，修复后均通过。\n- H5 全包 Jest 测试 36 个套件、367 个用例通过。改动文件 ESLint、Git 空白检查及 H5 生产构建通过。\n- 构建仍有已有的 `previewImage` / Swiper 类型告警及 Sass 弃用告警。验证使用 Jest/JSDOM。\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n- **修复**\n  - 修正页面滚动定位行为：同时提供数字型滚动位置和选择器时，优先使用滚动位置，包括值为 `0` 的情况。\n  - 同时提供数字型滚动位置和选择器时会发出警告；滚动位置为非数字且未提供选择器时，滚动目标位置为 `0`。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-11-07T16:02:10Z",
+      "mergedAt": "2026-11-10T12:42:57Z",
+      "additions": 16,
+      "deletions": 3,
+      "changedFiles": 2,
+      "commits": 1,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19620,
       "title": "fix(h5): report missing page scroll targets",
       "url": "https://github.com/NervJS/taro/pull/19620",
