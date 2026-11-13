@@ -3,6 +3,23 @@
   "pullRequests": [
     {
       "repository": "NervJS/taro",
+      "number": 19643,
+      "title": "fix(h5): settle pull-down refresh without a current component",
+      "url": "https://github.com/NervJS/taro/pull/19643",
+      "body": "Closes #19642\n\nH5 下拉刷新请求由当前页面中已挂载的组件接收。没有组件接收时，开始和停止都通过现有失败处理结算。组件可以同步接收请求，再异步完成停止操作。\n\n回归用例覆盖无接收者、其他页面的监听者、当前页面异步完成和多个监听者只接收一次。\n\n- [x] 错误修复 (Bugfix)\n- [x] Web 端（H5）\n\nH5 全包 444 个 Jest 用例、React 组件包 88 个用例、Stencil 组件测试 125 个用例以及 H5 生产构建通过。H5 和 React 改动通过 ESLint。Stencil 文件按仓库配置忽略，强制检查结果与上游一致。\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n<!-- coderabbit-ai-generated:v1 -->\n\n## Summary by CodeRabbit\n\n* **问题修复**\n  * 修复下拉刷新请求可能被其他页面组件错误处理的问题。现在，只有当前页面中有效的下拉刷新组件会处理开始或停止请求；没有组件可处理时，请求将返回失败结果。成功、失败及完成回调按请求结果执行。\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+      "labels": [],
+      "createdAt": "2026-11-11T16:54:24Z",
+      "mergedAt": "2026-11-13T02:51:29Z",
+      "additions": 136,
+      "deletions": 20,
+      "changedFiles": 4,
+      "commits": 2,
+      "comments": 4,
+      "reviewComments": 0,
+      "mergedBy": "Single-Dancer"
+    },
+    {
+      "repository": "NervJS/taro",
       "number": 19645,
       "title": "fix(h5): report finite download progress when length is unknown",
       "url": "https://github.com/NervJS/taro/pull/19645",
