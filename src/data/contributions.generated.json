@@ -2,6 +2,23 @@
   "author": "Jarvis636431",
   "pullRequests": [
     {
+      "repository": "meta/astryx",
+      "number": 12612,
+      "title": "docs: distinguish contributor Node from the CLI minimum",
+      "url": "https://github.com/meta/astryx/pull/12612",
+      "body": "## Reader impact\n\nThe README tells contributors that Node 22 is enough to set up the workspace. A contributor following that guide can pick a runtime different from the one the repository develops and tests with.\n\n## Source of truth\n\n- [`.nvmrc`](https://github.com/meta/astryx/blob/main/.nvmrc) pins the workspace Node version used by CI.\n- [The CLI package manifest](https://github.com/meta/astryx/blob/main/packages/cli/package.json) declares Node 22.13.0 as the CLI runtime minimum.\n\n## Correction\n\nPoint contributors to the workspace pin and state the CLI runtime minimum separately.\n\n## Evidence\n\nBoth links resolve to files in the repository. The workspace pin reports Node 24.22.1 and the CLI manifest reports `>=22.13.0`.\n\n## Scope\n\nComponents: repository README\n\n- [x] This PR changes documentation only.\n- [x] Runtime, API, visual, and policy changes were removed or split.\n- [x] Public text and artifacts contain no internal Meta context.\n\n## Testing\n\n- Compared the README with `.nvmrc`, the CI setup action, and the CLI package manifest.\n- Ran Prettier and `git diff --check`.\n",
+      "labels": ["CLA Signed", "ci:run", "community", "lane:2"],
+      "createdAt": "2026-11-18T09:10:28Z",
+      "mergedAt": "2026-11-22T17:28:42Z",
+      "additions": 7,
+      "deletions": 4,
+      "changedFiles": 1,
+      "commits": 3,
+      "comments": 8,
+      "reviewComments": 0,
+      "mergedBy": "cixzhang"
+    },
+    {
       "repository": "alibaba/hooks",
       "number": 2986,
       "title": "fix(useInfiniteScroll): support column-reverse scroll origins",
