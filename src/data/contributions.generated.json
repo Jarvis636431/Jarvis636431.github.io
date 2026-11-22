@@ -2,6 +2,23 @@
   "author": "Jarvis636431",
   "pullRequests": [
     {
+      "repository": "alibaba/hooks",
+      "number": 2986,
+      "title": "fix(useInfiniteScroll): support column-reverse scroll origins",
+      "url": "https://github.com/alibaba/hooks/pull/2986",
+      "body": "### 🤔 This is a ...\n\n- [x] Bug fix\n- [x] Site / documentation update\n- [x] Test Case\n\n### 🔗 Related issue link\n\nFixes #2948\n\n### 💡 Background and solution\n\nIn a flex container with `flex-direction: column-reverse`, scrolling towards the list end produces a negative `scrollTop`. `useInfiniteScroll` treats that value as a normal positive offset, so automatic loading does not trigger correctly and restoring the position after prepending uses the wrong sign.\n\nDetect flex/inline-flex column-reverse containers, normalize the scroll distance for the existing threshold and movement checks, and restore the signed offset after prepending. Loading continues to follow list order: `bottom` appends at the list end (visual top in a reversed column), while `top` prepends at the list start (visual bottom). Document this in English and Chinese. No new option, dependency or change to normal-layout list ordering.\n\n### Validation\n\n- Added 12 regression cases: 6 fail on unchanged master and all pass with this fix. Covers normal/reversed/block layouts, thresholds, movement direction, initial/restored positions, pending/no-more guards, resizing and layout changes.\n- Focused suites: 52 tests passed.\n- Full workspace tests, normal and `REACT_MODE=strict`: 96 files / 478 tests passed in each mode (Node 24.21.0).\n- Both packages' TypeScript checks passed; full workspace build passed (Node 24.3.0 / pnpm 10.12.4).\n- Real-browser comparison using bundled hook source reproduced missing loads on master and verified loading with the fix. Prepending three 50px rows restores reverse `scrollTop` from -20 to -170 with 0px anchor displacement, with browser scroll anchoring disabled. Normal-layout controls passed. Other browser engines and mobile devices were not tested.\n- Source coverage: 100% statements/functions/lines, 94.20% branches. Existing uncovered branches remain. Coverage emits the existing Vitest/coverage-provider version mismatch warning.\n- New test Biome check, source formatting and `git diff --check` passed. The source's existing exhaustive-dependencies lint error for `isNoMore` remains; that memo was not changed. Build emits existing toolchain warnings.\n\nAI assistance was used for implementation and validation.\n\n### 📝 Changelog\n\n| Language | Changelog |\n| --- | --- |\n| 🇺🇸 English | Fix automatic loading and scroll-position restoration in `useInfiniteScroll` for column-reverse flex containers. |\n| 🇨🇳 Chinese | 修复 `useInfiniteScroll` 在 column-reverse 弹性布局中的自动加载判断和滚动位置恢复。 |\n\n### ☑️ Self Check before Merge\n\n- [x] Doc is updated/provided or not needed\n- [x] Demo is updated/provided or not needed\n- [x] TypeScript definition is updated/provided or not needed\n- [x] Changelog is provided or not needed\n",
+      "labels": [],
+      "createdAt": "2026-10-27T05:59:20Z",
+      "mergedAt": "2026-11-22T14:02:41Z",
+      "additions": 242,
+      "deletions": 2,
+      "changedFiles": 4,
+      "commits": 3,
+      "comments": 1,
+      "reviewComments": 0,
+      "mergedBy": "crazylxr"
+    },
+    {
       "repository": "converge-ai-labs/agent-foundation",
       "number": 1705,
       "title": "test(harness): cover model switch context recovery",
