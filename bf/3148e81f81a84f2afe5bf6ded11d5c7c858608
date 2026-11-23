@@ -1,0 +1,24 @@
+src/components/site/Header.astro
+  s_2ae6908abdc9b7::t_7aa02079a8e504 17,46,49,96,101-112,118,140,143-156,167,211-215,224
+  s_2ae6908abdc9b7::t_df79a3c22065f4 113-117
+src/scripts/search.ts
+  s_2ae6908abdc9b7::t_4530c9764b3ed2 237
+tests/search-motion.test.mjs
+  s_2ae6908abdc9b7::t_4530c9764b3ed2 165,167-169,171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.7",
+  "base_commit_sha": "bf3148e81f81a84f2afe5bf6ded11d5c7c858608",
+  "prompts": {},
+  "sessions": {
+    "s_2ae6908abdc9b7": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a206ec-413c-7731-959c-0e15c2291405",
+        "model": "gpt-6.2-sol"
+      },
+      "human_author": "Jarvis <mengda636431@gmail.com>"
+    }
+  }
+}
