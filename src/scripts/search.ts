@@ -232,14 +232,9 @@ export function initSearch(
     clearMotion();
     closing = false;
     if (!dialog.open) {
-      // Mobile triggers become inert when their menu closes; restore a visible control.
       const focused = document.activeElement;
       lastFocusedElement =
-        focused === document.getElementById("mobile-search-btn")
-          ? document.getElementById("menu-btn")
-          : focused instanceof window.HTMLElement
-            ? focused
-            : null;
+        focused instanceof window.HTMLElement ? focused : null;
       previousOverflow = document.body.style.overflow;
       previousPadding = document.body.style.paddingRight;
       if (header)

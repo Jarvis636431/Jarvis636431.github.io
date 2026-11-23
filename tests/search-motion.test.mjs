@@ -49,8 +49,6 @@ function setup(reduced = false) {
       "search-status",
       "search-close",
       "main-header",
-      "mobile-search-btn",
-      "menu-btn",
     ].map((id) => [id, new Element()]),
   );
   const trigger = new Element();
@@ -164,13 +162,11 @@ test("reduced motion opens and closes immediately without timers", () => {
   assert.equal(ui.timers.size, 0);
 });
 
-test("search opened from the mobile menu restores its visible menu button", () => {
+test("search opened from the header restores focus to its search button", () => {
   const ui = setup(true);
-  ui.document.getElementById("mobile-search-btn").focus();
-  ui.openSearch();
+  ui.trigger.focus();
+  ui.trigger.listeners.get("click")();
+  assert.equal(ui.dialog.open, true);
   ui.closeSearch();
-  assert.equal(
-    ui.document.activeElement,
-    ui.document.getElementById("menu-btn"),
-  );
+  assert.equal(ui.document.activeElement, ui.trigger);
 });
