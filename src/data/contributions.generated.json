@@ -2,6 +2,23 @@
   "author": "Jarvis636431",
   "pullRequests": [
     {
+      "repository": "converge-ai-labs/agent-foundation",
+      "number": 1809,
+      "title": "fix(harness): preserve short inputs during context recovery",
+      "url": "https://github.com/converge-ai-labs/agent-foundation/pull/1809",
+      "body": "> This pull request includes changes prepared by Codex using `gpt-6.2-sol` on behalf of @Jarvis636431.\n>\n> This pull request includes changes prepared by a13n-harness-ui using `gpt-6.2-sol` on behalf of @Wh1isper.\n\n## Summary\n\nA run that overflows both its primary request and compaction can resume without its original task. With a 2,048-character recovery budget, a long retained-history path can leave enough room for a complete short input while the 64-character excerpt threshold still causes Harness to skip it.\n\nKeep a complete nonempty fragment whenever it fits. Empty fragments do not consume the prompt budget or displace a later user correction. Truncated excerpts still require at least 64 characters, and the recovery prompt still fits the configured budget.\n\n## Related issue\n\nRefs #1305\n\n## Validation\n\nThe new regression case fails before the fix. It drives both overflow attempts with a scripted model and verifies that the resumed request contains the original task and the complete history path within the minimum budget. The existing path-omission case also retains the task. All 241 tests across context recovery, explicit and background compaction, and output-limit recovery passed locally.\n\nThe follow-up regression test verifies that an empty task does not displace a user correction. It fails before the follow-up fix; all 49 context recovery tests pass with it.\n\n## Checklist\n\n- [x] Tests cover the changed behavior, or the reason they are unnecessary is explained.\n- [x] Affected specifications, documentation, and automation are updated. The fix follows the existing recovery budget and preservation contract.\n- [x] Shared rules have clear owners, and added complexity serves a concrete current need under the [code quality principles](https://github.com/converge-ai-labs/agent-foundation/blob/main/DEVELOPMENT.md#code-quality-and-design).\n- [x] Breaking or compatibility-impacting changes are identified and documented. No API or state format changes.\n- [ ] AI-generated changes were reviewed and understood by the human author.\n- [ ] The PR title and labels describe the change accurately for generated release notes.\n\n",
+      "labels": ["bug"],
+      "createdAt": "2026-11-24T13:22:45Z",
+      "mergedAt": "2026-11-25T03:08:44Z",
+      "additions": 26,
+      "deletions": 4,
+      "changedFiles": 2,
+      "commits": 2,
+      "comments": 2,
+      "reviewComments": 0,
+      "mergedBy": "Wh1isper"
+    },
+    {
       "repository": "NervJS/taro",
       "number": 19668,
       "title": "feat(h5): 支持 getRecorderManager 网页录音",
